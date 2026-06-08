@@ -26,4 +26,4 @@ def test_login_with_valid_credentials(page: Page):
 
     # Should redirect to inventory page
     expect(page).to_have_url("https://www.saucedemo.com/inventory.html")
-    expect(page.locator(".title")).to_have_text("Products")
+    expect(page.locator(".header_secondary_container .title")).to_have_text("Products")
