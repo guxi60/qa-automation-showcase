@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test outputs
+test-results/
+*.html
+!web-ui-tests/templates/*.html
+report/
+results/
+output/
+log.html
+report.html
+output.xml
+screenshots/
+playwright-report/
+allure-results/
+
+# Robot Framework
+robot-tests/results/
+robot-tests/log*.html
+robot-tests/report*.html
+robot-tests/output*.xml
+
+# JMeter
+*.jtl
+JMeterPluginsCMD.bat
