@@ -23,7 +23,10 @@ def inventory(page: Page) -> InventoryPage:
 def test_inventory_page_loads(inventory: InventoryPage):
     """Inventory page shows products after login."""
     assert inventory.is_loaded()
-    assert inventory.get_product_count() == 6, "SauceDemo should have 6 products"
+    count = inventory.get_product_count()
+    assert count == 6, "SauceDemo should have 6 products"
+    print(f"✓ Inventory page loaded with {count} products")
+    print(f"  Products: {', '.join(inventory.get_product_names())}")
 
 
 def test_all_products_have_name_and_price(inventory: InventoryPage):

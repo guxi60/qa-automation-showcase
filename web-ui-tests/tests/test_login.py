@@ -18,6 +18,8 @@ def test_login_with_valid_credentials(page: Page):
     expect(page).to_have_url(InventoryPage.URL)
     inventory = InventoryPage(page)
     assert inventory.is_loaded(), "Inventory page should show 'Products' title"
+    print("✓ Login successful — redirected to /inventory.html")
+    print("✓ Products title is visible")
 
 
 # ── Login errors ──────────────────────────────────────────────
@@ -31,7 +33,9 @@ def test_login_with_wrong_password(page: Page):
     assert login.is_error_visible(), "Error message should be displayed"
     error = login.get_error_text()
     assert "do not match" in error, f"Unexpected error text: {error}"
-    expect(page).to_have_url(LoginPage.URL)  # still on login page
+    expect(page).to_have_url(LoginPage.URL)
+    print(f"✓ Wrong password correctly rejected")
+    print(f"  Error message: {error}")
 
 
 def test_login_with_empty_username(page: Page):

@@ -42,12 +42,14 @@ def test_complete_checkout_e2e(cart_ready: CartPage, page: Page):
     expect(page).to_have_url(CheckoutStepTwoPage.URL)
     assert step2.get_item_count() == 1
     assert "Total" in step2.get_total_text()
+    print(f"✓ Checkout overview: 1 item, {step2.get_total_text()}")
     step2.finish()
 
     # Complete
     complete = CheckoutCompletePage(page)
     expect(page).to_have_url(CheckoutCompletePage.URL)
     assert "Thank you" in complete.get_header_text()
+    print(f"✓ Order complete: {complete.get_header_text()}")
 
     # Back home works
     complete.back_home()
