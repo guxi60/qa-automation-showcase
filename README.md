@@ -79,12 +79,12 @@ playwright install chromium
 
 # 3. 运行 Playwright 测试（含 HTML 报告）
 cd web-ui-tests
-pytest -v --html=report.html --self-contained-html
-# 报告: web-ui-tests/report.html
+pytest -v --html report.html
+# 用浏览器打开 web-ui-tests/report.html 查看完整报告（包含可展开的详细日志）
 
 # 4. 运行 Selenium 测试
 cd selenium-tests
-pytest -v --html=report.html --self-contained-html
+pytest -v --html report.html
 
 # 5. 运行 Robot Framework 测试
 cd robot-tests
