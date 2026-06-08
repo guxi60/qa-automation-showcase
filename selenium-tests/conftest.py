@@ -63,11 +63,31 @@ def pytest_configure(config):
 
 
 def pytest_unconfigure(config):
-    """Patch pytest-html 4.2.0 JS bug: missing ) in :not() selector."""
+    """Patch pytest-html for local file:// viewing.
+
+    Two issues fixed:
+    1. findAll :not() missing ')' — breaks click-to-expand
+    2. history.pushState on file:// throws SecurityError — aborts JS init
+       before bindEvents() runs, so no buttons work at all.
+    """
     report_candidates = list(Path(__file__).parent.glob("report*.html"))
     for report_path in report_candidates:
         content = report_path.read_text(encoding="utf-8")
-        broken = "findAll('.collapsible td:not(.col-links', row)"
-        fixed =  "findAll('.collapsible td:not(.col-links)', row)"
-        if broken in content:
-            report_path.write_text(content.replace(broken, fixed), encoding="utf-8")
+
+        # Fix 1: CSS selector syntax error
+        broken1 = "findAll('.collapsible td:not(.col-links', row)"
+        fixed1  = "findAll('.collapsible td:not(.col-links)', row)"
+        if broken1 in content:
+            content = content.replace(broken1, fixed1)
+
+        # Fix 2: file:// protocol breaks history.pushState → kills JS init
+        broken2 = "(function(){function r(e,n,t)"
+        fixed2 = (
+            "(function(){if(location.protocol==='file:'){"
+            "history.pushState=history.replaceState=function(){return arguments[2]}}"
+            "})();(function(){function r(e,n,t)"
+        )
+        if broken2 in content:
+            content = content.replace(broken2, fixed2)
+
+        report_path.write_text(content, encoding="utf-8")
