@@ -62,3 +62,19 @@ def pytest_runtest_makereport(item, call):
 def pytest_configure(config):
     config.addinivalue_line("markers", "smoke: mark test as smoke test (fast, critical path)")
     config.addinivalue_line("markers", "regression: mark test as regression test")
+
+
+def pytest_unconfigure(config):
+    """Patch pytest-html 4.2.0 JS bug: missing ) in :not() selector.
+
+    pytest_unconfigure is called after all plugins have finished, so the
+    report file is guaranteed to be written by then.
+    Bug reference: findAll('.collapsible td:not(.col-links' <-- missing ')'
+    """
+    report_candidates = list(Path(__file__).parent.glob("report*.html"))
+    for report_path in report_candidates:
+        content = report_path.read_text(encoding="utf-8")
+        broken = "findAll('.collapsible td:not(.col-links', row)"
+        fixed =  "findAll('.collapsible td:not(.col-links)', row)"
+        if broken in content:
+            report_path.write_text(content.replace(broken, fixed), encoding="utf-8")
