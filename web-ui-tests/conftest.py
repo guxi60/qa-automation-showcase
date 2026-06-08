@@ -27,6 +27,7 @@ def page(browser: Browser) -> Page:
         locale="en-US",
     )
     page = context.new_page()
+    page.set_default_navigation_timeout(60000)  # 60s for flaky networks
     yield page
     context.close()
 
