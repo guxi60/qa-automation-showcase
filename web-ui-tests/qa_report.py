@@ -15,9 +15,12 @@ import json
 import os
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, TYPE_CHECKING
 
 import allure
+
+if TYPE_CHECKING:
+    from playwright.sync_api import Page
 
 # ═══════════════════════════════════════════════════════════════
 #  DDT — data loading
@@ -59,6 +62,25 @@ def note(*lines: str):
     """Log an informational note."""
     for ln in lines:
         print(f"    · {ln}")
+
+
+def capture(page: "Page", name: str = ""):
+    """
+    Take a full-page screenshot and attach it to the Allure report.
+
+    Usage from any test:
+
+        from qa_report import capture
+        capture(page, "After login")
+    """
+    try:
+        png = page.screenshot(full_page=True, timeout=10000)
+        display = f"Screenshot: {name}" if name else "Screenshot"
+        allure.attach(png, name=display, attachment_type=allure.attachment_type.PNG)
+        if name:
+            print(f"    📷 {name}")
+    except Exception:
+        pass  # page may be closed or unreachable
 
 
 # ═══════════════════════════════════════════════════════════════

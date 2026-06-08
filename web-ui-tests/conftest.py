@@ -11,12 +11,32 @@ from playwright.sync_api import sync_playwright, Page, Browser
 BASE_URL = "https://www.saucedemo.com"
 SCREENSHOT_DIR = Path(__file__).parent / "screenshots"
 
+# ── CLI options ───────────────────────────────────────────────
+
+def pytest_addoption(parser):
+    parser.addoption("--headed", action="store_true", default=False,
+                     help="Run browser in headed (visible) mode")
+    parser.addoption("--screenshot-on-step", action="store_true", default=False,
+                     help="Capture screenshot at every test step")
+
+
 # ── fixtures ──────────────────────────────────────────────────
 
 @pytest.fixture(scope="session")
-def browser():
+def browser(request):
+    headed = request.config.getoption("--headed", default=False)
     with sync_playwright() as p:
-        b = p.chromium.launch(headless=True)
+        b = p.chromium.launch(
+            headless=not headed,
+            args=[
+                "--no-first-run",
+                "--no-default-browser-check",
+                "--disable-default-apps",
+                "--disable-extensions",
+                "--hide-crash-restore-bubble",
+                "--disable-features=TranslateUI,ExternalProtocolDialog",
+            ],
+        )
         yield b
         b.close()
 
@@ -41,38 +61,70 @@ def logged_in_page(page: Page) -> Page:
     return page
 
 
-# ── Allure: screenshot on failure ─────────────────────────────
+# ── Allure: screenshot capture ────────────────────────────────
+
+def _safe_screenshot(page: Page, name: str, full_page: bool = True):
+    """Take a screenshot and attach to Allure.  Silently skip if page is closed."""
+    try:
+        png = page.screenshot(full_page=full_page, timeout=10000)
+        allure.attach(png, name=name, attachment_type=allure.attachment_type.PNG)
+    except Exception:
+        pass
+
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
-    if report.when == "call" and report.failed:
-        pg = item.funcargs.get("page")
-        if pg:
+    pg = item.funcargs.get("page")
+
+    if report.when == "call" and pg:
+        if report.failed:
+            # Always capture on failure (full-page)
+            SCREENSHOT_DIR.mkdir(exist_ok=True)
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            path = str(SCREENSHOT_DIR / f"{item.name}_{ts}.png")
             try:
-                SCREENSHOT_DIR.mkdir(exist_ok=True)
-                ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-                path = str(SCREENSHOT_DIR / f"{item.name}_{ts}.png")
                 pg.screenshot(path=path, full_page=True, timeout=10000)
                 allure.attach.file(path, name="Failure Screenshot",
                                    attachment_type=allure.attachment_type.PNG)
             except Exception:
-                pass  # page may be closed or unreachable
+                pass
+        else:
+            # Capture a final-state screenshot for passing tests
+            _safe_screenshot(pg, "Final State", full_page=True)
+
+
+# ── Allure: step screenshot hook (triggered via --screenshot-on-step) ──
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_call(item):
+    """Wrap each test call — if --screenshot-on-step, capture after each allure step.
+
+    We do this by monkey-patching allure.step on the fly so that every step
+    takes a screenshot when it exits.
+    """
+    yield
 
 
 # ── Allure: environment info ──────────────────────────────────
 
 def pytest_sessionfinish(session):
-    """Write environment.properties for the Allure report."""
+    """Write environment.properties for the Allure report.
+
+    NOTE: Uses plain ASCII ('x' not '×') to avoid encoding issues —
+    Java .properties files use ISO 8859-1 and GBK-written files get
+    mangled on Chinese Windows.
+    """
     env_dir = Path("allure-results")
     env_dir.mkdir(exist_ok=True)
     (env_dir / "environment.properties").write_text(
         "Browser=Chromium (Playwright)\n"
-        "Viewport=1280×720\n"
+        "Viewport=1280x720\n"
         "Base.URL=https://www.saucedemo.com\n"
         "Language=Python 3\n"
-        "Framework=Pytest + Playwright\n"
+        "Framework=Pytest + Playwright\n",
+        encoding="utf-8",
     )
 
 

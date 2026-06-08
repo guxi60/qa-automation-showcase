@@ -18,6 +18,7 @@ Thumbs.db
 test-results/
 *.html
 !web-ui-tests/templates/*.html
+!docs/*.html
 report/
 results/
 output/
@@ -27,6 +28,7 @@ output.xml
 screenshots/
 playwright-report/
 allure-results/
+allure-report/
 
 # Robot Framework
 robot-tests/results/

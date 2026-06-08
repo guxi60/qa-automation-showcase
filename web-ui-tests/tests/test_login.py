@@ -5,7 +5,7 @@ import pytest
 from playwright.sync_api import Page, expect
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
-from qa_report import load_data, set_meta, step, action, note
+from qa_report import load_data, set_meta, step, action, note, capture
 
 
 @allure.feature("Authentication")
@@ -25,6 +25,7 @@ def test_login(page: Page, tc: dict):
         login = LoginPage(page)
         login.goto()
     action("Opened https://www.saucedemo.com/")
+    capture(page, "Login page loaded")
 
     # ── Act ──
     with step(f"Submit credentials  |  user={tc.get('username')!r}"):
@@ -49,6 +50,7 @@ def test_login(page: Page, tc: dict):
         with step("Verify inventory is populated"):
             assert inventory.is_loaded(), "Page title should be 'Products'"
             assert inventory.get_product_count() == 6
+        capture(page, "Inventory page after login")
 
 
 @allure.feature("Authentication")
