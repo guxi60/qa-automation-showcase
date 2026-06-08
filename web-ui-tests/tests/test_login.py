@@ -1,157 +1,200 @@
-"""Login tests — SauceDemo authentication scenarios."""
+"""Login — SauceDemo authentication scenarios."""
 
 from playwright.sync_api import Page, expect
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
-from qa_report import TestLog, testcase, get_metadata
+from qa_report import testcase, TestLog
 
 
+# ═══════════════════════════════════════════════════════════════
+#  TC-LOGIN-001  ·  Happy path — valid credentials
 # ═══════════════════════════════════════════════════════════════
 
 @testcase(
     id="TC-LOGIN-001",
-    category="Functional / Authentication",
-    priority="P0 (Smoke)",
-    precondition="SauceDemo login page is accessible. User 'standard_user' exists.",
-    test_data="standard_user / secret_sauce",
+    title="Valid credentials should grant access to the product inventory",
+    module="Authentication",
+    feature="Login",
+    level="System",
+    priority="P0",
+    tags=["smoke", "happy-path"],
+    precondition=[
+        "SauceDemo login page is reachable.",
+        "User 'standard_user' exists in the system.",
+    ],
+    test_data={"username": "standard_user", "password": "secret_sauce"},
+    expected="Redirect to /inventory.html; 'Products' heading visible; 6 products listed.",
 )
 def test_login_with_valid_credentials(page: Page):
-    """Standard user can log in with valid credentials."""
-
     log = TestLog()
 
+    # ── Step 1 ──
     log.step("Navigate to SauceDemo login page")
     login = LoginPage(page)
     login.goto()
-    log.detail("Opened https://www.saucedemo.com/")
+    log.action("Opened https://www.saucedemo.com/")
+    log.check("Login button is visible", login.login_button.is_visible(), True)
+    log.check("Username field is visible", login.username_input.is_visible(), True)
+    log.check("Password field is visible", login.password_input.is_visible(), True)
+    # assertions
+    expect(login.login_button).to_be_visible()
 
+    # ── Step 2 ──
     log.step("Enter valid credentials and submit")
     login.login("standard_user", "secret_sauce")
-    log.detail("Username: standard_user", "Password: ********")
+    log.action('Filled "standard_user" / "********" → clicked [Login]')
 
-    log.step("Verify login succeeded")
-    on_inventory = page.url == InventoryPage.URL
-    log.verify("Redirected to /inventory.html", on_inventory)
+    # ── Step 3 ──
+    log.step("Verify successful authentication")
+    log.verify("URL is /inventory.html",
+               actual=page.url, expected=InventoryPage.URL)
     expect(page).to_have_url(InventoryPage.URL)
 
     inventory = InventoryPage(page)
-    log.verify("Page title shows 'Products'", inventory.is_loaded())
-    log.check("Number of products displayed", inventory.get_product_count(), 6)
+    log.verify("Page heading is 'Products'",
+               actual=inventory.is_loaded(), expected=True)
+    log.check("Product count", inventory.get_product_count(), 6)
+    assert inventory.get_product_count() == 6
 
-    log.passed("Valid credentials successfully grant access to the inventory")
+    log.finish(True, "User authenticated and landed on inventory page.")
 
 
+# ═══════════════════════════════════════════════════════════════
+#  TC-LOGIN-002  ·  Wrong password
 # ═══════════════════════════════════════════════════════════════
 
 @testcase(
     id="TC-LOGIN-002",
-    category="Functional / Authentication",
+    title="Wrong password should be rejected with a descriptive error",
+    module="Authentication",
+    feature="Login",
+    level="System",
     priority="P1",
-    precondition="SauceDemo login page is accessible.",
-    test_data="standard_user / wrong_password (invalid)",
+    tags=["negative", "validation"],
+    precondition=["Login page is reachable."],
+    test_data={"username": "standard_user", "password": "wrong_password"},
+    expected="Error banner: 'Username and password do not match…'; stay on login page.",
 )
 def test_login_with_wrong_password(page: Page):
-    """User sees clear error when password is incorrect."""
-
     log = TestLog()
 
     log.step("Navigate to login page")
     login = LoginPage(page)
     login.goto()
 
-    log.step("Enter valid username + wrong password")
+    log.step("Submit valid username with an incorrect password")
     login.login("standard_user", "wrong_password")
-    log.detail("Username: standard_user", "Password: wrong_password")
+    log.action('Filled "standard_user" / "wrong_password" → clicked [Login]')
 
-    log.step("Observe error feedback")
-    log.verify("Error message is displayed", login.is_error_visible())
+    log.step("Verify error feedback")
+    log.check("Error banner is displayed", login.is_error_visible(), True)
     error = login.get_error_text()
-    log.check("Error text mentions 'do not match'", "do not match" in error, True)
-    log.detail(f"Displayed message: \"{error}\"")
-    # Real assertion
-    assert "do not match" in error, f"Unexpected error text: {error}"
+    log.verify("Error mentions credentials mismatch",
+               actual="do not match" in error, expected=True)
+    log.note(f"Displayed: {error!r}")
+    assert "do not match" in error
 
-    still_on_login = page.url == LoginPage.URL
-    log.verify("Still on login page (no redirect)", still_on_login)
+    log.verify("Still on login page (no redirect)",
+               actual=page.url, expected=LoginPage.URL)
     expect(page).to_have_url(LoginPage.URL)
 
-    log.passed("Wrong password correctly rejected with descriptive error")
+    log.finish(True, "Wrong password correctly rejected.")
 
 
+# ═══════════════════════════════════════════════════════════════
+#  TC-LOGIN-003  ·  Empty username
 # ═══════════════════════════════════════════════════════════════
 
 @testcase(
     id="TC-LOGIN-003",
-    category="Functional / Input Validation",
+    title="Empty username should trigger client-side validation",
+    module="Authentication",
+    feature="Login",
+    level="System",
     priority="P1",
-    precondition="SauceDemo login page is accessible.",
-    test_data="[empty] / secret_sauce",
+    tags=["negative", "validation", "boundary"],
+    precondition=["Login page is reachable."],
+    test_data={"username": "", "password": "secret_sauce"},
+    expected="Error banner: 'Username is required'; stay on login page.",
 )
 def test_login_with_empty_username(page: Page):
-    """Submitting empty username shows validation error."""
-
     log = TestLog()
 
     log.step("Navigate to login page")
     login = LoginPage(page)
     login.goto()
 
-    log.step("Leave username empty, fill password, click Login")
+    log.step("Submit with empty username field")
     login.login("", "secret_sauce")
-    log.detail("Username: [empty]", "Password: secret_sauce")
+    log.action('Filled "" / "secret_sauce" → clicked [Login]')
 
-    log.step("Verify validation error appears")
+    log.step("Verify validation error")
     error = login.get_error_text()
-    log.check("Error text matches expected", "Username is required" in error, True)
-    log.detail(f"Displayed message: \"{error}\"")
-    assert "Username is required" in error, f"Unexpected error: {error}"
+    log.verify("Error says 'Username is required'",
+               actual="Username is required" in error, expected=True)
+    log.note(f"Displayed: {error!r}")
+    assert "Username is required" in error
 
-    log.passed("Empty username field is properly validated")
+    log.finish(True, "Empty username correctly validated.")
 
 
+# ═══════════════════════════════════════════════════════════════
+#  TC-LOGIN-004  ·  Empty password
 # ═══════════════════════════════════════════════════════════════
 
 @testcase(
     id="TC-LOGIN-004",
-    category="Functional / Input Validation",
+    title="Empty password should trigger client-side validation",
+    module="Authentication",
+    feature="Login",
+    level="System",
     priority="P1",
-    precondition="SauceDemo login page is accessible.",
-    test_data="standard_user / [empty]",
+    tags=["negative", "validation", "boundary"],
+    precondition=["Login page is reachable."],
+    test_data={"username": "standard_user", "password": ""},
+    expected="Error banner: 'Password is required'; stay on login page.",
 )
 def test_login_with_empty_password(page: Page):
-    """Submitting empty password shows validation error."""
-
     log = TestLog()
 
     log.step("Navigate to login page")
     login = LoginPage(page)
     login.goto()
 
-    log.step("Fill username, leave password empty, click Login")
+    log.step("Submit with empty password field")
     login.login("standard_user", "")
-    log.detail("Username: standard_user", "Password: [empty]")
+    log.action('Filled "standard_user" / "" → clicked [Login]')
 
-    log.step("Verify validation error appears")
+    log.step("Verify validation error")
     error = login.get_error_text()
-    log.check("Error text matches expected", "Password is required" in error, True)
-    log.detail(f"Displayed message: \"{error}\"")
-    assert "Password is required" in error, f"Unexpected error: {error}"
+    log.verify("Error says 'Password is required'",
+               actual="Password is required" in error, expected=True)
+    log.note(f"Displayed: {error!r}")
+    assert "Password is required" in error
 
-    log.passed("Empty password field is properly validated")
+    log.finish(True, "Empty password correctly validated.")
 
 
+# ═══════════════════════════════════════════════════════════════
+#  TC-LOGIN-005  ·  Locked-out user
 # ═══════════════════════════════════════════════════════════════
 
 @testcase(
     id="TC-LOGIN-005",
-    category="Functional / Access Control",
+    title="Locked-out user must be denied access with a clear explanation",
+    module="Authentication",
+    feature="Login",
+    level="System",
     priority="P1",
-    precondition="SauceDemo login page is accessible. User 'locked_out_user' exists.",
-    test_data="locked_out_user / secret_sauce",
+    tags=["negative", "access-control"],
+    precondition=[
+        "Login page is reachable.",
+        "Account 'locked_out_user' exists in locked state.",
+    ],
+    test_data={"username": "locked_out_user", "password": "secret_sauce"},
+    expected="Error banner: '…this user has been locked out'; stay on login page.",
 )
 def test_locked_out_user_cannot_login(page: Page):
-    """Locked-out user is blocked with appropriate message."""
-
     log = TestLog()
 
     log.step("Navigate to login page")
@@ -160,53 +203,57 @@ def test_locked_out_user_cannot_login(page: Page):
 
     log.step("Attempt login as locked-out user")
     login.login("locked_out_user", "secret_sauce")
-    log.detail("Username: locked_out_user")
+    log.action('Filled "locked_out_user" / "********" → clicked [Login]')
 
     log.step("Verify access is denied")
     error = login.get_error_text()
-    log.check("Error mentions 'locked out'", "locked out" in error.lower(), True)
-    log.detail(f"Displayed message: \"{error}\"")
-    assert "locked out" in error.lower(), f"Unexpected error: {error}"
+    log.verify("Error mentions 'locked out'",
+               actual="locked out" in error.lower(), expected=True)
+    log.note(f"Displayed: {error!r}")
+    assert "locked out" in error.lower()
 
-    still_on_login = page.url == LoginPage.URL
-    log.verify("Still on login page", still_on_login)
+    log.verify("Still on login page",
+               actual=page.url, expected=LoginPage.URL)
     expect(page).to_have_url(LoginPage.URL)
 
-    log.passed("Locked-out user correctly denied access")
+    log.finish(True, "Locked-out user correctly denied access.")
 
 
+# ═══════════════════════════════════════════════════════════════
+#  TC-LOGIN-006  ·  Element integrity on page load
 # ═══════════════════════════════════════════════════════════════
 
 @testcase(
     id="TC-LOGIN-006",
-    category="GUI / Smoke",
-    priority="P0 (Smoke)",
-    precondition="SauceDemo login page is accessible.",
-    test_data="N/A — no interaction required",
+    title="Login page must render all required form elements on initial load",
+    module="GUI",
+    feature="Login",
+    level="System",
+    priority="P0",
+    tags=["smoke", "gui", "static"],
+    precondition=["Login page is reachable."],
+    test_data=None,
+    expected="Username input, password input, and Login button are all visible. Login button text = 'Login'.",
 )
 def test_login_page_elements_visible(page: Page):
-    """Login page renders all required form elements on initial load."""
-
     log = TestLog()
 
     log.step("Navigate to login page")
     login = LoginPage(page)
     login.goto()
 
-    log.step("Verify all form controls are visible and correct")
-    log.check("Username input field visible",
-              login.username_input.is_visible(), True)
-    log.check("Password input field visible",
-              login.password_input.is_visible(), True)
-    log.check("Login button visible",
-              login.login_button.is_visible(), True)
-    log.check("Login button text",
-              login.login_button.input_value(), "Login")
+    log.step("Verify all form controls are present and visible")
+    log.check("Username input", login.username_input.is_visible(), True)
+    log.check("Password input", login.password_input.is_visible(), True)
+    log.check("Login button",   login.login_button.is_visible(), True)
+    log.verify("Login button text",
+               actual=login.login_button.input_value(),
+               expected="Login")
 
-    # Real assertions
+    # assertions
     expect(login.username_input).to_be_visible()
     expect(login.password_input).to_be_visible()
     expect(login.login_button).to_be_visible()
     expect(login.login_button).to_have_value("Login")
 
-    log.passed("All login page elements render correctly on initial load")
+    log.finish(True, "All login form elements render correctly.")
