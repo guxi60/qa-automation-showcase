@@ -1,0 +1,54 @@
+{
+  "cart": [
+    {
+      "id": "TC-CART-001",
+      "title": "Cart page displays all items added from inventory",
+      "story": "Cart display",
+      "severity": "BLOCKER",
+      "tags": ["smoke"],
+      "level": "System",
+      "add_items": ["Sauce Labs Backpack", "Sauce Labs Onesie"],
+      "_comment": "Display — added items appear in cart"
+    },
+    {
+      "id": "TC-CART-002",
+      "title": "Removing an item decrements count and removes from list",
+      "story": "Cart modification",
+      "severity": "CRITICAL",
+      "tags": ["functional"],
+      "level": "System",
+      "add_items": ["Sauce Labs Backpack", "Sauce Labs Onesie"],
+      "remove_item": "Sauce Labs Backpack",
+      "_comment": "Modification — remove from cart"
+    },
+    {
+      "id": "TC-CART-003",
+      "title": "Cart badge count survives navigation away and back",
+      "story": "Cart state persistence",
+      "severity": "CRITICAL",
+      "tags": ["functional", "state"],
+      "level": "System",
+      "add_item": "Sauce Labs Backpack",
+      "_comment": "State — cart persists across navigation"
+    },
+    {
+      "id": "TC-CART-004",
+      "title": "Navigating to cart without adding items shows empty cart",
+      "story": "Empty cart",
+      "severity": "CRITICAL",
+      "tags": ["functional"],
+      "level": "System",
+      "_comment": "Empty state — cart starts empty"
+    },
+    {
+      "id": "TC-CART-005",
+      "title": "Checkout button is visible and enabled when cart has items",
+      "story": "Cart navigation",
+      "severity": "CRITICAL",
+      "tags": ["functional", "gui"],
+      "level": "System",
+      "add_items": ["Sauce Labs Backpack", "Sauce Labs Onesie"],
+      "_comment": "GUI — checkout button visible"
+    }
+  ]
+}

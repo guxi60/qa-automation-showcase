@@ -1,5 +1,6 @@
-"""Checkout — SauceDemo end-to-end purchase flow."""
+"""Checkout tests — Allure-native, DDT-driven."""
 
+import allure
 import pytest
 from playwright.sync_api import Page, expect
 from pages.login_page import LoginPage
@@ -10,12 +11,12 @@ from pages.checkout_page import (
     CheckoutStepTwoPage,
     CheckoutCompletePage,
 )
-from qa_report import testcase, TestLog
+from qa_report import load_data, set_meta, step, action, note
 
 
 @pytest.fixture
 def cart_ready(page: Page) -> CartPage:
-    """Login, add 1 item, navigate to cart."""
+    """Log in, add 1 item, go to cart."""
     login = LoginPage(page)
     login.goto()
     login.login("standard_user", "secret_sauce")
@@ -26,229 +27,97 @@ def cart_ready(page: Page) -> CartPage:
 
 
 # ═══════════════════════════════════════════════════════════════
-#  TC-CHK-001  ·  Complete checkout — happy path
+#  E2E happy path
 # ═══════════════════════════════════════════════════════════════
 
-@testcase(
-    id="TC-CHK-001",
-    title="Customer should be able to complete a purchase from cart to confirmation",
-    module="Checkout",
-    feature="Order Placement",
-    level="E2E",
-    priority="P0",
-    tags=["smoke", "e2e", "happy-path"],
-    precondition=[
-        "Logged in as standard_user.",
-        "1 item (Sauce Labs Backpack) is in the cart.",
-        "Cart page is displayed.",
-    ],
-    test_data={
-        "first_name": "Gu",
-        "last_name": "Xiang",
-        "postal_code": "201318",
-    },
-    expected=(
-        "Flow: Cart → Checkout form → Order overview → Confirmation → Back to products.  "
-        "Confirmation header reads 'Thank you for your order!'"
-    ),
-)
+@allure.feature("Checkout")
 def test_complete_checkout_e2e(cart_ready: CartPage, page: Page):
-    log = TestLog()
+    """TC-CHK-001 — Full purchase flow."""
+    tc = load_data("checkout.json")["checkout"][0]
+    set_meta(tc)
 
-    # ── Navigate ──
-    log.step("Proceed from cart to checkout")
-    cart_ready.go_to_checkout()
-    log.action("Clicked [Checkout] on cart page")
-    step1 = CheckoutStepOnePage(page)
-    expect(step1.first_name).to_be_visible()
+    with step("Proceed from cart to checkout form"):
+        cart_ready.go_to_checkout()
+    action("Clicked [Checkout] on cart page")
 
-    # ── Fill shipping info ──
-    log.step("Fill shipping information form")
-    step1.fill_info("Gu", "Xiang", "201318")
-    log.note("First Name : Gu", "Last Name  : Xiang", "Postal Code: 201318")
-    step1.continue_checkout()
-    log.action("Clicked [Continue]")
+    with step("Fill shipping information"):
+        step1 = CheckoutStepOnePage(page)
+        step1.fill_info(tc["first_name"], tc["last_name"], tc["postal_code"])
+        action(
+            f"First Name: {tc['first_name']}",
+            f"Last Name:  {tc['last_name']}",
+            f"Postal:     {tc['postal_code']}",
+        )
+        step1.continue_checkout()
+    action("Clicked [Continue]")
 
-    # ── Review ──
-    log.step("Review order summary")
-    expect(page).to_have_url(CheckoutStepTwoPage.URL)
-    step2 = CheckoutStepTwoPage(page)
-    log.check("Items in order", step2.get_item_count(), 1)
-    total = step2.get_total_text()
-    log.check("Total line present", "Total" in total, True)
-    log.note(f"Order total: {total}")
+    with step("Review order overview"):
+        expect(page).to_have_url(CheckoutStepTwoPage.URL)
+        step2 = CheckoutStepTwoPage(page)
+        assert step2.get_item_count() == 1
+        total = step2.get_total_text()
+        assert "Total" in total
+        note(f"Order total: {total}")
 
-    # ── Place order ──
-    log.step("Confirm and place the order")
-    step2.finish()
-    log.action("Clicked [Finish]")
+    with step("Place the order"):
+        step2.finish()
+    action("Clicked [Finish]")
 
-    # ── Confirmation ──
-    log.step("Verify order confirmation")
-    log.verify("On confirmation page",
-               actual=page.url, expected=CheckoutCompletePage.URL)
-    expect(page).to_have_url(CheckoutCompletePage.URL)
+    with step("Verify order confirmation"):
+        expect(page).to_have_url(CheckoutCompletePage.URL)
+        complete = CheckoutCompletePage(page)
+        header = complete.get_header_text()
+        assert "Thank you" in header
+        note(f"Message: {header!r}")
 
-    complete = CheckoutCompletePage(page)
-    header = complete.get_header_text()
-    log.verify("Thank-you message appears",
-               actual="Thank you" in header, expected=True)
-    log.note(f"Message: {header!r}")
-
-    # ── Return ──
-    log.step("Return to products from confirmation")
-    complete.back_home()
-    log.action("Clicked [Back Home]")
-    log.verify("Landed on inventory page",
-               actual=page.url, expected=InventoryPage.URL)
+    with step("Return to products"):
+        complete.back_home()
+    action("Clicked [Back Home]")
     expect(page).to_have_url(InventoryPage.URL)
 
-    log.finish(True, "E2E checkout flow completed: Cart → Form → Review → Confirm → Done.")
-
 
 # ═══════════════════════════════════════════════════════════════
-#  TC-CHK-002  ·  Empty first name
+#  Form validation (parametrized — 3 negative cases)
 # ═══════════════════════════════════════════════════════════════
 
-@testcase(
-    id="TC-CHK-002",
-    title="Checkout must reject an empty first-name field",
-    module="Checkout",
-    feature="Input Validation",
-    level="System",
-    priority="P1",
-    tags=["negative", "validation"],
-    precondition=["Cart contains 1 item.", "On checkout step one."],
-    test_data={"first_name": "", "last_name": "Xiang", "postal_code": "201318"},
-    expected="Error: 'First Name is required'; stay on step one.",
-)
-def test_checkout_empty_first_name(cart_ready: CartPage, page: Page):
-    log = TestLog()
+@allure.feature("Checkout")
+@pytest.mark.parametrize("tc", load_data("checkout.json")["validation"])
+def test_checkout_form_validation(cart_ready: CartPage, page: Page, tc: dict):
+    """TC-CHK-002..004 — Empty field rejection."""
+    set_meta(tc)
 
-    log.step("Navigate to checkout form")
-    cart_ready.go_to_checkout()
+    with step("Navigate to checkout form"):
+        cart_ready.go_to_checkout()
     step1 = CheckoutStepOnePage(page)
 
-    log.step("Submit with empty first name")
-    step1.fill_info("", "Xiang", "201318")
-    step1.continue_checkout()
-    log.action("First Name: [empty] → clicked [Continue]")
+    with step(f"Submit form  |  first={tc['first_name']!r}  last={tc['last_name']!r}  postal={tc['postal_code']!r}"):
+        step1.fill_info(tc["first_name"], tc["last_name"], tc["postal_code"])
+        step1.continue_checkout()
 
-    log.step("Verify validation error")
-    error = step1.get_error_text()
-    log.verify("Error mentions 'First Name'",
-               actual="First Name" in error, expected=True)
-    log.note(f"Displayed: {error!r}")
-    assert "First Name" in error
-
-    log.finish(True, "Empty first name correctly rejected.")
+    with step(f"Verify error contains {tc['expected_error']!r}"):
+        error = step1.get_error_text()
+        assert tc["expected_error"] in error, (
+            f"Expected error containing {tc['expected_error']!r}, got {error!r}"
+        )
+    note(f"Displayed: {error!r}")
 
 
 # ═══════════════════════════════════════════════════════════════
-#  TC-CHK-003  ·  Empty last name
+#  Navigation — cancel
 # ═══════════════════════════════════════════════════════════════
 
-@testcase(
-    id="TC-CHK-003",
-    title="Checkout must reject an empty last-name field",
-    module="Checkout",
-    feature="Input Validation",
-    level="System",
-    priority="P1",
-    tags=["negative", "validation"],
-    precondition=["Cart contains 1 item.", "On checkout step one."],
-    test_data={"first_name": "Gu", "last_name": "", "postal_code": "201318"},
-    expected="Error: 'Last Name is required'; stay on step one.",
-)
-def test_checkout_empty_last_name(cart_ready: CartPage, page: Page):
-    log = TestLog()
-
-    log.step("Navigate to checkout form")
-    cart_ready.go_to_checkout()
-    step1 = CheckoutStepOnePage(page)
-
-    log.step("Submit with empty last name")
-    step1.fill_info("Gu", "", "201318")
-    step1.continue_checkout()
-    log.action("Last Name: [empty] → clicked [Continue]")
-
-    log.step("Verify validation error")
-    error = step1.get_error_text()
-    log.verify("Error mentions 'Last Name'",
-               actual="Last Name" in error, expected=True)
-    log.note(f"Displayed: {error!r}")
-    assert "Last Name" in error
-
-    log.finish(True, "Empty last name correctly rejected.")
-
-
-# ═══════════════════════════════════════════════════════════════
-#  TC-CHK-004  ·  Empty postal code
-# ═══════════════════════════════════════════════════════════════
-
-@testcase(
-    id="TC-CHK-004",
-    title="Checkout must reject an empty postal-code field",
-    module="Checkout",
-    feature="Input Validation",
-    level="System",
-    priority="P1",
-    tags=["negative", "validation"],
-    precondition=["Cart contains 1 item.", "On checkout step one."],
-    test_data={"first_name": "Gu", "last_name": "Xiang", "postal_code": ""},
-    expected="Error: 'Postal Code is required'; stay on step one.",
-)
-def test_checkout_empty_postal_code(cart_ready: CartPage, page: Page):
-    log = TestLog()
-
-    log.step("Navigate to checkout form")
-    cart_ready.go_to_checkout()
-    step1 = CheckoutStepOnePage(page)
-
-    log.step("Submit with empty postal code")
-    step1.fill_info("Gu", "Xiang", "")
-    step1.continue_checkout()
-    log.action("Postal Code: [empty] → clicked [Continue]")
-
-    log.step("Verify validation error")
-    error = step1.get_error_text()
-    log.verify("Error mentions 'Postal Code'",
-               actual="Postal Code" in error, expected=True)
-    log.note(f"Displayed: {error!r}")
-    assert "Postal Code" in error
-
-    log.finish(True, "Empty postal code correctly rejected.")
-
-
-# ═══════════════════════════════════════════════════════════════
-#  TC-CHK-005  ·  Cancel from checkout
-# ═══════════════════════════════════════════════════════════════
-
-@testcase(
-    id="TC-CHK-005",
-    title="Cancel on checkout form should return user to cart without side effects",
-    module="Checkout",
-    feature="Navigation",
-    level="System",
-    priority="P2",
-    tags=["navigation"],
-    precondition=["Cart contains 1 item.", "On checkout step one."],
-    test_data=None,
-    expected="Redirected to cart page; cart contents unchanged.",
-)
+@allure.feature("Checkout")
 def test_checkout_cancel_returns_to_cart(cart_ready: CartPage, page: Page):
-    log = TestLog()
+    """TC-CHK-005 — Cancel returns to cart without side effects."""
+    tc = load_data("checkout.json")["navigation"][0]
+    set_meta(tc)
 
-    log.step("Navigate to checkout form")
-    cart_ready.go_to_checkout()
+    with step("Navigate to checkout form"):
+        cart_ready.go_to_checkout()
 
-    log.step("Click [Cancel] without filling the form")
-    page.locator('[data-test="cancel"]').click()
-    log.action("Clicked [Cancel]")
+    with step("Click [Cancel] without filling the form"):
+        page.locator('[data-test="cancel"]').click()
+    action("Clicked [Cancel]")
 
-    log.step("Verify returned to cart")
-    log.verify("Page is cart page",
-               actual=page.url, expected=CartPage.URL)
-    expect(page).to_have_url(CartPage.URL)
-
-    log.finish(True, "Cancel navigates back to cart with no side effects.")
+    with step("Verify return to cart page"):
+        expect(page).to_have_url(CartPage.URL)

@@ -1,0 +1,9 @@
+
+  ▸ Navigate to SauceDemo login page
+    ▶ Opened https://www.saucedemo.com/
+
+  ▸ Submit credentials  |  user=''
+    ▶ Filled username=''  password=***  → clicked [Login]
+
+  ▸ Verify error message contains 'Username is required'
+    · Displayed: 'Epic sadface: Username is required'

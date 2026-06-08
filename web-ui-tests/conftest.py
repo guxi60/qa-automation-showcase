@@ -1,12 +1,12 @@
-"""Playwright + pytest fixtures and configuration."""
+"""Playwright + pytest fixtures — Allure report integration."""
 
 from __future__ import annotations
 
 import pytest
+import allure
 from pathlib import Path
 from datetime import datetime
 from playwright.sync_api import sync_playwright, Page, Browser
-from qa_report import get_metadata
 
 BASE_URL = "https://www.saucedemo.com"
 SCREENSHOT_DIR = Path(__file__).parent / "screenshots"
@@ -41,45 +41,7 @@ def logged_in_page(page: Page) -> Page:
     return page
 
 
-# ── Custom report columns ─────────────────────────────────────
-
-_stored: dict[str, dict] = {}
-
-COLS = [
-    ("tc_id",    "Test ID"),
-    ("module",   "Module"),
-    ("feature",  "Feature"),
-    ("level",    "Level"),
-    ("priority", "Priority"),
-]
-
-
-@pytest.hookimpl(tryfirst=True)
-def pytest_collection_modifyitems(session, config, items):
-    for item in items:
-        name = item.originalname if hasattr(item, "originalname") else item.name
-        meta = get_metadata(name)
-        if meta:
-            _stored[item.nodeid] = meta
-
-
-@pytest.hookimpl(optionalhook=True)
-def pytest_html_results_table_header(cells):
-    cells.pop()
-    for _k, label in COLS:
-        cells.append(f"<th>{label}</th>")
-
-
-@pytest.hookimpl(optionalhook=True)
-def pytest_html_results_table_row(report, cells):
-    cells.pop()
-    meta = _stored.get(report.nodeid, {})
-    for key, _label in COLS:
-        val = meta.get(key, "-") or "-"
-        cells.append(f"<td>{val}</td>")
-
-
-# ── Screenshots on failure ────────────────────────────────────
+# ── Allure: screenshot on failure ─────────────────────────────
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
@@ -88,34 +50,49 @@ def pytest_runtest_makereport(item, call):
     if report.when == "call" and report.failed:
         pg = item.funcargs.get("page")
         if pg:
-            SCREENSHOT_DIR.mkdir(exist_ok=True)
-            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-            pg.screenshot(path=str(SCREENSHOT_DIR / f"{item.name}_{ts}.png"),
-                          full_page=True)
+            try:
+                SCREENSHOT_DIR.mkdir(exist_ok=True)
+                ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+                path = str(SCREENSHOT_DIR / f"{item.name}_{ts}.png")
+                pg.screenshot(path=path, full_page=True, timeout=10000)
+                allure.attach.file(path, name="Failure Screenshot",
+                                   attachment_type=allure.attachment_type.PNG)
+            except Exception:
+                pass  # page may be closed or unreachable
+
+
+# ── Allure: environment info ──────────────────────────────────
+
+def pytest_sessionfinish(session):
+    """Write environment.properties for the Allure report."""
+    env_dir = Path("allure-results")
+    env_dir.mkdir(exist_ok=True)
+    (env_dir / "environment.properties").write_text(
+        "Browser=Chromium (Playwright)\n"
+        "Viewport=1280×720\n"
+        "Base.URL=https://www.saucedemo.com\n"
+        "Language=Python 3\n"
+        "Framework=Pytest + Playwright\n"
+    )
 
 
 # ── Markers ───────────────────────────────────────────────────
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "smoke: P0 critical-path test")
+    config.addinivalue_line("markers", "smoke: P0 critical-path")
     config.addinivalue_line("markers", "regression: regression suite")
     config.addinivalue_line("markers", "e2e: end-to-end flow")
 
 
-# ── Post-report patches (pytest-html 4.2.0) ──────────────────
+# ── Post-report patches (pytest-html 4.2.0, for html fallback)
 
 def pytest_unconfigure(config):
-    """Fix two pytest-html 4.2.0 bugs for local file:// viewing."""
     for rp in Path(__file__).parent.glob("report*.html"):
         c = rp.read_text(encoding="utf-8")
-
-        # Fix 1: syntax error in findAll selector
         b1 = "findAll('.collapsible td:not(.col-links', row)"
         f1 = "findAll('.collapsible td:not(.col-links)', row)"
         if b1 in c:
             c = c.replace(b1, f1)
-
-        # Fix 2: pushState on file:// aborts JS init
         b2 = "(function(){function r(e,n,t)"
         f2 = ("(function(){if(location.protocol==='file:'){"
               "history.pushState=history.replaceState="
@@ -123,5 +100,4 @@ def pytest_unconfigure(config):
               "})();(function(){function r(e,n,t)")
         if b2 in c:
             c = c.replace(b2, f2)
-
         rp.write_text(c, encoding="utf-8")

@@ -1,203 +1,125 @@
-"""Cart — SauceDemo shopping cart operations."""
+"""Cart tests — Allure-native, DDT-driven."""
 
+import allure
 import pytest
 from playwright.sync_api import Page
 from pages.login_page import LoginPage
 from pages.inventory_page import InventoryPage
 from pages.cart_page import CartPage
-from qa_report import testcase, TestLog
+from qa_report import load_data, set_meta, step, action, note
 
 
-@pytest.fixture
-def cart_with_items(page: Page) -> CartPage:
-    """Log in, add 2 items, go to cart."""
+def _go_to_cart_with(page: Page, items: list[str]) -> CartPage:
+    """Log in, add each item from *items*, navigate to cart."""
     login = LoginPage(page)
     login.goto()
     login.login("standard_user", "secret_sauce")
     inv = InventoryPage(page)
-    inv.add_item_to_cart("Sauce Labs Backpack")
-    inv.add_item_to_cart("Sauce Labs Onesie")
+    for item in items:
+        inv.add_item_to_cart(item)
     inv.go_to_cart()
     return CartPage(page)
 
 
 # ═══════════════════════════════════════════════════════════════
-#  TC-CART-001  ·  Cart shows added items
-# ═══════════════════════════════════════════════════════════════
 
-@testcase(
-    id="TC-CART-001",
-    title="Cart page must display all items added from inventory",
-    module="Cart",
-    feature="Item Management",
-    level="System",
-    priority="P0",
-    tags=["smoke"],
-    precondition=[
-        "Logged in as standard_user.",
-        "2 items added to cart: Sauce Labs Backpack, Sauce Labs Onesie.",
-        "On cart page.",
-    ],
-    test_data={"items": ["Sauce Labs Backpack", "Sauce Labs Onesie"]},
-    expected="Cart shows exactly 2 items with correct names.",
-)
-def test_cart_shows_added_items(cart_with_items: CartPage):
-    log = TestLog()
+@allure.feature("Cart")
+@pytest.mark.parametrize("tc", [
+    tc for tc in load_data("cart.json")["cart"]
+    if tc["id"] != "TC-CART-003"  # persistence handled separately
+])
+def test_cart(page: Page, tc: dict):
+    """DDT-driven cart tests: display, removal, empty, button."""
+    set_meta(tc)
 
-    log.step("Verify cart page is loaded")
-    log.check("Cart page is loaded", cart_with_items.is_loaded(), True)
-    assert cart_with_items.is_loaded()
+    add_items: list[str] = tc.get("add_items", [])
+    remove_item: str      = tc.get("remove_item", "")
+    single_add: str       = tc.get("add_item", "")
 
-    log.step("Verify item count and contents")
-    log.check("Item count is 2", cart_with_items.get_item_count(), 2)
-    assert cart_with_items.get_item_count() == 2
+    if single_add:
+        add_items = [single_add]
 
-    names = cart_with_items.get_item_names()
-    log.verify("Contains 'Sauce Labs Backpack'",
-               actual="Sauce Labs Backpack" in names, expected=True)
-    log.verify("Contains 'Sauce Labs Onesie'",
-               actual="Sauce Labs Onesie" in names, expected=True)
-    assert "Sauce Labs Backpack" in names
-    assert "Sauce Labs Onesie" in names
+    with step("Log in and add items to cart"):
+        cart = _go_to_cart_with(page, add_items)
+    action(f"Cart contains {cart.get_item_count()} item(s)")
 
-    log.finish(True, "Cart correctly displays both added items.")
+    if remove_item:
+        with step(f"Remove {remove_item!r} from cart"):
+            before = cart.get_item_count()
+            cart.remove_item(remove_item)
+        action(f"Clicked [Remove] — count {before} → {cart.get_item_count()}")
+        assert cart.get_item_count() == before - 1
+        assert remove_item not in cart.get_item_names()
 
+    elif add_items:
+        with step("Verify cart contents"):
+            assert cart.is_loaded()
+            assert cart.get_item_count() == len(add_items)
+            names = cart.get_item_names()
+            for item in add_items:
+                assert item in names, f"{item!r} not found in cart"
+            for i, name in enumerate(names, 1):
+                note(f"[{i}] {name}")
 
-# ═══════════════════════════════════════════════════════════════
-#  TC-CART-002  ·  Remove item from cart
-# ═══════════════════════════════════════════════════════════════
-
-@testcase(
-    id="TC-CART-002",
-    title="Removing an item from cart must decrement count and remove from list",
-    module="Cart",
-    feature="Item Management",
-    level="System",
-    priority="P1",
-    precondition=["Cart contains 2 items.", "On cart page."],
-    test_data={"remove": "Sauce Labs Backpack"},
-    expected="Cart count decreases to 1; removed item no longer listed.",
-)
-def test_remove_item_from_cart(cart_with_items: CartPage):
-    log = TestLog()
-
-    log.step("Confirm initial state")
-    log.check("Initial item count", cart_with_items.get_item_count(), 2)
-    assert cart_with_items.get_item_count() == 2
-
-    log.step("Remove 'Sauce Labs Backpack' from cart")
-    cart_with_items.remove_item("Sauce Labs Backpack")
-    log.action("Clicked [Remove] on 'Sauce Labs Backpack'")
-
-    log.step("Verify cart state after removal")
-    log.check("Item count decreased to 1", cart_with_items.get_item_count(), 1)
-    assert cart_with_items.get_item_count() == 1
-    log.verify("Removed item no longer in list",
-               actual="Sauce Labs Backpack" not in cart_with_items.get_item_names(),
-               expected=True)
-
-    log.finish(True, "Item removed correctly; cart state updated.")
+    else:
+        with step("Verify empty cart state"):
+            assert cart.get_item_count() == 0
+            note("Cart is empty — no items added")
 
 
 # ═══════════════════════════════════════════════════════════════
-#  TC-CART-003  ·  Cart persists across navigation
+#  TC-CART-003 — State persistence (needs its own flow)
 # ═══════════════════════════════════════════════════════════════
 
-@testcase(
-    id="TC-CART-003",
-    title="Cart badge count must survive navigation away from and back to inventory",
-    module="Cart",
-    feature="State Persistence",
-    level="System",
-    priority="P1",
-    precondition=["Logged in as standard_user.", "No items in cart."],
-    test_data={"add": "Sauce Labs Backpack"},
-    expected="Badge shows '1' before and after navigating to cart and back.",
-)
+@allure.feature("Cart")
 def test_cart_persists_after_navigation(page: Page):
-    log = TestLog()
+    """Cart badge survives navigating to cart and back."""
+    tc_data = load_data("cart.json")["cart"]
+    tc = next(t for t in tc_data if t["id"] == "TC-CART-003")
+    set_meta(tc)
 
-    log.step("Log in and add an item")
-    login = LoginPage(page)
-    login.goto()
-    login.login("standard_user", "secret_sauce")
-    inv = InventoryPage(page)
-    inv.add_item_to_cart("Sauce Labs Backpack")
-    log.action("Added 'Sauce Labs Backpack'")
-    log.check("Cart badge = 1", inv.get_cart_count(), 1)
-    assert inv.get_cart_count() == 1
+    item = tc["add_item"]
 
-    log.step("Navigate to cart then back to inventory")
-    inv.go_to_cart()
-    cart = CartPage(page)
-    cart.continue_shopping.click()
-    log.action("Cart → Continue Shopping → back to inventory")
+    with step("Log in and add item to cart"):
+        login = LoginPage(page)
+        login.goto()
+        login.login("standard_user", "secret_sauce")
+        inv = InventoryPage(page)
+        inv.add_item_to_cart(item)
+    action(f"Added {item!r}")
 
-    log.step("Verify badge still shows 1")
-    log.check("Cart badge still = 1", inv.get_cart_count(), 1)
-    assert inv.get_cart_count() == 1
+    with step("Verify badge = 1 on inventory page"):
+        assert inv.get_cart_count() == 1
+    note("Badge shows '1'")
 
-    log.finish(True, "Cart state persisted across navigation.")
+    with step("Navigate to cart, then back to inventory"):
+        inv.go_to_cart()
+        CartPage(page).continue_shopping.click()
+    action("Cart → Continue Shopping → back to inventory")
 
-
-# ═══════════════════════════════════════════════════════════════
-#  TC-CART-004  ·  Empty cart
-# ═══════════════════════════════════════════════════════════════
-
-@testcase(
-    id="TC-CART-004",
-    title="Navigating to cart without adding items should show an empty cart",
-    module="Cart",
-    feature="State — Empty",
-    level="System",
-    priority="P1",
-    precondition=["Logged in as standard_user.", "No items in cart."],
-    test_data=None,
-    expected="Cart item count = 0.",
-)
-def test_cart_empty_by_default(page: Page):
-    log = TestLog()
-
-    log.step("Log in without adding anything")
-    login = LoginPage(page)
-    login.goto()
-    login.login("standard_user", "secret_sauce")
-    inv = InventoryPage(page)
-    inv.go_to_cart()
-    log.action("Directly navigated to cart page")
-
-    log.step("Verify cart is empty")
-    cart = CartPage(page)
-    log.check("Item count is 0", cart.get_item_count(), 0)
-    assert cart.get_item_count() == 0
-
-    log.finish(True, "Cart is empty when no items have been added.")
+    with step("Verify badge still = 1"):
+        # After returning, the InventoryPage locators need the page to be on inventory URL
+        assert "inventory" in page.url, f"Not on inventory page: {page.url}"
+        inv2 = InventoryPage(page)
+        assert inv2.get_cart_count() == 1
+    note("Cart badge persisted across navigation")
 
 
 # ═══════════════════════════════════════════════════════════════
-#  TC-CART-005  ·  Checkout button available
+#  TC-CART-005 — Checkout button
 # ═══════════════════════════════════════════════════════════════
 
-@testcase(
-    id="TC-CART-005",
-    title="Checkout button must be visible and enabled when cart has items",
-    module="Cart",
-    feature="Navigation",
-    level="System",
-    priority="P1",
-    precondition=["Cart contains 2 items.", "On cart page."],
-    test_data=None,
-    expected="[Checkout] button is visible and enabled.",
-)
-def test_checkout_button_exists(cart_with_items: CartPage):
-    log = TestLog()
+@allure.feature("Cart")
+def test_checkout_button_exists(page: Page):
+    """Checkout button is visible and enabled when cart has items."""
+    tc_data = load_data("cart.json")["cart"]
+    tc = next(t for t in tc_data if t["id"] == "TC-CART-005")
+    set_meta(tc)
 
-    log.step("Verify checkout button state")
-    log.check("Checkout button is visible",
-              cart_with_items.checkout_button.is_visible(), True)
-    log.check("Checkout button is enabled",
-              cart_with_items.checkout_button.is_enabled(), True)
-    assert cart_with_items.checkout_button.is_visible()
-    assert cart_with_items.checkout_button.is_enabled()
+    with step("Add items and go to cart"):
+        cart = _go_to_cart_with(page, tc.get("add_items", []))
 
-    log.finish(True, "Checkout button is ready for user interaction.")
+    with step("Verify checkout button state"):
+        assert cart.checkout_button.is_visible()
+        assert cart.checkout_button.is_enabled()
+    action("Checkout button is ready")

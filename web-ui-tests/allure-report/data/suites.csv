@@ -1,0 +1,37 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"
+Data-driven login test.
+
+Each JSON entry drives one test case.  The *tc* dict carries
+id, title, story, severity, tags, username, password, and
+optionally expected_error (for negative cases).
+","16144","TC-LOGIN-003: Empty username triggers 'Username is required' error","tests","Mon Jun 08 15:40:58 CST 2026","passed","Mon Jun 08 15:41:14 CST 2026","","test_login","",""
+"
+Data-driven login test.
+
+Each JSON entry drives one test case.  The *tc* dict carries
+id, title, story, severity, tags, username, password, and
+optionally expected_error (for negative cases).
+","13271","TC-LOGIN-002: Wrong password is rejected with a descriptive error","tests","Mon Jun 08 15:40:45 CST 2026","passed","Mon Jun 08 15:40:58 CST 2026","","test_login","",""
+"
+Data-driven login test.
+
+Each JSON entry drives one test case.  The *tc* dict carries
+id, title, story, severity, tags, username, password, and
+optionally expected_error (for negative cases).
+","30329","TC-LOGIN-004: Empty password triggers 'Password is required' error","tests","Mon Jun 08 15:41:14 CST 2026","passed","Mon Jun 08 15:41:45 CST 2026","","test_login","",""
+"
+Data-driven login test.
+
+Each JSON entry drives one test case.  The *tc* dict carries
+id, title, story, severity, tags, username, password, and
+optionally expected_error (for negative cases).
+","2232","TC-LOGIN-005: Locked-out user is denied access","tests","Mon Jun 08 15:41:45 CST 2026","passed","Mon Jun 08 15:41:47 CST 2026","","test_login","",""
+"
+Data-driven login test.
+
+Each JSON entry drives one test case.  The *tc* dict carries
+id, title, story, severity, tags, username, password, and
+optionally expected_error (for negative cases).
+","22066","TC-LOGIN-001: Valid credentials grant access to the product inventory","tests","Mon Jun 08 15:40:23 CST 2026","passed","Mon Jun 08 15:40:45 CST 2026","","test_login","",""
+"TC-LOGIN-006 — Static GUI check (not parametrized — no interaction).","6733","TC-LOGIN-006: Login page renders all required form elements on initial load","tests","Mon Jun 08 15:41:47 CST 2026","passed","Mon Jun 08 15:41:54 CST 2026","","test_login","",""
