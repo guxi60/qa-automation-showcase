@@ -36,6 +36,9 @@ robot-tests/results/
 robot-tests/log*.html
 robot-tests/report*.html
 robot-tests/output*.xml
+robot-tests/selenium-screenshot-*.png
+robot-tests/allure-results/
+robot-tests/allure-report/
 
 # JMeter
 *.jtl

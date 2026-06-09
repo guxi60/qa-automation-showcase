@@ -40,4 +40,4 @@ See the full requirements → test traceability matrix at [traceability-matrix.m
 |-----------|----------------|
 | Playwright + pytest | ✅ 27 test cases — full coverage |
 | Selenium + pytest | ✅ 25 test cases — full coverage |
-| Robot Framework | ⬜ To be implemented |
+| Robot Framework | ✅ 24 test cases — full coverage |

@@ -95,9 +95,11 @@ pytest -v
 allure generate allure-results -o allure-report --clean
 allure open allure-report
 
-# 5. Run Robot Framework tests
-cd robot-tests
-robot -d results tests/
+# 5. Run Robot Framework tests (Allure report)
+cd ../robot-tests
+robot --listener allure_robotframework:allure-results --pythonpath resources tests/
+allure generate allure-results -o allure-report --clean
+allure open allure-report
 
 # 6. Run API tests
 cd api-tests
@@ -110,10 +112,10 @@ pytest -v
 
 | Feature | Playwright | Selenium | Robot Framework | API |
 |---------|-----------|----------|-----------------|-----|
-| Login (happy/negative/boundary) | ✅ (6 cases) | ✅ (6 cases) | ⬜ | — |
-| Inventory (sort/display/images) | ✅ (8 cases) | ✅ (8 cases) | — | — |
-| Cart (add/remove/persistence) | ✅ (5 cases) | ✅ (5 cases) | — | — |
-| Checkout E2E (incl. validation) | ✅ (5 cases) | ✅ (5 cases) | ⬜ | — |
+| Login (happy/negative/boundary) | ✅ (6 cases) | ✅ (6 cases) | ✅ (6 cases) | — |
+| Inventory (sort/display/images) | ✅ (8 cases) | ✅ (8 cases) | ✅ (8 cases) | — |
+| Cart (add/remove/persistence) | ✅ (5 cases) | ✅ (5 cases) | ✅ (5 cases) | — |
+| Checkout E2E (incl. validation) | ✅ (5 cases) | ✅ (5 cases) | ✅ (5 cases) | — |
 | User CRUD | — | — | — | ⬜ |
 | Post CRUD | — | — | — | ⬜ |
 | Schema validation | — | — | — | ⬜ |
@@ -141,9 +143,9 @@ Each module has a corresponding requirements specification in [docs/requirements
 The [RTM](docs/requirements/traceability-matrix.md) ensures every requirement maps to automated test cases, cross-validated across multiple frameworks.
 
 ```text
-Requirements (REQ-*.md) → Test Data (test_data/*.json) → Playwright ✅
-                                                         → Selenium    ✅
-                                                         → Robot       ⬜
+Requirements (REQ-*.md) → Test Data (test_data/*.json) → Playwright ✅ (25 cases)
+                                                         → Selenium    ✅ (25 cases)
+                                                         → Robot       ✅ (24 cases)
 ```
 
 ---

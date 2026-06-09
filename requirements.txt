@@ -10,8 +10,9 @@ pytest-xdist>=3.5.0
 allure-pytest>=2.13.0
 
 # Robot Framework
-robotframework>=6.1.0
+robotframework>=7.0.0
 robotframework-seleniumlibrary>=6.2.0
+allure-robotframework>=2.13.0
 
 # API Testing
 requests>=2.31.0
