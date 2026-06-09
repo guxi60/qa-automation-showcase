@@ -1,28 +1,28 @@
 # QA Automation Showcase
 
-> **同一个被测系统，三套自动化框架 —— 一套完整的测试工程对比，展示工具选型与技术迁移能力。**
+> **One system under test, three automation frameworks — a side-by-side comparison demonstrating tool selection rationale and technology migration capability.**
 >
-> 被测对象：[SauceDemo](https://www.saucedemo.com/)（标准电商流程：登录 → 商品浏览 → 购物车 → 结账）
+> System under test: [SauceDemo](https://www.saucedemo.com/) (standard e-commerce flow: Login → Browse → Cart → Checkout)
 
 ---
 
-## 🎯 项目动机
+## 🎯 Motivation
 
-做这个项目的出发点很简单：**什么场景该选什么测试框架？** 与其在面试中口头回答，不如用代码说话。
+The motivation is simple: **which test framework should you choose for a given context?** Instead of giving a hand-wavy answer in an interview, let the code speak for itself.
 
-同一个 SauceDemo 电商网站，分别用三种不同理念的框架实现完整的测试覆盖：
+The same SauceDemo e-commerce site, tested end-to-end with three frameworks built on fundamentally different philosophies:
 
-| 框架 | 设计理念 | 适用场景 |
-|------|---------|---------|
-| **Selenium + pytest** | WebDriver 标准协议，最广泛的浏览器支持 | 多浏览器兼容性测试、传统企业项目 |
-| **Robot Framework** | 关键字驱动，降低非技术成员的参与门槛 | 跨角色协作项目、BDD 风格团队 |
-| **Playwright + pytest** | 现代化设计，内置 auto-wait、trace、并行 | 快速迭代的 Web 应用、新项目启动 |
+| Framework | Design Philosophy | Best For |
+|-----------|-------------------|----------|
+| **Selenium + pytest** | WebDriver standard protocol, broadest browser support | Cross-browser compatibility, traditional enterprise projects |
+| **Robot Framework** | Keyword-driven, lowers the barrier for non-technical stakeholders | Cross-role collaboration, BDD-style teams |
+| **Playwright + pytest** | Modern design, built-in auto-wait, trace viewer, parallelism | Fast-iterating web apps, greenfield projects |
 
-每种框架有各自的 POM 实现、测试用例和网络容错策略，可以直接对比它们在同一个场景下的表现差异。
+Each framework has its own POM implementation, test cases, and network resilience strategy. You can directly compare how they handle the exact same scenarios.
 
 ---
 
-## 🧰 技术栈
+## 🧰 Tech Stack
 
 ```
 Web UI Testing:  Selenium  |  Playwright  |  Robot Framework
@@ -31,140 +31,140 @@ Mobile Testing:  Maestro
 Performance:     JMeter
 CI/CD:           GitHub Actions
 Lang:            Python 3.x
-Reports:         pytest-html  |  Allure
+Reports:         Allure
 ```
 
 ---
 
-## 📁 项目结构
+## 📁 Project Structure
 
 ```
 qa-automation-showcase/
-├── docs/requirements/            # 需求规格文档 & 追溯矩阵
-│   ├── README.md                 # 需求方法论
-│   ├── REQ-AUTH.md               # 用户认证需求 (6)
-│   ├── REQ-INVENTORY.md          # 商品浏览需求 (8)
-│   ├── REQ-CART.md               # 购物车需求 (5)
-│   ├── REQ-CHECKOUT.md           # 结账需求 (5)
-│   └── traceability-matrix.md    # 需求追溯矩阵 (RTM)
-├── web-ui-tests/                # Playwright + pytest（现代方案）
+├── docs/requirements/            # Requirements specs & traceability matrix
+│   ├── README.md                 # Methodology overview
+│   ├── REQ-AUTH.md               # Authentication requirements (6)
+│   ├── REQ-INVENTORY.md          # Inventory requirements (8)
+│   ├── REQ-CART.md               # Cart requirements (5)
+│   ├── REQ-CHECKOUT.md           # Checkout requirements (5)
+│   └── traceability-matrix.md    # Requirements Traceability Matrix (RTM)
+├── web-ui-tests/                # Playwright + pytest (modern)
 │   ├── pages/                   # Page Object Model
-│   ├── tests/                   # 测试用例
-│   ├── test_data/               # 测试数据（与 Selenium 共享）
-│   └── conftest.py              # Fixtures & 配置
-├── selenium-tests/              # Selenium + pytest（经典方案）
+│   ├── tests/                   # Test cases
+│   ├── test_data/               # Test data (shared with Selenium)
+│   └── conftest.py              # Fixtures & config
+├── selenium-tests/              # Selenium + pytest (classic)
 │   ├── pages/                   # Page Object Model
-│   ├── tests/                   # 测试用例
-│   └── conftest.py              # Fixtures & 配置
-├── robot-tests/                 # Robot Framework（关键字驱动方案）
-│   ├── resources/               # 公共关键字 & 页面对象
-│   └── tests/                   # .robot 用例文件
-├── api-tests/                   # API 测试
-│   ├── tests/                   # 接口测试用例
-│   └── schemas/                 # JSON Schema 定义
-├── performance/                 # JMeter 性能测试
-├── mobile-tests/                # Maestro 移动端测试
+│   ├── tests/                   # Test cases
+│   └── conftest.py              # Fixtures & config
+├── robot-tests/                 # Robot Framework (keyword-driven)
+│   ├── resources/               # Shared keywords & page objects
+│   └── tests/                   # .robot test files
+├── api-tests/                   # API tests
+│   ├── tests/                   # API test cases
+│   └── schemas/                 # JSON Schema definitions
+├── performance/                 # JMeter performance tests
+├── mobile-tests/                # Maestro mobile tests
 ├── .github/workflows/           # GitHub Actions CI
-└── requirements.txt             # Python 依赖
+└── requirements.txt             # Python dependencies
 ```
 
 ---
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
 ```bash
 # 1. Clone
 git clone https://github.com/guxi60/qa-automation-showcase.git
 cd qa-automation-showcase
 
-# 2. 创建虚拟环境 & 安装依赖
+# 2. Create virtual environment & install dependencies
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+source venv/bin/activate          # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 playwright install chromium
 
-# 3. 运行 Playwright 测试（Allure 报告）
+# 3. Run Playwright tests (Allure report)
 cd web-ui-tests
 pytest -v
 allure generate allure-results -o allure-report --clean
 allure open allure-report
 
-# 4. 运行 Selenium 测试（Allure 报告）
+# 4. Run Selenium tests (Allure report)
 cd ../selenium-tests
 pytest -v
 allure generate allure-results -o allure-report --clean
 allure open allure-report
 
-# 5. 运行 Robot Framework 测试
+# 5. Run Robot Framework tests
 cd robot-tests
 robot -d results tests/
 
-# 6. 运行 API 测试
+# 6. Run API tests
 cd api-tests
 pytest -v
 ```
 
 ---
 
-## 📊 测试覆盖矩阵
+## 📊 Test Coverage Matrix
 
-| 功能模块 | Playwright | Selenium | Robot Framework | API |
+| Feature | Playwright | Selenium | Robot Framework | API |
 |---------|-----------|----------|-----------------|-----|
-| 登录（正常/异常/边界） | ✅ (6 用例) | ✅ (6 用例) | ⬜ | — |
-| 商品列表（排序/展示/图片） | ✅ (8 用例) | ✅ (8 用例) | — | — |
-| 购物车（增删改/持久化） | ✅ (5 用例) | ✅ (5 用例) | — | — |
-| 结账 E2E（含表单校验） | ✅ (5 用例) | ✅ (5 用例) | ⬜ | — |
-| 用户 CRUD | — | — | — | ⬜ |
-| 帖子 CRUD | — | — | — | ⬜ |
-| Schema 校验 | — | — | — | ⬜ |
-| 性能压测 | — | — | — | — |
+| Login (happy/negative/boundary) | ✅ (6 cases) | ✅ (6 cases) | ⬜ | — |
+| Inventory (sort/display/images) | ✅ (8 cases) | ✅ (8 cases) | — | — |
+| Cart (add/remove/persistence) | ✅ (5 cases) | ✅ (5 cases) | — | — |
+| Checkout E2E (incl. validation) | ✅ (5 cases) | ✅ (5 cases) | ⬜ | — |
+| User CRUD | — | — | — | ⬜ |
+| Post CRUD | — | — | — | ⬜ |
+| Schema validation | — | — | — | ⬜ |
+| Performance / Load | — | — | — | — |
 
 ---
 
-## 📋 需求驱动测试 (Requirements-Driven Testing)
+## 📋 Requirements-Driven Testing
 
-本项目采用 TDD 闭环方法论：**需求规格 → 测试设计 → 自动化实现 → 需求追溯**。
+This project follows the TDD closed-loop methodology: **Requirements Spec → Test Design → Automation → Traceability**.
 
-### 需求文档
+### Requirements Documentation
 
-每个功能模块都有对应的需求规格文档，位于 [docs/requirements/](docs/requirements/)：
+Each module has a corresponding requirements specification in [docs/requirements/](docs/requirements/):
 
-| 文档 | 需求数 | 描述 |
-|------|--------|------|
-| [REQ-AUTH.md](docs/requirements/REQ-AUTH.md) | 6 | 登录/凭据验证/错误提示 |
-| [REQ-INVENTORY.md](docs/requirements/REQ-INVENTORY.md) | 8 | 商品展示/排序/数据完整性 |
-| [REQ-CART.md](docs/requirements/REQ-CART.md) | 5 | 购物车增删/持久化 |
-| [REQ-CHECKOUT.md](docs/requirements/REQ-CHECKOUT.md) | 5 | E2E 购买/表单校验 |
+| Document | Reqs | Description |
+|----------|------|-------------|
+| [REQ-AUTH.md](docs/requirements/REQ-AUTH.md) | 6 | Login, credential validation, error messages |
+| [REQ-INVENTORY.md](docs/requirements/REQ-INVENTORY.md) | 8 | Product display, sorting, data integrity |
+| [REQ-CART.md](docs/requirements/REQ-CART.md) | 5 | Cart add/remove, state persistence |
+| [REQ-CHECKOUT.md](docs/requirements/REQ-CHECKOUT.md) | 5 | E2E purchase flow, form validation |
 
-### 需求追溯矩阵
+### Requirements Traceability Matrix
 
-[RTM](docs/requirements/traceability-matrix.md) 确保每条需求都有对应的自动化测试用例，并在多个框架中交叉验证。
+The [RTM](docs/requirements/traceability-matrix.md) ensures every requirement maps to automated test cases, cross-validated across multiple frameworks.
 
 ```text
-需求规格 (REQ-*.md) → 测试数据 (test_data/*.json) → Playwright 测试 ✅
-                                                    → Selenium 测试    ✅
-                                                    → Robot Framework  ⬜
+Requirements (REQ-*.md) → Test Data (test_data/*.json) → Playwright ✅
+                                                         → Selenium    ✅
+                                                         → Robot       ⬜
 ```
 
 ---
 
-## 🧪 测试理念
+## 🧪 Testing Principles
 
-1. **可读性优先** — 测试用例的结构读起来像场景描述，而非代码堆砌
-2. **失败可追溯** — 每次测试失败自动截图，无需重现即可定位问题
-3. **数据与逻辑分离** — 测试数据独立于用例代码，便于维护和复用
-4. **横向可比较** — 同一场景用不同框架实现，为工具选型提供真实参考
-5. **网络容错** — 内置导航超时与重试机制，适应不稳定网络环境
+1. **Readability First** — Test cases read like scenario descriptions, not code dumps
+2. **Failure Traceability** — Automatic screenshots on every failure; no reproduction needed to pinpoint issues
+3. **Data–Logic Separation** — Test data lives independently from test code, making maintenance and reuse straightforward
+4. **Cross-Framework Comparison** — Same scenarios implemented with different frameworks provide real-world reference for tool selection
+5. **Network Resilience** — Built-in navigation timeouts and retry mechanisms for unstable network conditions
 
 ---
 
-## 👤 关于作者
+## 👤 About the Author
 
-**顾翔 (Gu Xiang)** | Senior QA Engineer | 15+ 年测试经验
+**Gu Xiang** | Senior QA Engineer | 15+ years of testing experience
 
-- 精通 Selenium / Robot Framework / Playwright / Maestro / JMeter
-- 曾任 QA Lead / Scrum Master，带领跨时区测试团队
-- 从 CT 医疗影像到 Web3 数字钱包，多行业交付经验
-- 热衷探索 AI + 测试自动化的工程化落地
+- Proficient in Selenium / Robot Framework / Playwright / Maestro / JMeter
+- Former QA Lead / Scrum Master, leading cross-timezone testing teams
+- Cross-industry delivery experience — from CT medical imaging to Web3 digital wallets
+- Passionate about engineering the intersection of AI + test automation
 
 📧 guxi60@outlook.com

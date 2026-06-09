@@ -1,83 +1,83 @@
-# REQ-CHECKOUT: 结账流程
+# REQ-CHECKOUT: Checkout Flow
 
-> **模块**: 结账三步流程 — 信息填写 → 订单确认 → 完成
+> **Module**: Three-step checkout — Information → Overview → Complete
 >
-> **子页面**:
-> - Step One: `checkout-step-one.html` — 收货信息表单
-> - Step Two: `checkout-step-two.html` — 订单概览
-> - Complete: `checkout-complete.html` — 完成确认
+> **Sub-pages**:
+> - Step One: `checkout-step-one.html` — Shipping information form
+> - Step Two: `checkout-step-two.html` — Order overview
+> - Complete: `checkout-complete.html` — Order confirmation
 
 ---
 
-## REQ-CHK-001: 完整购买流程 E2E
+## REQ-CHK-001: Complete E2E purchase flow
 
-- **优先级**: BLOCKER
-- **类型**: E2E · Happy Path
-- **前置条件**: 已登录，购物车有商品
-- **验收标准**:
-  1. Given 用户购物车中有商品 → When 依次完成填写收货信息 → 确认订单 → 点击 Finish → Then 显示 "Thank you" 确认页 → 点击 Back Home 返回 Inventory
-- **关联测试用例**:
-  | 框架 | 用例ID | 文件 | 状态 |
-  |------|--------|------|------|
+- **Priority**: BLOCKER
+- **Type**: E2E · Happy Path
+- **Precondition**: Logged in, items in cart
+- **Acceptance Criteria**:
+  1. Given the user's cart has items → When they complete the shipping form → review the order → click Finish → Then a "Thank you" confirmation is displayed → and clicking Back Home returns to Inventory
+- **Linked Test Cases**:
+  | Framework | Case ID | File | Status |
+  |-----------|---------|------|--------|
   | Playwright | TC-CHK-001 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-001 | test_checkout.py | ✅ |
 
 ---
 
-## REQ-CHK-002: 空名字段校验 — First Name
+## REQ-CHK-002: Empty field validation — First Name
 
-- **优先级**: CRITICAL
-- **类型**: Functional · Validation · Negative
-- **前置条件**: 已进入结账 Step One
-- **验收标准**:
-  1. Given 用户在结账表单 → When First Name 为空，点击 Continue → Then 显示包含 "First Name" 的错误信息
-- **关联测试用例**:
-  | 框架 | 用例ID | 文件 | 状态 |
-  |------|--------|------|------|
+- **Priority**: CRITICAL
+- **Type**: Functional · Validation · Negative
+- **Precondition**: On Checkout Step One
+- **Acceptance Criteria**:
+  1. Given the user is on the checkout form → When First Name is empty and Continue is clicked → Then an error containing "First Name" is displayed
+- **Linked Test Cases**:
+  | Framework | Case ID | File | Status |
+  |-----------|---------|------|--------|
   | Playwright | TC-CHK-002 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-002 | test_checkout.py | ✅ |
 
 ---
 
-## REQ-CHK-003: 空名字段校验 — Last Name
+## REQ-CHK-003: Empty field validation — Last Name
 
-- **优先级**: CRITICAL
-- **类型**: Functional · Validation · Negative
-- **前置条件**: 已进入结账 Step One
-- **验收标准**:
-  1. Given 用户在结账表单 → When Last Name 为空，点击 Continue → Then 显示包含 "Last Name" 的错误信息
-- **关联测试用例**:
-  | 框架 | 用例ID | 文件 | 状态 |
-  |------|--------|------|------|
+- **Priority**: CRITICAL
+- **Type**: Functional · Validation · Negative
+- **Precondition**: On Checkout Step One
+- **Acceptance Criteria**:
+  1. Given the user is on the checkout form → When Last Name is empty and Continue is clicked → Then an error containing "Last Name" is displayed
+- **Linked Test Cases**:
+  | Framework | Case ID | File | Status |
+  |-----------|---------|------|--------|
   | Playwright | TC-CHK-003 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-003 | test_checkout.py | ✅ |
 
 ---
 
-## REQ-CHK-004: 空名字段校验 — Postal Code
+## REQ-CHK-004: Empty field validation — Postal Code
 
-- **优先级**: CRITICAL
-- **类型**: Functional · Validation · Negative
-- **前置条件**: 已进入结账 Step One
-- **验收标准**:
-  1. Given 用户在结账表单 → When Postal Code 为空，点击 Continue → Then 显示包含 "Postal Code" 的错误信息
-- **关联测试用例**:
-  | 框架 | 用例ID | 文件 | 状态 |
-  |------|--------|------|------|
+- **Priority**: CRITICAL
+- **Type**: Functional · Validation · Negative
+- **Precondition**: On Checkout Step One
+- **Acceptance Criteria**:
+  1. Given the user is on the checkout form → When Postal Code is empty and Continue is clicked → Then an error containing "Postal Code" is displayed
+- **Linked Test Cases**:
+  | Framework | Case ID | File | Status |
+  |-----------|---------|------|--------|
   | Playwright | TC-CHK-004 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-004 | test_checkout.py | ✅ |
 
 ---
 
-## REQ-CHK-005: 取消返回购物车
+## REQ-CHK-005: Cancel returns to cart
 
-- **优先级**: NORMAL
-- **类型**: Functional · Navigation
-- **前置条件**: 已进入结账 Step One
-- **验收标准**:
-  1. Given 用户在结账表单 → When 点击 Cancel（不填写任何字段）→ Then 返回购物车页，无副作用
-- **关联测试用例**:
-  | 框架 | 用例ID | 文件 | 状态 |
-  |------|--------|------|------|
+- **Priority**: NORMAL
+- **Type**: Functional · Navigation
+- **Precondition**: On Checkout Step One
+- **Acceptance Criteria**:
+  1. Given the user is on the checkout form → When they click Cancel (without filling any fields) → Then they are returned to the cart page with no side effects
+- **Linked Test Cases**:
+  | Framework | Case ID | File | Status |
+  |-----------|---------|------|--------|
   | Playwright | TC-CHK-005 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-005 | test_checkout.py | ✅ |
