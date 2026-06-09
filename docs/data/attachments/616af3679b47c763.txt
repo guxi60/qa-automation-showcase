@@ -1,3 +1,0 @@
-
-  ▸ Check badge on fresh inventory page
-    ▶ Cart badge is not displayed

@@ -161,11 +161,44 @@ Command to run + generate report in one shot:
 
 ```bash
 # Playwright
-cd web-ui-tests && pytest -v && allure generate allure-results -o allure-report --clean
+cd web-ui-tests && rm -rf allure-results && pytest -v && allure generate allure-results -o allure-report --clean
 
 # Selenium
-cd selenium-tests && pytest -v && allure generate allure-results -o allure-report --clean
+cd selenium-tests && rm -rf allure-results && pytest -v && allure generate allure-results -o allure-report --clean
 
 # Robot Framework
-cd robot-tests && robot --listener allure_robotframework:allure-results --pythonpath resources tests/ && allure generate allure-results -o allure-report --clean
+cd robot-tests && rm -rf allure-results && robot --listener allure_robotframework:allure-results --pythonpath resources tests/ && allure generate allure-results -o allure-report --clean
 ```
+
+**⚠️ Always delete `allure-results/` before running tests.** Allure does not deduplicate by TC-ID. If a previous run left results behind (e.g. a since-removed duplicate test case, or a flaky timeout that was retried separately), the stale files will contaminate the report with inflated counts or mixed pass/fail statuses.
+
+---
+
+## Report Verification Checklist
+
+After generating a report, verify it before publishing:
+
+```bash
+# 1. Check the total count matches expectations
+cat allure-report/widgets/summary.json | python -c "import sys,json; s=json.load(sys.stdin)['statistic']; print(s)"
+
+# Expected output for each framework (as of current coverage):
+#   {"passed": 24, "failed": 0, "broken": 0, "skipped": 0, "unknown": 0, "total": 24}
+```
+
+### Verification steps
+
+| Step | What to check | How |
+|------|--------------|-----|
+| 1. Clean start | `allure-results/` deleted | `ls allure-results/` → must not exist |
+| 2. Run tests | All tests green | `pytest -v` or `robot ...` output |
+| 3. Check for broken/stale | Only passed results in allure-results | `grep '"status"' allure-results/*-result.json \| sort \| uniq -c` → all `"passed"` |
+| 4. Generate report | `summary.json` total matches expected | `cat allure-report/widgets/summary.json` → `"total":24` |
+| 5. Branding | `environment.properties` present and correct | `cat allure-report/widgets/environment.json` → branded framework name |
+
+### Common pitfalls
+
+- **Stale results accumulation**: Running tests without cleaning `allure-results/` merges old + new runs → inflated counts or status mismatches
+- **Broken results from retries**: If one test fails/errors and you retry just that one, the original broken result file is still there. Delete it manually or re-run the full suite from clean
+- **`--clean` on `allure generate` does NOT clean `allure-results/`** — it only cleans the output report directory. Always clean the input results directory separately
+- **`docs/` regeneration**: `allure generate --clean` on `docs/` will wipe `docs/requirements/`. Backup `docs/requirements/` first, regenerate, then restore
