@@ -1,0 +1,12 @@
+
+  ▸ Sort by 'Name (A to Z)' → expect first='Sauce Labs Backpack'
+    ▶ First item: 'Sauce Labs Backpack'  ✓
+
+  ▸ Sort by 'Name (Z to A)' → expect first='Test.allTheThings() T-Shirt (Red)'
+    ▶ First item: 'Test.allTheThings() T-Shirt (Red)'  ✓
+
+  ▸ Sort by 'Price (low to high)' → expect first='Sauce Labs Onesie'
+    ▶ First item: 'Sauce Labs Onesie'  ✓
+
+  ▸ Sort by 'Price (high to low)' → expect first='Sauce Labs Fleece Jacket'
+    ▶ First item: 'Sauce Labs Fleece Jacket'  ✓

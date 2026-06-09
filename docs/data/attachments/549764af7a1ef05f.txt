@@ -1,0 +1,6 @@
+
+  ▸ Log in and add items to cart
+    ▶ Cart contains 0 item(s)
+
+  ▸ Verify empty cart state
+    · Cart is empty — no items added

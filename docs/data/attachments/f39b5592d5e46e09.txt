@@ -1,0 +1,20 @@
+
+  ▸ Verify page is loaded
+
+  ▸ Verify product count = 6
+
+  ▸ List all product names
+    · [1] Sauce Labs Backpack
+    · [2] Sauce Labs Bike Light
+    · [3] Sauce Labs Bolt T-Shirt
+    · [4] Sauce Labs Fleece Jacket
+    · [5] Sauce Labs Onesie
+    · [6] Test.allTheThings() T-Shirt (Red)
+
+  ▸ Verify each product has valid name and price
+    · [1] 'Sauce Labs Backpack' — $29.99  ✓
+    · [2] 'Sauce Labs Bike Light' — $9.99  ✓
+    · [3] 'Sauce Labs Bolt T-Shirt' — $15.99  ✓
+    · [4] 'Sauce Labs Fleece Jacket' — $49.99  ✓
+    · [5] 'Sauce Labs Onesie' — $7.99  ✓
+    · [6] 'Test.allTheThings() T-Shirt (Red)' — $15.99  ✓
