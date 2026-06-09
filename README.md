@@ -143,8 +143,8 @@ Each module has a corresponding requirements specification in [docs/requirements
 The [RTM](docs/requirements/traceability-matrix.md) ensures every requirement maps to automated test cases, cross-validated across multiple frameworks.
 
 ```text
-Requirements (REQ-*.md) → Test Data (test_data/*.json) → Playwright ✅ (25 cases)
-                                                         → Selenium    ✅ (25 cases)
+Requirements (REQ-*.md) → Test Data (test_data/*.json) → Playwright ✅ (24 cases)
+                                                         → Selenium    ✅ (24 cases)
                                                          → Robot       ✅ (24 cases)
 ```
 

@@ -1,4 +1,4 @@
-# REQ-INVENTORY: Product Inventory
+﻿# REQ-INVENTORY: Product Inventory
 
 > **Module**: Inventory page — `https://www.saucedemo.com/inventory.html`
 >

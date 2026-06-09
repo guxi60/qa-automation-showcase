@@ -1,4 +1,4 @@
-# REQ-CART: Shopping Cart
+﻿# REQ-CART: Shopping Cart
 
 > **Module**: Cart page — `https://www.saucedemo.com/cart.html`
 >

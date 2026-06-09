@@ -1,4 +1,4 @@
-# REQ-CHECKOUT: Checkout Flow
+﻿# REQ-CHECKOUT: Checkout Flow
 
 > **Module**: Three-step checkout — Information → Overview → Complete
 >

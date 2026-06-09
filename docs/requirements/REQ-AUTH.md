@@ -1,4 +1,4 @@
-# REQ-AUTH: Authentication
+﻿# REQ-AUTH: Authentication
 
 > **Module**: Login page — `https://www.saucedemo.com/`
 >

@@ -15,6 +15,16 @@ Go To Cart Ready For Checkout
     Go To Cart
     Cart Should Be Loaded
 
+Checkout Validation Template
+    [Documentation]    DDT template for empty-field checkout tests.
+    [Arguments]    ${first}    ${last}    ${postal}    ${expected_error}
+    Go To Cart Ready For Checkout
+    Click Checkout
+    Fill Checkout Info    ${first}    ${last}    ${postal}
+    Click Continue
+    ${error}=    Get Checkout Error Text
+    Should Contain    ${error}    ${expected_error}
+
 
 *** Test Cases ***
 TC-CHK-001: Complete Purchase From Cart To Confirmation
@@ -39,33 +49,18 @@ TC-CHK-001: Complete Purchase From Cart To Confirmation
 
 TC-CHK-002: Empty First Name Rejected On Checkout
     [Tags]    negative    validation
-    [Documentation]    Submitting with empty first name shows validation error.
-    Go To Cart Ready For Checkout
-    Click Checkout
-    Fill Checkout Info    ${EMPTY}    Xiang    201318
-    Click Continue
-    ${error}=    Get Checkout Error Text
-    Should Contain    ${error}    First Name
+    [Template]    Checkout Validation Template
+    ${EMPTY}    Xiang    201318    First Name
 
 TC-CHK-003: Empty Last Name Rejected On Checkout
     [Tags]    negative    validation
-    [Documentation]    Submitting with empty last name shows validation error.
-    Go To Cart Ready For Checkout
-    Click Checkout
-    Fill Checkout Info    Gu    ${EMPTY}    201318
-    Click Continue
-    ${error}=    Get Checkout Error Text
-    Should Contain    ${error}    Last Name
+    [Template]    Checkout Validation Template
+    Gu    ${EMPTY}    201318    Last Name
 
 TC-CHK-004: Empty Postal Code Rejected On Checkout
     [Tags]    negative    validation
-    [Documentation]    Submitting with empty postal code shows validation error.
-    Go To Cart Ready For Checkout
-    Click Checkout
-    Fill Checkout Info    Gu    Xiang    ${EMPTY}
-    Click Continue
-    ${error}=    Get Checkout Error Text
-    Should Contain    ${error}    Postal Code
+    [Template]    Checkout Validation Template
+    Gu    Xiang    ${EMPTY}    Postal Code
 
 TC-CHK-005: Cancel On Checkout Returns To Cart
     [Tags]    navigation

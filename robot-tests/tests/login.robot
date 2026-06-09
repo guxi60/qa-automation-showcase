@@ -10,6 +10,25 @@ ${SECRET_SAUCE}       secret_sauce
 ${LOCKED_USER}        locked_out_user
 
 
+*** Keywords ***
+Negative Login Template
+    [Documentation]    DDT template for negative/boundary login tests.
+    [Arguments]    ${username}    ${password}    ${expected_error}
+    Navigate To Login
+    Login With Credentials    ${username}    ${password}
+    ${error}=    Get Login Error Text
+    Should Contain    ${error}    ${expected_error}
+
+Negative Login With URL Check
+    [Documentation]    DDT template for negative login that also checks URL.
+    [Arguments]    ${username}    ${password}    ${expected_error}
+    Navigate To Login
+    Login With Credentials    ${username}    ${password}
+    ${error}=    Get Login Error Text
+    Should Contain    ${error}    ${expected_error}
+    Location Should Be    ${BASE_URL}
+
+
 *** Test Cases ***
 TC-LOGIN-001: Valid Credentials Grant Access
     [Tags]    smoke    happy-path
@@ -22,37 +41,23 @@ TC-LOGIN-001: Valid Credentials Grant Access
 
 TC-LOGIN-002: Wrong Password Is Rejected
     [Tags]    negative    validation
-    [Documentation]    Wrong password should show error and stay on login page.
-    Navigate To Login
-    Login With Credentials    ${STANDARD_USER}    wrong_password
-    ${error}=    Get Login Error Text
-    Should Contain    ${error}    do not match
-    Location Should Be    ${BASE_URL}
+    [Template]    Negative Login With URL Check
+    ${STANDARD_USER}    wrong_password    do not match
 
 TC-LOGIN-003: Empty Username Is Rejected
     [Tags]    negative    validation    boundary
-    [Documentation]    Empty username with valid password shows required error.
-    Navigate To Login
-    Login With Credentials    ${EMPTY}    ${SECRET_SAUCE}
-    ${error}=    Get Login Error Text
-    Should Contain    ${error}    Username is required
+    [Template]    Negative Login Template
+    ${EMPTY}    ${SECRET_SAUCE}    Username is required
 
 TC-LOGIN-004: Empty Password Is Rejected
     [Tags]    negative    validation    boundary
-    [Documentation]    Valid username with empty password shows required error.
-    Navigate To Login
-    Login With Credentials    ${STANDARD_USER}    ${EMPTY}
-    ${error}=    Get Login Error Text
-    Should Contain    ${error}    Password is required
+    [Template]    Negative Login Template
+    ${STANDARD_USER}    ${EMPTY}    Password is required
 
 TC-LOGIN-005: Locked-Out User Is Denied
     [Tags]    negative    access-control
-    [Documentation]    Locked-out account should show locked out error.
-    Navigate To Login
-    Login With Credentials    ${LOCKED_USER}    ${SECRET_SAUCE}
-    ${error}=    Get Login Error Text
-    Should Contain    ${error}    locked out
-    Location Should Be    ${BASE_URL}
+    [Template]    Negative Login With URL Check
+    ${LOCKED_USER}    ${SECRET_SAUCE}    locked out
 
 TC-LOGIN-006: Login Page Renders Required Elements
     [Tags]    smoke    gui
