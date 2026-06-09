@@ -1,6 +1,8 @@
-"""Selenium + pytest fixtures and configuration."""
+"""Selenium + pytest fixtures — Allure report integration."""
 
+import os
 import pytest
+import allure
 from pathlib import Path
 from datetime import datetime
 from selenium import webdriver
@@ -12,18 +14,39 @@ from webdriver_manager.chrome import ChromeDriverManager
 BASE_URL = "https://www.saucedemo.com"
 SCREENSHOT_DIR = Path(__file__).parent / "screenshots"
 
+# Reuse Playwright's bundled Chromium so Selenium works without a system Chrome.
+_PLAYWRIGHT_CHROMIUMS = sorted(
+    (Path(os.environ.get("LOCALAPPDATA", "")) / "ms-playwright").glob("chromium-*/chrome-win*/chrome.exe"),
+    reverse=True,  # newest first
+)
+_CHROME_BINARY = str(_PLAYWRIGHT_CHROMIUMS[0]) if _PLAYWRIGHT_CHROMIUMS else None
+
 
 @pytest.fixture(scope="session")
 def driver():
-    """Create a Chrome WebDriver instance for the entire session."""
+    """Create a Chrome WebDriver instance for the entire session.
+
+    Uses Playwright's bundled Chromium binary when no system Chrome is present.
+    """
     chrome_options = Options()
+    if _CHROME_BINARY:
+        chrome_options.binary_location = _CHROME_BINARY
     chrome_options.add_argument("--headless=new")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--window-size=1280,720")
 
+    # Match ChromeDriver version to the bundled Chromium (v147).
+    try:
+        driver_path = ChromeDriverManager(
+            driver_version="147.0.7727.15",
+            chrome_type="chromium",
+        ).install()
+    except Exception:
+        driver_path = ChromeDriverManager().install()
+
     driver = webdriver.Chrome(
-        service=Service(ChromeDriverManager().install()),
+        service=Service(driver_path),
         options=chrome_options,
     )
     driver.implicitly_wait(5)
@@ -41,53 +64,82 @@ def logged_in_driver(driver):
     return driver
 
 
-# ----- pytest hooks -----
+# ── Allure: screenshot capture ────────────────────────────────
+
+def _safe_screenshot(driver, name: str):
+    """Take a screenshot and attach to Allure.  Silently skip if driver is closed."""
+    try:
+        png = driver.get_screenshot_as_png()
+        allure.attach(png, name=name, attachment_type=allure.attachment_type.PNG)
+    except Exception:
+        pass
+
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Capture screenshot on test failure."""
     outcome = yield
     report = outcome.get_result()
-    if report.when == "call" and report.failed:
-        driver = item.funcargs.get("driver")
-        if driver:
-            SCREENSHOT_DIR.mkdir(exist_ok=True)
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"{item.name}_{timestamp}.png"
-            driver.save_screenshot(str(SCREENSHOT_DIR / filename))
+    drv = item.funcargs.get("driver")
 
+    if report.when == "call" and drv:
+        if report.failed:
+            # Always capture on failure
+            SCREENSHOT_DIR.mkdir(exist_ok=True)
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            path = str(SCREENSHOT_DIR / f"{item.name}_{ts}.png")
+            try:
+                drv.save_screenshot(path)
+                allure.attach.file(path, name="Failure Screenshot",
+                                   attachment_type=allure.attachment_type.PNG)
+            except Exception:
+                pass
+        else:
+            # Capture a final-state screenshot for passing tests
+            _safe_screenshot(drv, "Final State")
+
+
+# ── Allure: environment info ──────────────────────────────────
+
+def pytest_sessionfinish(session):
+    """Write environment.properties for the Allure report.
+
+    Branded distinctly from Playwright so the two reports are
+    easy to tell apart in side-by-side comparison.
+    """
+    env_dir = Path("allure-results")
+    env_dir.mkdir(exist_ok=True)
+    (env_dir / "environment.properties").write_text(
+        "Browser=Chrome (Selenium WebDriver)\n"
+        "Viewport=1280x720\n"
+        "Base.URL=https://www.saucedemo.com\n"
+        "Language=Python 3\n"
+        "Framework=Selenium + pytest\n",
+        encoding="utf-8",
+    )
+
+
+# ── Markers ───────────────────────────────────────────────────
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "smoke: fast critical path test")
-    config.addinivalue_line("markers", "regression: regression test")
+    config.addinivalue_line("markers", "smoke: P0 critical-path")
+    config.addinivalue_line("markers", "regression: regression suite")
+    config.addinivalue_line("markers", "e2e: end-to-end flow")
 
+
+# ── Post-report patches (pytest-html 4.2.0, for html fallback) ─
 
 def pytest_unconfigure(config):
-    """Patch pytest-html for local file:// viewing.
-
-    Two issues fixed:
-    1. findAll :not() missing ')' — breaks click-to-expand
-    2. history.pushState on file:// throws SecurityError — aborts JS init
-       before bindEvents() runs, so no buttons work at all.
-    """
-    report_candidates = list(Path(__file__).parent.glob("report*.html"))
-    for report_path in report_candidates:
-        content = report_path.read_text(encoding="utf-8")
-
-        # Fix 1: CSS selector syntax error
-        broken1 = "findAll('.collapsible td:not(.col-links', row)"
-        fixed1  = "findAll('.collapsible td:not(.col-links)', row)"
-        if broken1 in content:
-            content = content.replace(broken1, fixed1)
-
-        # Fix 2: file:// protocol breaks history.pushState → kills JS init
-        broken2 = "(function(){function r(e,n,t)"
-        fixed2 = (
-            "(function(){if(location.protocol==='file:'){"
-            "history.pushState=history.replaceState=function(){return arguments[2]}}"
-            "})();(function(){function r(e,n,t)"
-        )
-        if broken2 in content:
-            content = content.replace(broken2, fixed2)
-
-        report_path.write_text(content, encoding="utf-8")
+    for rp in Path(__file__).parent.glob("report*.html"):
+        c = rp.read_text(encoding="utf-8")
+        b1 = "findAll('.collapsible td:not(.col-links', row)"
+        f1 = "findAll('.collapsible td:not(.col-links)', row)"
+        if b1 in c:
+            c = c.replace(b1, f1)
+        b2 = "(function(){function r(e,n,t)"
+        f2 = ("(function(){if(location.protocol==='file:'){"
+              "history.pushState=history.replaceState="
+              "function(){return arguments[2]}}"
+              "})();(function(){function r(e,n,t)")
+        if b2 in c:
+            c = c.replace(b2, f2)
+        rp.write_text(c, encoding="utf-8")

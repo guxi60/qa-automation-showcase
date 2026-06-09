@@ -40,15 +40,21 @@ Reports:         pytest-html  |  Allure
 
 ```
 qa-automation-showcase/
+├── docs/requirements/            # 需求规格文档 & 追溯矩阵
+│   ├── README.md                 # 需求方法论
+│   ├── REQ-AUTH.md               # 用户认证需求 (6)
+│   ├── REQ-INVENTORY.md          # 商品浏览需求 (8)
+│   ├── REQ-CART.md               # 购物车需求 (5)
+│   ├── REQ-CHECKOUT.md           # 结账需求 (5)
+│   └── traceability-matrix.md    # 需求追溯矩阵 (RTM)
 ├── web-ui-tests/                # Playwright + pytest（现代方案）
 │   ├── pages/                   # Page Object Model
 │   ├── tests/                   # 测试用例
-│   ├── test_data/               # 测试数据
+│   ├── test_data/               # 测试数据（与 Selenium 共享）
 │   └── conftest.py              # Fixtures & 配置
 ├── selenium-tests/              # Selenium + pytest（经典方案）
 │   ├── pages/                   # Page Object Model
 │   ├── tests/                   # 测试用例
-│   ├── test_data/               # 测试数据
 │   └── conftest.py              # Fixtures & 配置
 ├── robot-tests/                 # Robot Framework（关键字驱动方案）
 │   ├── resources/               # 公共关键字 & 页面对象
@@ -77,14 +83,17 @@ source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 playwright install chromium
 
-# 3. 运行 Playwright 测试（含 HTML 报告）
+# 3. 运行 Playwright 测试（Allure 报告）
 cd web-ui-tests
-pytest -v --html report.html
-# 用浏览器打开 web-ui-tests/report.html 查看完整报告（包含可展开的详细日志）
+pytest -v
+allure generate allure-results -o allure-report --clean
+allure open allure-report
 
-# 4. 运行 Selenium 测试
-cd selenium-tests
-pytest -v --html report.html
+# 4. 运行 Selenium 测试（Allure 报告）
+cd ../selenium-tests
+pytest -v
+allure generate allure-results -o allure-report --clean
+allure open allure-report
 
 # 5. 运行 Robot Framework 测试
 cd robot-tests
@@ -101,14 +110,41 @@ pytest -v
 
 | 功能模块 | Playwright | Selenium | Robot Framework | API |
 |---------|-----------|----------|-----------------|-----|
-| 登录（正常/异常/边界） | ✅ (6 用例) | ⬜ | ⬜ | — |
-| 商品列表（排序/展示/图片） | ✅ (11 用例) | ⬜ | — | — |
-| 购物车（增删改/持久化） | ✅ (5 用例) | ⬜ | — | — |
-| 结账 E2E（含表单校验） | ✅ (5 用例) | ⬜ | ⬜ | — |
+| 登录（正常/异常/边界） | ✅ (6 用例) | ✅ (6 用例) | ⬜ | — |
+| 商品列表（排序/展示/图片） | ✅ (8 用例) | ✅ (8 用例) | — | — |
+| 购物车（增删改/持久化） | ✅ (5 用例) | ✅ (5 用例) | — | — |
+| 结账 E2E（含表单校验） | ✅ (5 用例) | ✅ (5 用例) | ⬜ | — |
 | 用户 CRUD | — | — | — | ⬜ |
 | 帖子 CRUD | — | — | — | ⬜ |
 | Schema 校验 | — | — | — | ⬜ |
 | 性能压测 | — | — | — | — |
+
+---
+
+## 📋 需求驱动测试 (Requirements-Driven Testing)
+
+本项目采用 TDD 闭环方法论：**需求规格 → 测试设计 → 自动化实现 → 需求追溯**。
+
+### 需求文档
+
+每个功能模块都有对应的需求规格文档，位于 [docs/requirements/](docs/requirements/)：
+
+| 文档 | 需求数 | 描述 |
+|------|--------|------|
+| [REQ-AUTH.md](docs/requirements/REQ-AUTH.md) | 6 | 登录/凭据验证/错误提示 |
+| [REQ-INVENTORY.md](docs/requirements/REQ-INVENTORY.md) | 8 | 商品展示/排序/数据完整性 |
+| [REQ-CART.md](docs/requirements/REQ-CART.md) | 5 | 购物车增删/持久化 |
+| [REQ-CHECKOUT.md](docs/requirements/REQ-CHECKOUT.md) | 5 | E2E 购买/表单校验 |
+
+### 需求追溯矩阵
+
+[RTM](docs/requirements/traceability-matrix.md) 确保每条需求都有对应的自动化测试用例，并在多个框架中交叉验证。
+
+```text
+需求规格 (REQ-*.md) → 测试数据 (test_data/*.json) → Playwright 测试 ✅
+                                                    → Selenium 测试    ✅
+                                                    → Robot Framework  ⬜
+```
 
 ---
 
