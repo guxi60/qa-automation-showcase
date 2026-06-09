@@ -27,6 +27,7 @@ def _go_to_cart_with(page: Page, items: list[str]) -> CartPage:
 @pytest.mark.parametrize("tc", [
     tc for tc in load_data("cart.json")["cart"]
     if tc["id"] != "TC-CART-003"  # persistence handled separately
+       and tc["id"] != "TC-CART-005"  # checkout button handled separately
 ])
 def test_cart(page: Page, tc: dict):
     """DDT-driven cart tests: display, removal, empty, button."""
