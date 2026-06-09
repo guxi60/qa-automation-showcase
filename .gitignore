@@ -29,6 +29,7 @@ screenshots/
 playwright-report/
 allure-results/
 allure-report/
+assets/
 
 # Robot Framework
 robot-tests/results/
