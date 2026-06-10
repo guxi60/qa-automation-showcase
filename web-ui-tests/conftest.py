@@ -64,8 +64,20 @@ def logged_in_page(page: Page) -> Page:
 # ── Allure: screenshot capture ────────────────────────────────
 
 def _safe_screenshot(page: Page, name: str, full_page: bool = True):
-    """Take a screenshot and attach to Allure.  Silently skip if page is closed."""
+    """Take a screenshot and attach to Allure.  Silently skip if page is closed.
+
+    Before capture, waits for pending network requests + forces a layout/paint
+    cycle so CSS background-images (e.g. cart icon SVG) are composited into the
+    pixel buffer — without this, headless Chromium may snapshot before the CSS
+    background finishes rendering.
+    """
     try:
+        try:
+            page.wait_for_load_state("networkidle", timeout=5000)
+        except Exception:
+            pass
+        page.evaluate("() => document.body.offsetHeight")
+        page.wait_for_timeout(300)
         png = page.screenshot(full_page=full_page, timeout=10000)
         allure.attach(png, name=name, attachment_type=allure.attachment_type.PNG)
     except Exception:
@@ -80,20 +92,26 @@ def pytest_runtest_makereport(item, call):
 
     if report.when == "call" and pg:
         if report.failed:
-            # Always capture on failure (full-page)
+            # Always capture on failure (full-page for debugging context)
             SCREENSHOT_DIR.mkdir(exist_ok=True)
             ts = datetime.now().strftime("%Y%m%d_%H%M%S")
             path = str(SCREENSHOT_DIR / f"{item.name}_{ts}.png")
             try:
+                try:
+                    pg.wait_for_load_state("networkidle", timeout=5000)
+                except Exception:
+                    pass
+                pg.evaluate("() => document.body.offsetHeight")
+                pg.wait_for_timeout(300)
                 pg.screenshot(path=path, full_page=True, timeout=10000)
                 allure.attach.file(path, name="Failure Screenshot",
                                    attachment_type=allure.attachment_type.PNG)
             except Exception:
                 pass
         else:
-            # Capture a final-state screenshot for passing tests
-            # NOTE: full_page=False keeps the viewport at 1280x720 so fixed-position
-            # header elements (cart icon SVG) render correctly — matches Selenium.
+            # Capture a final-state screenshot for passing tests.
+            # full_page=False keeps the viewport compact; _safe_screenshot
+            # forces a paint cycle so CSS background-images render reliably.
             _safe_screenshot(pg, "Final State", full_page=False)
 
 
