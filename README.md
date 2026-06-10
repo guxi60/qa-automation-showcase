@@ -130,7 +130,7 @@ pytest -v
 | Checkout E2E (incl. validation) | ✅ (5 cases) | ✅ (5 cases) | ✅ (5 cases) | — |
 | User CRUD | — | — | — | ✅ (7 cases) |
 | Post CRUD | — | — | — | ✅ (7 cases) |
-| Schema validation | — | — | — | ✅ (7 cases) |
+| Schema validation | — | — | — | ✅ (included above) |
 | Performance / Load | — | — | — | — |
 
 ---
