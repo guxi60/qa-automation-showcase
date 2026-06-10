@@ -66,17 +66,12 @@ def logged_in_page(page: Page) -> Page:
 def _safe_screenshot(page: Page, name: str, full_page: bool = True):
     """Take a screenshot and attach to Allure.  Silently skip if page is closed.
 
-    Before capture:
-
-    1. Wait for pending network requests.
-    2. Scroll to top so fixed-position header elements sit in their natural
-       viewport slot.
-    3. Run a double ``requestAnimationFrame`` round-trip to guarantee the
-       compositor has finished painting.  A plain ``offsetHeight`` / timeout
-       only forces *layout*; CSS background-images on ``::before``
-       pseudo-elements (e.g. the cart SVG icon) need a full paint+composite
-       cycle.  The double-rAF pattern synchronises with the rendering
-       pipeline so the pixel buffer is ready when we read it.
+    Also captures the ``.primary_header`` element individually — headless
+    Chromium does not reliably composite CSS ``background-image`` on
+    ``::before`` pseudo-elements during a full-page capture, but an
+    element-level screenshot forces the browser to render that specific
+    DOM subtree to a dedicated pixel buffer, which triggers the
+    background-image decode + paint.
     """
     try:
         try:
@@ -88,8 +83,21 @@ def _safe_screenshot(page: Page, name: str, full_page: bool = True):
             "() => new Promise(r => requestAnimationFrame("
             "    () => requestAnimationFrame(r)))"
         )
+        # ── Full-page screenshot ─────────────────────────────
         png = page.screenshot(full_page=full_page, timeout=10000)
         allure.attach(png, name=name, attachment_type=allure.attachment_type.PNG)
+        # ── Header element screenshot ────────────────────────
+        # Element-level capture forces headless Chromium to render
+        # the header subtree (including ::before background-images
+        # like the cart SVG icon) to its own pixel buffer.
+        hdr = page.locator(".primary_header")
+        if hdr.count() > 0:
+            hdr_png = hdr.first.screenshot(timeout=5000)
+            allure.attach(
+                hdr_png,
+                name="Header (cart icon + badge)",
+                attachment_type=allure.attachment_type.PNG,
+            )
     except Exception:
         pass
 
@@ -123,9 +131,11 @@ def pytest_runtest_makereport(item, call):
                 pass
         else:
             # Capture a final-state screenshot for passing tests.
-            # full_page=False keeps the viewport compact; _safe_screenshot
-            # forces a paint cycle so CSS background-images render reliably.
-            _safe_screenshot(pg, "Final State", full_page=False)
+            # full_page=True forces a full-document composite pass,
+            # which is necessary for CSS background-images on ::before
+            # pseudo-elements (e.g. the cart SVG icon) to render
+            # reliably in headless Chromium.
+            _safe_screenshot(pg, "Final State", full_page=True)
 
 
 # ── Allure: step screenshot hook (triggered via --screenshot-on-step) ──

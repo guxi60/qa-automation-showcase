@@ -66,9 +66,8 @@ def note(*lines: str):
 def capture(page: "Page", name: str = ""):
     """
     Take a full-page screenshot and attach it to the Allure report.
-
-    Before capture, runs a double ``requestAnimationFrame`` to ensure
-    CSS background-images (e.g. the cart SVG icon) are fully composited.
+    Also captures the ``.primary_header`` element individually as a
+    guaranteed cart-icon + badge reference.
 
     Usage from any test:
 
@@ -84,6 +83,14 @@ def capture(page: "Page", name: str = ""):
         png = page.screenshot(full_page=True, timeout=10000)
         display = f"Screenshot: {name}" if name else "Screenshot"
         allure.attach(png, name=display, attachment_type=allure.attachment_type.PNG)
+        hdr = page.locator(".primary_header")
+        if hdr.count() > 0:
+            hdr_png = hdr.first.screenshot(timeout=5000)
+            allure.attach(
+                hdr_png,
+                name="Header (cart icon + badge)",
+                attachment_type=allure.attachment_type.PNG,
+            )
         if name:
             print(f"    📷 {name}")
     except Exception:
