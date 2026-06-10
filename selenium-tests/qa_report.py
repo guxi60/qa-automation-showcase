@@ -5,15 +5,16 @@ Design
 ──────
 - Metadata lives in Allure-native decorators  (@allure.feature, @allure.story,
   @allure.severity, @allure.title, @allure.tag, @allure.label).
-- Test data is shared with Playwright: loads from web-ui-tests/test_data/.
+- Test data is shared with Playwright: loads from web-ui-tests/test_data/ (JSON).
 - step() prints to terminal while delegating to allure.step for the report.
 """
 from __future__ import annotations
 
-import json
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, TYPE_CHECKING
+
+import json
 
 import allure
 

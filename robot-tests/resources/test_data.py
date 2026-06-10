@@ -1,12 +1,13 @@
 """Python variable file for Robot Framework.
 
-Reads shared test_data/*.json (same files used by Playwright & Selenium)
+Reads shared test_data/*.yaml (same files used by Playwright & Selenium)
 and exposes values as Robot Framework variables (uppercase = Robot variable).
 """
 
-import json
 import os
 from pathlib import Path
+
+import yaml
 
 from selenium.webdriver import ChromeOptions
 from webdriver_manager.chrome import ChromeDriverManager
@@ -33,13 +34,13 @@ def _load(filename: str) -> dict:
     path = _SHARED_DATA / filename
     if not path.exists():
         raise FileNotFoundError(f"Test data file not found: {path}")
-    return json.loads(path.read_text(encoding="utf-8"))
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
-_login = _load("login.json")
-_inventory = _load("inventory.json")
-_cart = _load("cart.json")
-_checkout = _load("checkout.json")
+_login = _load("login.yaml")
+_inventory = _load("inventory.yaml")
+_cart = _load("cart.yaml")
+_checkout = _load("checkout.yaml")
 
 # ── browser configuration ──────────────────────────────────────
 

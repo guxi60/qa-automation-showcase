@@ -21,6 +21,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CHK-001 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-001 | test_checkout.py | ✅ |
+  | Robot Framework | TC-CHK-001 | checkout.robot | ✅ |
 
 ---
 
@@ -36,6 +37,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CHK-002 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-002 | test_checkout.py | ✅ |
+  | Robot Framework | TC-CHK-002 | checkout.robot | ✅ |
 
 ---
 
@@ -51,6 +53,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CHK-003 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-003 | test_checkout.py | ✅ |
+  | Robot Framework | TC-CHK-003 | checkout.robot | ✅ |
 
 ---
 
@@ -66,6 +69,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CHK-004 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-004 | test_checkout.py | ✅ |
+  | Robot Framework | TC-CHK-004 | checkout.robot | ✅ |
 
 ---
 
@@ -81,3 +85,4 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CHK-005 | test_checkout.py | ✅ |
   | Selenium | TC-CHK-005 | test_checkout.py | ✅ |
+  | Robot Framework | TC-CHK-005 | checkout.robot | ✅ |

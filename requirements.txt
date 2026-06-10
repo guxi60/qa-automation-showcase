@@ -20,3 +20,4 @@ jsonschema>=4.20.0
 
 # Utilities
 python-dotenv>=1.0.0
+PyYAML>=6.0

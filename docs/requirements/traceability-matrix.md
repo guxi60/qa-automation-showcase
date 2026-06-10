@@ -72,7 +72,7 @@
 Requirements Spec (REQ-*.md)
        │
        ▼
-   Test Data (test_data/*.json)
+   Test Data (test_data/*.yaml / *.json)
        │
        ├──▶ Playwright tests (web-ui-tests/tests/) ✅
        ├──▶ Selenium tests   (selenium-tests/tests/) ✅

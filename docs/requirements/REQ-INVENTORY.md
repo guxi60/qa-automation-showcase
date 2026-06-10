@@ -18,6 +18,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-INV-001 | test_inventory.py | ✅ |
   | Selenium | TC-INV-001 | test_inventory.py | ✅ |
+  | Robot Framework | TC-INV-001 | inventory.robot | ✅ |
 
 ---
 
@@ -33,6 +34,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-INV-002 | test_inventory.py | ✅ |
   | Selenium | TC-INV-002 | test_inventory.py | ✅ |
+  | Robot Framework | TC-INV-002 | inventory.robot | ✅ |
 
 ---
 
@@ -48,6 +50,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-INV-003 | test_inventory.py | ✅ |
   | Selenium | TC-INV-003 | test_inventory.py | ✅ |
+  | Robot Framework | TC-INV-003 | inventory.robot | ✅ |
 
 ---
 
@@ -66,6 +69,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-INV-004 | test_inventory.py | ✅ |
   | Selenium | TC-INV-004 | test_inventory.py | ✅ |
+  | Robot Framework | TC-INV-004 | inventory.robot | ✅ |
 
 ---
 
@@ -81,6 +85,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-INV-005 | test_inventory.py | ✅ |
   | Selenium | TC-INV-005 | test_inventory.py | ✅ |
+  | Robot Framework | TC-INV-005 | inventory.robot | ✅ |
 
 ---
 
@@ -96,6 +101,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-INV-006 | test_inventory.py | ✅ |
   | Selenium | TC-INV-006 | test_inventory.py | ✅ |
+  | Robot Framework | TC-INV-006 | inventory.robot | ✅ |
 
 ---
 
@@ -111,6 +117,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-INV-007 | test_inventory.py | ✅ |
   | Selenium | TC-INV-007 | test_inventory.py | ✅ |
+  | Robot Framework | TC-INV-007 | inventory.robot | ✅ |
 
 ---
 
@@ -126,3 +133,4 @@
   |-----------|---------|------|--------|
   | Playwright | TC-INV-008 | test_inventory.py | ✅ |
   | Selenium | TC-INV-008 | test_inventory.py | ✅ |
+  | Robot Framework | TC-INV-008 | inventory.robot | ✅ |

@@ -8,7 +8,7 @@
 
 | Rule | Detail |
 |------|--------|
-| **Shared test data** | All three frameworks consume `web-ui-tests/test_data/*.json` — never duplicate test data per framework |
+| **Shared test data** | All three frameworks consume `web-ui-tests/test_data/*.{yaml,json}` — YAML for Playwright/Robot, JSON for Selenium. Same data, two formats |
 | **TC-ID naming** | `TC-{MODULE}-{NNN}` (e.g. `TC-LOGIN-001`, `TC-CHK-003`). Unique across the project |
 | **TC count parity** | Every requirement → exactly 1 TC-ID → exactly 1 test function/case per framework |
 | **Allure everywhere** | All frameworks produce `allure-results/` → `allure-report/`, with branded `environment.properties` |
@@ -21,7 +21,7 @@
 ```
   1. Write Requirement (REQ-*.md)
          │
-  2. Add Test Data  (test_data/*.json)
+  2. Add Test Data  (test_data/*.yaml + *.json)
          │
   3. Implement Test  (all three frameworks)
          │
@@ -58,11 +58,12 @@ In `docs/requirements/REQ-{MODULE}.md` (or create a new file):
 
 ### Step 2: Add test data
 
-In `web-ui-tests/test_data/{module}.json`, add a JSON entry with at least `id`, `title`, `severity`, `tags`.
+In `web-ui-tests/test_data/{module}.yaml` (Playwright/Robot) or `{module}.json` (Selenium), add an entry with at least `id`, `title`, `severity`, `tags`.
 
-The JSON is read by:
-- **Playwright / Selenium**: `load_data()` → `@pytest.mark.parametrize`
-- **Robot Framework**: `resources/test_data.py` → Python variable file
+The data is read by:
+- **Playwright**: `load_data("module.yaml")` → `yaml.safe_load()` → `@pytest.mark.parametrize`
+- **Selenium**: `load_data("module.json")` → `json.loads()` → `@pytest.mark.parametrize`
+- **Robot Framework**: `resources/test_data.py` → `yaml.safe_load("module.yaml")` → Python variable file
 
 ### Step 3: Implement in three frameworks
 
@@ -137,9 +138,9 @@ These files must stay in sync. When you change any one, verify the others:
 
 | Framework | DDT Approach | Data Source |
 |-----------|-------------|-------------|
-| **Playwright + pytest** | `@pytest.mark.parametrize("tc", load_data(file)["key"])` → `set_meta(tc)` inside test | `test_data/*.json` |
-| **Selenium + pytest** | Identical to Playwright (same `load_data`, same `set_meta`) | Same JSON |
-| **Robot Framework** | `[Template]` keyword with data arguments per test case; also standalone keyword-driven tests for unique flows | `test_data.py` (Python var file reads JSON) |
+| **Playwright + pytest** | `@pytest.mark.parametrize("tc", load_data(file)["key"])` → `set_meta(tc)` inside test | `test_data/*.yaml` |
+| **Selenium + pytest** | Identical to Playwright (same `load_data`, same `set_meta`) | `test_data/*.json` |
+| **Robot Framework** | `[Template]` keyword with data arguments per test case; also standalone keyword-driven tests for unique flows | `test_data.py` (Python var file reads YAML) |
 
 **When to use template DDT vs. standalone test in Robot:**
 - Validation / negative tests that share the same step sequence → `[Template]`

@@ -23,7 +23,7 @@ def inventory(page: Page) -> InventoryPage:
 # ═══════════════════════════════════════════════════════════════
 
 @allure.feature("Inventory")
-@pytest.mark.parametrize("tc", load_data("inventory.json")["display"])
+@pytest.mark.parametrize("tc", load_data("inventory.yaml")["display"])
 def test_inventory_display(inventory: InventoryPage, tc: dict):
     """TC-INV-001..003 — Product listing, data integrity, images."""
     set_meta(tc)
@@ -67,7 +67,7 @@ def test_inventory_display(inventory: InventoryPage, tc: dict):
 @allure.feature("Inventory")
 def test_sort_order(inventory: InventoryPage):
     """TC-INV-004 — Each sort criterion returns correct first item."""
-    tc_data = load_data("inventory.json")["sorting"][0]
+    tc_data = load_data("inventory.yaml")["sorting"][0]
     set_meta(tc_data)
 
     for scenario in tc_data["scenarios"]:
@@ -85,7 +85,7 @@ def test_sort_order(inventory: InventoryPage):
 @allure.feature("Inventory")
 def test_price_sort_is_numerical(inventory: InventoryPage):
     """TC-INV-005 — Price (low to high) is numerically correct."""
-    tc = load_data("inventory.json")["sorting"][1]
+    tc = load_data("inventory.yaml")["sorting"][1]
     set_meta(tc)
 
     with step(f"Sort by {tc['sort']!r}"):
@@ -105,7 +105,7 @@ def test_price_sort_is_numerical(inventory: InventoryPage):
 @allure.feature("Inventory")
 def test_cart_badge_starts_empty(inventory: InventoryPage):
     """TC-INV-006 — Badge is hidden when cart is empty."""
-    tc = load_data("inventory.json")["cart_badge"][0]
+    tc = load_data("inventory.yaml")["cart_badge"][0]
     set_meta(tc)
 
     with step("Check badge on fresh inventory page"):
@@ -116,7 +116,7 @@ def test_cart_badge_starts_empty(inventory: InventoryPage):
 @allure.feature("Inventory")
 def test_cart_badge_increments(inventory: InventoryPage):
     """TC-INV-007 — Badge increments with each item added."""
-    tc = load_data("inventory.json")["cart_badge"][1]
+    tc = load_data("inventory.yaml")["cart_badge"][1]
     set_meta(tc)
 
     items = tc["add_items"]
@@ -130,7 +130,7 @@ def test_cart_badge_increments(inventory: InventoryPage):
 @allure.feature("Inventory")
 def test_add_then_remove_resets_cart(inventory: InventoryPage):
     """TC-INV-008 — Add → Remove returns badge to zero."""
-    tc = load_data("inventory.json")["cart_badge"][2]
+    tc = load_data("inventory.yaml")["cart_badge"][2]
     set_meta(tc)
 
     item = tc["add_remove"]

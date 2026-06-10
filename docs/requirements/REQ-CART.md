@@ -18,6 +18,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CART-001 | test_cart.py | ✅ |
   | Selenium | TC-CART-001 | test_cart.py | ✅ |
+  | Robot Framework | TC-CART-001 | cart.robot | ✅ |
 
 ---
 
@@ -33,6 +34,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CART-002 | test_cart.py | ✅ |
   | Selenium | TC-CART-002 | test_cart.py | ✅ |
+  | Robot Framework | TC-CART-002 | cart.robot | ✅ |
 
 ---
 
@@ -48,6 +50,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CART-003 | test_cart.py | ✅ |
   | Selenium | TC-CART-003 | test_cart.py | ✅ |
+  | Robot Framework | TC-CART-003 | cart.robot | ✅ |
 
 ---
 
@@ -63,6 +66,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CART-004 | test_cart.py | ✅ |
   | Selenium | TC-CART-004 | test_cart.py | ✅ |
+  | Robot Framework | TC-CART-004 | cart.robot | ✅ |
 
 ---
 
@@ -78,3 +82,4 @@
   |-----------|---------|------|--------|
   | Playwright | TC-CART-005 | test_cart.py | ✅ |
   | Selenium | TC-CART-005 | test_cart.py | ✅ |
+  | Robot Framework | TC-CART-005 | cart.robot | ✅ |

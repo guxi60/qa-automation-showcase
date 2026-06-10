@@ -92,7 +92,9 @@ def pytest_runtest_makereport(item, call):
                 pass
         else:
             # Capture a final-state screenshot for passing tests
-            _safe_screenshot(pg, "Final State", full_page=True)
+            # NOTE: full_page=False keeps the viewport at 1280x720 so fixed-position
+            # header elements (cart icon SVG) render correctly — matches Selenium.
+            _safe_screenshot(pg, "Final State", full_page=False)
 
 
 # ── Allure: step screenshot hook (triggered via --screenshot-on-step) ──

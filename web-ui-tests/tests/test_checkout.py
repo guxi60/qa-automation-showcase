@@ -33,7 +33,7 @@ def cart_ready(page: Page) -> CartPage:
 @allure.feature("Checkout")
 def test_complete_checkout_e2e(cart_ready: CartPage, page: Page):
     """TC-CHK-001 — Full purchase flow."""
-    tc = load_data("checkout.json")["checkout"][0]
+    tc = load_data("checkout.yaml")["checkout"][0]
     set_meta(tc)
 
     with step("Proceed from cart to checkout form"):
@@ -81,7 +81,7 @@ def test_complete_checkout_e2e(cart_ready: CartPage, page: Page):
 # ═══════════════════════════════════════════════════════════════
 
 @allure.feature("Checkout")
-@pytest.mark.parametrize("tc", load_data("checkout.json")["validation"])
+@pytest.mark.parametrize("tc", load_data("checkout.yaml")["validation"])
 def test_checkout_form_validation(cart_ready: CartPage, page: Page, tc: dict):
     """TC-CHK-002..004 — Empty field rejection."""
     set_meta(tc)
@@ -109,7 +109,7 @@ def test_checkout_form_validation(cart_ready: CartPage, page: Page, tc: dict):
 @allure.feature("Checkout")
 def test_checkout_cancel_returns_to_cart(cart_ready: CartPage, page: Page):
     """TC-CHK-005 — Cancel returns to cart without side effects."""
-    tc = load_data("checkout.json")["navigation"][0]
+    tc = load_data("checkout.yaml")["navigation"][0]
     set_meta(tc)
 
     with step("Navigate to checkout form"):

@@ -5,19 +5,18 @@ Design
 ──────
 - Metadata lives in Allure-native decorators  (@allure.feature, @allure.story,
   @allure.severity, @allure.title, @allure.tag, @allure.label).
-- Test data is externalised to JSON files under test_data/.
+- Test data is externalised to YAML files under test_data/.
 - This module provides one convenience:  load_data(file) and a thin step()
   wrapper that prints to terminal while delegating to allure.step.
 """
 from __future__ import annotations
 
-import json
-import os
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, TYPE_CHECKING
 
 import allure
+import yaml
 
 if TYPE_CHECKING:
     from playwright.sync_api import Page
@@ -30,11 +29,11 @@ _DATA_DIR = Path(__file__).parent / "test_data"
 
 
 def load_data(filename: str) -> dict:
-    """Load a JSON test-data file from test_data/."""
+    """Load a YAML test-data file from test_data/."""
     path = _DATA_DIR / filename
     if not path.exists():
         raise FileNotFoundError(f"Test data file not found: {path}")
-    return json.loads(path.read_text(encoding="utf-8"))
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
 # ═══════════════════════════════════════════════════════════════

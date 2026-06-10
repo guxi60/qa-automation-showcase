@@ -1,0 +1,86 @@
+# Inventory test cases — shared across Playwright, Selenium, and Robot Framework
+display:
+  - id: TC-INV-001
+    title: "Inventory page displays exactly 6 products after login"
+    story: "Product listing"
+    severity: BLOCKER
+    tags: [smoke]
+    level: System
+    expected_count: 6
+    expected_names: &all_products
+      - "Sauce Labs Backpack"
+      - "Sauce Labs Bike Light"
+      - "Sauce Labs Bolt T-Shirt"
+      - "Sauce Labs Fleece Jacket"
+      - "Sauce Labs Onesie"
+      - "Test.allTheThings() T-Shirt (Red)"
+    # Display — 6 products listed
+
+  - id: TC-INV-002
+    title: "Every product tile has a non-empty name and price > $0"
+    story: "Product data integrity"
+    severity: CRITICAL
+    tags: [functional, data-integrity]
+    level: System
+    expected_count: 6
+    # Data integrity — names and prices
+
+  - id: TC-INV-003
+    title: "Every product tile has a visible image with valid src"
+    story: "Product data integrity"
+    severity: CRITICAL
+    tags: [gui, data-integrity]
+    level: System
+    # GUI — product images
+
+sorting:
+  - id: TC-INV-004
+    title: "Products sort correctly for each sort criterion"
+    story: "Product sorting"
+    severity: CRITICAL
+    tags: [functional]
+    level: System
+    scenarios:
+      - {sort: "Name (A to Z)",       first: "Sauce Labs Backpack"}
+      - {sort: "Name (Z to A)",       first: "Test.allTheThings() T-Shirt (Red)"}
+      - {sort: "Price (low to high)",  first: "Sauce Labs Onesie"}
+      - {sort: "Price (high to low)",  first: "Sauce Labs Fleece Jacket"}
+    # Sorting — parametrized 4 ways
+
+  - id: TC-INV-005
+    title: "Price (low to high) sort must be numerically correct"
+    story: "Product sorting"
+    severity: MINOR
+    tags: [functional]
+    level: System
+    sort: "Price (low to high)"
+    # Sort — numerical correctness
+
+cart_badge:
+  - id: TC-INV-006
+    title: "Cart badge is hidden when no items are in cart"
+    story: "Cart badge lifecycle"
+    severity: CRITICAL
+    tags: [functional]
+    level: System
+    # Badge — starts empty
+
+  - id: TC-INV-007
+    title: "Cart badge increments as items are added"
+    story: "Cart badge lifecycle"
+    severity: CRITICAL
+    tags: [functional]
+    level: System
+    add_items:
+      - "Sauce Labs Backpack"
+      - "Sauce Labs Bike Light"
+    # Badge — increments
+
+  - id: TC-INV-008
+    title: "Adding then removing same item resets cart count to zero"
+    story: "Cart badge lifecycle"
+    severity: NORMAL
+    tags: [functional]
+    level: System
+    add_remove: "Sauce Labs Backpack"
+    # Badge — add then remove

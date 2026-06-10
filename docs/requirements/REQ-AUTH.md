@@ -18,6 +18,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-LOGIN-001 | test_login.py | ✅ |
   | Selenium | TC-LOGIN-001 | test_login.py | ✅ |
+  | Robot Framework | TC-LOGIN-001 | login.robot | ✅ |
 
 ---
 
@@ -33,6 +34,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-LOGIN-002 | test_login.py | ✅ |
   | Selenium | TC-LOGIN-002 | test_login.py | ✅ |
+  | Robot Framework | TC-LOGIN-002 | login.robot | ✅ |
 
 ---
 
@@ -48,6 +50,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-LOGIN-003 | test_login.py | ✅ |
   | Selenium | TC-LOGIN-003 | test_login.py | ✅ |
+  | Robot Framework | TC-LOGIN-003 | login.robot | ✅ |
 
 ---
 
@@ -63,6 +66,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-LOGIN-004 | test_login.py | ✅ |
   | Selenium | TC-LOGIN-004 | test_login.py | ✅ |
+  | Robot Framework | TC-LOGIN-004 | login.robot | ✅ |
 
 ---
 
@@ -78,6 +82,7 @@
   |-----------|---------|------|--------|
   | Playwright | TC-LOGIN-005 | test_login.py | ✅ |
   | Selenium | TC-LOGIN-005 | test_login.py | ✅ |
+  | Robot Framework | TC-LOGIN-005 | login.robot | ✅ |
 
 ---
 
@@ -93,3 +98,4 @@
   |-----------|---------|------|--------|
   | Playwright | TC-LOGIN-006 | test_login.py | ✅ |
   | Selenium | TC-LOGIN-006 | test_login.py | ✅ |
+  | Robot Framework | TC-LOGIN-006 | login.robot | ✅ |

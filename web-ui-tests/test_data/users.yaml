@@ -1,0 +1,30 @@
+# User credentials — shared across Playwright, Selenium, and Robot Framework
+valid_users:
+  - username: standard_user
+    password: secret_sauce
+    description: "Standard user"
+  - username: problem_user
+    password: secret_sauce
+    description: "Problem user - images may differ"
+  - username: performance_glitch_user
+    password: secret_sauce
+    description: "Performance glitch user - slower loading"
+
+locked_user:
+  username: locked_out_user
+  password: secret_sauce
+  expected_error: "Epic sadface: Sorry, this user has been locked out."
+
+invalid_scenarios:
+  - username: standard_user
+    password: wrong_password
+    description: "wrong password"
+  - username: nonexistent_user
+    password: secret_sauce
+    description: "nonexistent user"
+  - username: ""
+    password: secret_sauce
+    description: "empty username"
+  - username: standard_user
+    password: ""
+    description: "empty password"

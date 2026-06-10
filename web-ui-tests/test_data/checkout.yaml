@@ -1,0 +1,58 @@
+# Checkout test cases — shared across Playwright, Selenium, and Robot Framework
+checkout:
+  - id: TC-CHK-001
+    title: "Customer completes a purchase from cart to confirmation"
+    story: "Happy-path purchase"
+    severity: BLOCKER
+    tags: [smoke, e2e, happy-path]
+    level: E2E
+    first_name: &fn Gu
+    last_name: &ln Xiang
+    postal_code: &pc "201318"
+    # E2E — full checkout flow
+
+validation:
+  - id: TC-CHK-002
+    title: "Empty first-name field is rejected on checkout"
+    story: "Checkout form validation"
+    severity: CRITICAL
+    tags: [negative, validation]
+    level: System
+    first_name: ""
+    last_name: *ln
+    postal_code: *pc
+    expected_error: "First Name"
+    # Negative — empty first name
+
+  - id: TC-CHK-003
+    title: "Empty last-name field is rejected on checkout"
+    story: "Checkout form validation"
+    severity: CRITICAL
+    tags: [negative, validation]
+    level: System
+    first_name: *fn
+    last_name: ""
+    postal_code: *pc
+    expected_error: "Last Name"
+    # Negative — empty last name
+
+  - id: TC-CHK-004
+    title: "Empty postal-code field is rejected on checkout"
+    story: "Checkout form validation"
+    severity: CRITICAL
+    tags: [negative, validation]
+    level: System
+    first_name: *fn
+    last_name: *ln
+    postal_code: ""
+    expected_error: "Postal Code"
+    # Negative — empty postal code
+
+navigation:
+  - id: TC-CHK-005
+    title: "Cancel on checkout form returns to cart without changes"
+    story: "Checkout navigation"
+    severity: NORMAL
+    tags: [navigation]
+    level: System
+    # Navigation — cancel from checkout

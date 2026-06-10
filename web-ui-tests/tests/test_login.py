@@ -9,7 +9,7 @@ from qa_report import load_data, set_meta, step, action, note, capture
 
 
 @allure.feature("Authentication")
-@pytest.mark.parametrize("tc", load_data("login.json")["login"])
+@pytest.mark.parametrize("tc", load_data("login.yaml")["login"])
 def test_login(page: Page, tc: dict):
     """
     Data-driven login test.

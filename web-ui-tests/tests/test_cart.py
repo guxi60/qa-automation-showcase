@@ -25,7 +25,7 @@ def _go_to_cart_with(page: Page, items: list[str]) -> CartPage:
 
 @allure.feature("Cart")
 @pytest.mark.parametrize("tc", [
-    tc for tc in load_data("cart.json")["cart"]
+    tc for tc in load_data("cart.yaml")["cart"]
     if tc["id"] != "TC-CART-003"  # persistence handled separately
        and tc["id"] != "TC-CART-005"  # checkout button handled separately
 ])
@@ -75,7 +75,7 @@ def test_cart(page: Page, tc: dict):
 @allure.feature("Cart")
 def test_cart_persists_after_navigation(page: Page):
     """Cart badge survives navigating to cart and back."""
-    tc_data = load_data("cart.json")["cart"]
+    tc_data = load_data("cart.yaml")["cart"]
     tc = next(t for t in tc_data if t["id"] == "TC-CART-003")
     set_meta(tc)
 
@@ -113,7 +113,7 @@ def test_cart_persists_after_navigation(page: Page):
 @allure.feature("Cart")
 def test_checkout_button_exists(page: Page):
     """Checkout button is visible and enabled when cart has items."""
-    tc_data = load_data("cart.json")["cart"]
+    tc_data = load_data("cart.yaml")["cart"]
     tc = next(t for t in tc_data if t["id"] == "TC-CART-005")
     set_meta(tc)
 
