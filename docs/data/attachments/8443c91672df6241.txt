@@ -1,0 +1,7 @@
+
+  ▸ Navigate to checkout form
+
+  ▸ Click [Cancel] without filling the form
+    ▶ Clicked [Cancel]
+
+  ▸ Verify return to cart page
