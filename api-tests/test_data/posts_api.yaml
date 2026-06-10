@@ -1,0 +1,102 @@
+# API test data — Posts CRUD + Schema validation
+#
+# Each entry maps to exactly one pytest parametrized test case.
+# Metadata keys (id, title, severity, tags, story, level) drive
+# allure.dynamic.* via set_meta().  Domain keys (endpoint, method,
+# expected_status, etc.) drive test assertions.
+
+posts:
+  - id: TC-API-POSTS-001
+    title: "GET /posts — list all posts, verify count & structure"
+    severity: CRITICAL
+    tags: [smoke, regression, crud]
+    story: "Post CRUD"
+    level: "API"
+    endpoint: "/posts"
+    method: GET
+    expected_status: 200
+    assert_type: collection
+    expected_count: 100
+    content_type: "application/json"
+
+  - id: TC-API-POSTS-002
+    title: "GET /posts/1 — single post with JSON Schema validation"
+    severity: CRITICAL
+    tags: [smoke, regression, crud, schema]
+    story: "Post CRUD"
+    level: "API"
+    endpoint: "/posts/1"
+    method: GET
+    expected_status: 200
+    assert_type: single
+    expected_id: 1
+    schema: post_schema.json
+
+  - id: TC-API-POSTS-003
+    title: "POST /posts — create a new post"
+    severity: CRITICAL
+    tags: [smoke, regression, crud]
+    story: "Post CRUD"
+    level: "API"
+    endpoint: "/posts"
+    method: POST
+    expected_status: 201
+    assert_type: create
+    payload:
+      userId: 1
+      title: "API Testing with pytest + requests"
+      body: "A showcase of REST API test automation using pytest, requests, and JSON Schema validation. Rate-limited to respect the free tier."
+
+  - id: TC-API-POSTS-004
+    title: "PUT /posts/1 — full update of an existing post"
+    severity: NORMAL
+    tags: [regression, crud]
+    story: "Post CRUD"
+    level: "API"
+    endpoint: "/posts/1"
+    method: PUT
+    expected_status: 200
+    assert_type: update
+    payload:
+      id: 1
+      userId: 1
+      title: "[UPDATED] API Testing with pytest + requests"
+      body: "This post has been updated via PUT."
+
+  - id: TC-API-POSTS-005
+    title: "DELETE /posts/1 — remove a post"
+    severity: NORMAL
+    tags: [regression, crud]
+    story: "Post CRUD"
+    level: "API"
+    endpoint: "/posts/1"
+    method: DELETE
+    expected_status: 200
+    assert_type: delete
+
+  - id: TC-API-POSTS-006
+    title: "GET /posts?userId=1 — filter posts by user"
+    severity: NORMAL
+    tags: [regression, crud]
+    story: "Post CRUD"
+    level: "API"
+    endpoint: "/posts"
+    method: GET
+    expected_status: 200
+    assert_type: filter
+    query_params:
+      userId: 1
+    validate_field: userId
+    validate_value: 1
+
+  - id: TC-API-POSTS-007
+    title: "Validate all /posts against Post JSON Schema"
+    severity: CRITICAL
+    tags: [regression, schema]
+    story: "Schema Validation"
+    level: "API"
+    endpoint: "/posts"
+    method: GET
+    expected_status: 200
+    assert_type: schema_batch
+    schema: post_schema.json

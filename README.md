@@ -128,9 +128,9 @@ pytest -v
 | Inventory (sort/display/images) | ✅ (8 cases) | ✅ (8 cases) | ✅ (8 cases) | — |
 | Cart (add/remove/persistence) | ✅ (5 cases) | ✅ (5 cases) | ✅ (5 cases) | — |
 | Checkout E2E (incl. validation) | ✅ (5 cases) | ✅ (5 cases) | ✅ (5 cases) | — |
-| User CRUD | — | — | — | ⬜ |
-| Post CRUD | — | — | — | ⬜ |
-| Schema validation | — | — | — | ⬜ |
+| User CRUD | — | — | — | ✅ (7 cases) |
+| Post CRUD | — | — | — | ✅ (7 cases) |
+| Schema validation | — | — | — | ✅ (7 cases) |
 | Performance / Load | — | — | — | — |
 
 ---
@@ -149,15 +149,19 @@ Each module has a corresponding requirements specification in [docs/requirements
 | [REQ-INVENTORY.md](docs/requirements/REQ-INVENTORY.md) | 8 | Product display, sorting, data integrity |
 | [REQ-CART.md](docs/requirements/REQ-CART.md) | 5 | Cart add/remove, state persistence |
 | [REQ-CHECKOUT.md](docs/requirements/REQ-CHECKOUT.md) | 5 | E2E purchase flow, form validation |
+| [REQ-API-USERS.md](docs/requirements/REQ-API-USERS.md) | 7 | User CRUD — list / single / create / update / delete / 404 / schema |
+| [REQ-API-POSTS.md](docs/requirements/REQ-API-POSTS.md) | 7 | Post CRUD — list / single / create / update / delete / filter / schema |
 
 ### Requirements Traceability Matrix
 
 The [RTM](docs/requirements/traceability-matrix.md) ensures every requirement maps to automated test cases, cross-validated across multiple frameworks.
 
 ```text
-Requirements (REQ-*.md) → Test Data (test_data/*.yaml ↔ *.json) → Playwright ✅ (24 cases)
-                                                         → Selenium    ✅ (24 cases)
-                                                         → Robot       ✅ (24 cases)
+Requirements (REQ-*.md)
+  ├── Web UI: Test Data (test_data/*.yaml ↔ *.json) → Playwright ✅ (24)
+  │                                                   → Selenium    ✅ (24)
+  │                                                   → Robot       ✅ (24)
+  └── API:    Test Data (test_data/*.yaml)           → pytest+requests ✅ (14)
 ```
 
 ---

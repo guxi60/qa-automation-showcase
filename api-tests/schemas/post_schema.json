@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://qa-automation-showcase/schemas/post.json",
+  "title": "Post",
+  "description": "JSONPlaceholder Post object — validated in API schema tests",
+  "type": "object",
+  "required": ["userId", "id", "title", "body"],
+  "properties": {
+    "userId": {
+      "type": "integer",
+      "description": "ID of the user who authored this post"
+    },
+    "id": {
+      "type": "integer",
+      "description": "Unique post identifier"
+    },
+    "title": {
+      "type": "string",
+      "description": "Post title"
+    },
+    "body": {
+      "type": "string",
+      "description": "Post body content"
+    }
+  }
+}

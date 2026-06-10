@@ -67,12 +67,20 @@ def capture(page: "Page", name: str = ""):
     """
     Take a full-page screenshot and attach it to the Allure report.
 
+    Before capture, runs a double ``requestAnimationFrame`` to ensure
+    CSS background-images (e.g. the cart SVG icon) are fully composited.
+
     Usage from any test:
 
         from qa_report import capture
         capture(page, "After login")
     """
     try:
+        page.evaluate("window.scrollTo(0, 0)")
+        page.evaluate(
+            "() => new Promise(r => requestAnimationFrame("
+            "    () => requestAnimationFrame(r)))"
+        )
         png = page.screenshot(full_page=True, timeout=10000)
         display = f"Screenshot: {name}" if name else "Screenshot"
         allure.attach(png, name=display, attachment_type=allure.attachment_type.PNG)

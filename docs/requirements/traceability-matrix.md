@@ -8,13 +8,15 @@
 
 ## Coverage Overview
 
-| Module | Reqs | Playwright | Selenium | Robot Framework |
-|--------|------|------------|----------|-----------------|
-| AUTH | 6 | 6/6 ✅ | 6/6 ✅ | 6/6 ✅ |
-| INVENTORY | 8 | 8/8 ✅ | 8/8 ✅ | 8/8 ✅ |
-| CART | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ |
-| CHECKOUT | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ |
-| **Total** | **24** | **24/24 (100%)** | **24/24 (100%)** | **24/24 (100%)** |
+| Module | Reqs | Playwright | Selenium | Robot Framework | API |
+|--------|------|------------|----------|-----------------|-----|
+| AUTH | 6 | 6/6 ✅ | 6/6 ✅ | 6/6 ✅ | — |
+| INVENTORY | 8 | 8/8 ✅ | 8/8 ✅ | 8/8 ✅ | — |
+| CART | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — |
+| CHECKOUT | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — |
+| API-USERS | 7 | — | — | — | 7/7 ✅ |
+| API-POSTS | 7 | — | — | — | 7/7 ✅ |
+| **Total** | **38** | **24/24 (100%)** | **24/24 (100%)** | **24/24 (100%)** | **14/14 (100%)** |
 
 ---
 
@@ -64,6 +66,30 @@
 | [REQ-CHK-004](REQ-CHECKOUT.md#req-chk-004-empty-field-validation--postal-code) | Empty field — Postal Code | CRITICAL | TC-CHK-004 ✅ | TC-CHK-004 ✅ | TC-CHK-004 ✅ |
 | [REQ-CHK-005](REQ-CHECKOUT.md#req-chk-005-cancel-returns-to-cart) | Cancel returns to cart | NORMAL | TC-CHK-005 ✅ | TC-CHK-005 ✅ | TC-CHK-005 ✅ |
 
+### API-USERS — Users CRUD & Schema
+
+| Req ID | Description | Priority | API |
+|--------|------------|----------|-----|
+| [REQ-API-USERS-001](REQ-API-USERS.md#req-api-users-001-list-all-users-with-correct-count-and-structure) | List all users (10) | BLOCKER | TC-API-USERS-001 ✅ |
+| [REQ-API-USERS-002](REQ-API-USERS.md#req-api-users-002-single-user-retrieval-with-json-schema-validation) | Single user + schema | BLOCKER | TC-API-USERS-002 ✅ |
+| [REQ-API-USERS-003](REQ-API-USERS.md#req-api-users-003-create-a-new-user-and-verify-echoed-payload) | Create user | BLOCKER | TC-API-USERS-003 ✅ |
+| [REQ-API-USERS-004](REQ-API-USERS.md#req-api-users-004-full-update-of-an-existing-user) | Update user | NORMAL | TC-API-USERS-004 ✅ |
+| [REQ-API-USERS-005](REQ-API-USERS.md#req-api-users-005-delete-an-existing-user) | Delete user | NORMAL | TC-API-USERS-005 ✅ |
+| [REQ-API-USERS-006](REQ-API-USERS.md#req-api-users-006-non-existent-user-returns-404) | 404 negative | MINOR | TC-API-USERS-006 ✅ |
+| [REQ-API-USERS-007](REQ-API-USERS.md#req-api-users-007-batch-json-schema-validation-across-all-users) | Batch schema | BLOCKER | TC-API-USERS-007 ✅ |
+
+### API-POSTS — Posts CRUD & Schema
+
+| Req ID | Description | Priority | API |
+|--------|------------|----------|-----|
+| [REQ-API-POSTS-001](REQ-API-POSTS.md#req-api-posts-001-list-all-posts-with-correct-count-and-structure) | List all posts (100) | BLOCKER | TC-API-POSTS-001 ✅ |
+| [REQ-API-POSTS-002](REQ-API-POSTS.md#req-api-posts-002-single-post-retrieval-with-json-schema-validation) | Single post + schema | BLOCKER | TC-API-POSTS-002 ✅ |
+| [REQ-API-POSTS-003](REQ-API-POSTS.md#req-api-posts-003-create-a-new-post-and-verify-echoed-payload) | Create post | BLOCKER | TC-API-POSTS-003 ✅ |
+| [REQ-API-POSTS-004](REQ-API-POSTS.md#req-api-posts-004-full-update-of-an-existing-post) | Update post | NORMAL | TC-API-POSTS-004 ✅ |
+| [REQ-API-POSTS-005](REQ-API-POSTS.md#req-api-posts-005-delete-an-existing-post) | Delete post | NORMAL | TC-API-POSTS-005 ✅ |
+| [REQ-API-POSTS-006](REQ-API-POSTS.md#req-api-posts-006-filter-posts-by-user-id) | Filter by userId | NORMAL | TC-API-POSTS-006 ✅ |
+| [REQ-API-POSTS-007](REQ-API-POSTS.md#req-api-posts-007-batch-json-schema-validation-across-all-posts) | Batch schema | BLOCKER | TC-API-POSTS-007 ✅ |
+
 ---
 
 ## TDD Closed-Loop Verification
@@ -71,12 +97,15 @@
 ```text
 Requirements Spec (REQ-*.md)
        │
-       ▼
-   Test Data (test_data/*.yaml / *.json)
+       ├──▶ Web UI  Test Data (test_data/*.yaml / *.json)
+       │         │
+       │         ├──▶ Playwright tests (web-ui-tests/tests/) ✅
+       │         ├──▶ Selenium tests   (selenium-tests/tests/) ✅
+       │         └──▶ Robot tests      (robot-tests/tests/)    ✅
        │
-       ├──▶ Playwright tests (web-ui-tests/tests/) ✅
-       ├──▶ Selenium tests   (selenium-tests/tests/) ✅
-       └──▶ Robot tests      (robot-tests/tests/)    ✅
+       └──▶ API    Test Data (test_data/*.yaml)
+                 │
+                 └──▶ pytest + requests  (api-tests/tests/)   ✅
 ```
 
-**Closed-loop rule**: Every requirement → at least one test case → implemented in all three frameworks → test results traceable back to the requirement.
+**Closed-loop rule**: Every requirement → at least one test case → implemented in the relevant framework(s) → test results traceable back to the requirement.

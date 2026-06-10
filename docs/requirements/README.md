@@ -14,6 +14,8 @@
 | Inventory | [REQ-INVENTORY.md](REQ-INVENTORY.md) | 8 | Product listing, sorting, data integrity, cart badge |
 | Cart | [REQ-CART.md](REQ-CART.md) | 5 | Item add/remove, state persistence, empty state, checkout entry |
 | Checkout | [REQ-CHECKOUT.md](REQ-CHECKOUT.md) | 5 | E2E purchase flow, form validation, cancel & return |
+| API — Users | [REQ-API-USERS.md](REQ-API-USERS.md) | 7 | List / single / create / update / delete / 404 / schema |
+| API — Posts | [REQ-API-POSTS.md](REQ-API-POSTS.md) | 7 | List / single / create / update / delete / filter / schema |
 
 ---
 
@@ -41,3 +43,4 @@ See the full requirements → test traceability matrix at [traceability-matrix.m
 | Playwright + pytest | ✅ 24 test cases — full coverage |
 | Selenium + pytest | ✅ 24 test cases — full coverage |
 | Robot Framework | ✅ 24 test cases — full coverage |
+| pytest + requests (API) | ✅ 14 test cases — full coverage |

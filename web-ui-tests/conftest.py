@@ -66,18 +66,28 @@ def logged_in_page(page: Page) -> Page:
 def _safe_screenshot(page: Page, name: str, full_page: bool = True):
     """Take a screenshot and attach to Allure.  Silently skip if page is closed.
 
-    Before capture, waits for pending network requests + forces a layout/paint
-    cycle so CSS background-images (e.g. cart icon SVG) are composited into the
-    pixel buffer — without this, headless Chromium may snapshot before the CSS
-    background finishes rendering.
+    Before capture:
+
+    1. Wait for pending network requests.
+    2. Scroll to top so fixed-position header elements sit in their natural
+       viewport slot.
+    3. Run a double ``requestAnimationFrame`` round-trip to guarantee the
+       compositor has finished painting.  A plain ``offsetHeight`` / timeout
+       only forces *layout*; CSS background-images on ``::before``
+       pseudo-elements (e.g. the cart SVG icon) need a full paint+composite
+       cycle.  The double-rAF pattern synchronises with the rendering
+       pipeline so the pixel buffer is ready when we read it.
     """
     try:
         try:
             page.wait_for_load_state("networkidle", timeout=5000)
         except Exception:
             pass
-        page.evaluate("() => document.body.offsetHeight")
-        page.wait_for_timeout(300)
+        page.evaluate("window.scrollTo(0, 0)")
+        page.evaluate(
+            "() => new Promise(r => requestAnimationFrame("
+            "    () => requestAnimationFrame(r)))"
+        )
         png = page.screenshot(full_page=full_page, timeout=10000)
         allure.attach(png, name=name, attachment_type=allure.attachment_type.PNG)
     except Exception:
@@ -101,8 +111,11 @@ def pytest_runtest_makereport(item, call):
                     pg.wait_for_load_state("networkidle", timeout=5000)
                 except Exception:
                     pass
-                pg.evaluate("() => document.body.offsetHeight")
-                pg.wait_for_timeout(300)
+                pg.evaluate("window.scrollTo(0, 0)")
+                pg.evaluate(
+                    "() => new Promise(r => requestAnimationFrame("
+                    "    () => requestAnimationFrame(r)))"
+                )
                 pg.screenshot(path=path, full_page=True, timeout=10000)
                 allure.attach.file(path, name="Failure Screenshot",
                                    attachment_type=allure.attachment_type.PNG)

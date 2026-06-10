@@ -1,55 +1,55 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"TC-INV-004 — Each sort criterion returns correct first item.","86","TC-INV-004: Products sort correctly for each sort criterion","tests","Wed Jun 10 10:18:34 CST 2026","passed","Wed Jun 10 10:18:35 CST 2026","","test_inventory","",""
-"TC-LOGIN-006 — Static GUI check (not parametrized — no interaction).","83220","TC-LOGIN-006: Login page renders all required form elements on initial load","tests","Wed Jun 10 10:22:05 CST 2026","passed","Wed Jun 10 10:23:29 CST 2026","","test_login","",""
+"TC-CHK-002..004 — Empty field rejection.","159","TC-CHK-002: Empty first-name field is rejected on checkout","tests","Wed Jun 10 16:40:21 CST 2026","passed","Wed Jun 10 16:40:21 CST 2026","","test_checkout","",""
 "
 Data-driven login test.
 
 Each JSON entry drives one test case.  The *tc* dict carries
 id, title, story, severity, tags, username, password, and
 optionally expected_error (for negative cases).
-","11187","TC-LOGIN-002: Wrong password is rejected with a descriptive error","tests","Wed Jun 10 10:21:06 CST 2026","passed","Wed Jun 10 10:21:18 CST 2026","","test_login","",""
+","17078","TC-LOGIN-005: Locked-out user is denied access","tests","Wed Jun 10 16:50:47 CST 2026","passed","Wed Jun 10 16:51:04 CST 2026","","test_login","",""
+"TC-INV-001..003 — Product listing, data integrity, images.","252","TC-INV-003: Every product tile has a visible image with valid src","tests","Wed Jun 10 16:43:04 CST 2026","passed","Wed Jun 10 16:43:04 CST 2026","","test_inventory","",""
+"TC-INV-001..003 — Product listing, data integrity, images.","53","TC-INV-002: Every product tile has a non-empty name and price > $0","tests","Wed Jun 10 16:42:34 CST 2026","passed","Wed Jun 10 16:42:34 CST 2026","","test_inventory","",""
+"TC-INV-005 — Price (low to high) is numerically correct.","42","TC-INV-005: Price (low to high) sort must be numerically correct","tests","Wed Jun 10 16:44:39 CST 2026","passed","Wed Jun 10 16:44:39 CST 2026","","test_inventory","",""
+"DDT-driven cart tests: display, removal, empty, button.","3372","TC-CART-004: Navigating to cart without adding items shows empty cart","tests","Wed Jun 10 16:39:03 CST 2026","passed","Wed Jun 10 16:39:07 CST 2026","","test_cart","",""
+"TC-INV-008 — Add → Remove returns badge to zero.","95","TC-INV-008: Adding then removing same item resets cart count to zero","tests","Wed Jun 10 16:48:00 CST 2026","passed","Wed Jun 10 16:48:00 CST 2026","","test_inventory","",""
+"Cart badge survives navigating to cart and back.","11363","TC-CART-003: Cart badge count survives navigation away and back","tests","Wed Jun 10 16:39:12 CST 2026","passed","Wed Jun 10 16:39:23 CST 2026","","test_cart","",""
 "
 Data-driven login test.
 
 Each JSON entry drives one test case.  The *tc* dict carries
 id, title, story, severity, tags, username, password, and
 optionally expected_error (for negative cases).
-","14208","TC-LOGIN-004: Empty password triggers 'Password is required' error","tests","Wed Jun 10 10:21:39 CST 2026","passed","Wed Jun 10 10:21:54 CST 2026","","test_login","",""
-"TC-CHK-001 — Full purchase flow.","239","TC-CHK-001: Customer completes a purchase from cart to confirmation","tests","Wed Jun 10 10:15:19 CST 2026","passed","Wed Jun 10 10:15:19 CST 2026","","test_checkout","",""
-"Cart badge survives navigating to cart and back.","21922","TC-CART-003: Cart badge count survives navigation away and back","tests","Wed Jun 10 10:13:46 CST 2026","passed","Wed Jun 10 10:14:08 CST 2026","","test_cart","",""
-"TC-INV-007 — Badge increments with each item added.","96","TC-INV-007: Cart badge increments as items are added","tests","Wed Jun 10 10:20:30 CST 2026","passed","Wed Jun 10 10:20:30 CST 2026","","test_inventory","",""
-"TC-INV-005 — Price (low to high) is numerically correct.","43","TC-INV-005: Price (low to high) sort must be numerically correct","tests","Wed Jun 10 10:18:57 CST 2026","passed","Wed Jun 10 10:18:57 CST 2026","","test_inventory","",""
-"TC-CHK-002..004 — Empty field rejection.","160","TC-CHK-002: Empty first-name field is rejected on checkout","tests","Wed Jun 10 10:15:37 CST 2026","passed","Wed Jun 10 10:15:37 CST 2026","","test_checkout","",""
-"TC-INV-001..003 — Product listing, data integrity, images.","40","TC-INV-001: Inventory page displays exactly 6 products after login","tests","Wed Jun 10 10:16:58 CST 2026","passed","Wed Jun 10 10:16:58 CST 2026","","test_inventory","",""
-"TC-INV-001..003 — Product listing, data integrity, images.","55","TC-INV-002: Every product tile has a non-empty name and price > $0","tests","Wed Jun 10 10:17:28 CST 2026","passed","Wed Jun 10 10:17:28 CST 2026","","test_inventory","",""
-"TC-INV-008 — Add → Remove returns badge to zero.","91","TC-INV-008: Adding then removing same item resets cart count to zero","tests","Wed Jun 10 10:20:56 CST 2026","passed","Wed Jun 10 10:20:56 CST 2026","","test_inventory","",""
-"DDT-driven cart tests: display, removal, empty, button.","30604","TC-CART-001: Cart page displays all items added from inventory","tests","Wed Jun 10 10:12:39 CST 2026","passed","Wed Jun 10 10:13:09 CST 2026","","test_cart","",""
+","117886","TC-LOGIN-002: Wrong password is rejected with a descriptive error","tests","Wed Jun 10 16:48:14 CST 2026","passed","Wed Jun 10 16:50:12 CST 2026","","test_login","",""
+"TC-INV-004 — Each sort criterion returns correct first item.","90","TC-INV-004: Products sort correctly for each sort criterion","tests","Wed Jun 10 16:44:24 CST 2026","passed","Wed Jun 10 16:44:24 CST 2026","","test_inventory","",""
 "
 Data-driven login test.
 
 Each JSON entry drives one test case.  The *tc* dict carries
 id, title, story, severity, tags, username, password, and
 optionally expected_error (for negative cases).
-","11479","TC-LOGIN-005: Locked-out user is denied access","tests","Wed Jun 10 10:21:54 CST 2026","passed","Wed Jun 10 10:22:05 CST 2026","","test_login","",""
-"DDT-driven cart tests: display, removal, empty, button.","27901","TC-CART-004: Navigating to cart without adding items shows empty cart","tests","Wed Jun 10 10:13:18 CST 2026","passed","Wed Jun 10 10:13:46 CST 2026","","test_cart","",""
-"TC-INV-006 — Badge is hidden when cart is empty.","12","TC-INV-006: Cart badge is hidden when no items are in cart","tests","Wed Jun 10 10:19:48 CST 2026","passed","Wed Jun 10 10:19:48 CST 2026","","test_inventory","",""
-"DDT-driven cart tests: display, removal, empty, button.","8032","TC-CART-002: Removing an item decrements count and removes from list","tests","Wed Jun 10 10:13:10 CST 2026","passed","Wed Jun 10 10:13:18 CST 2026","","test_cart","",""
+","8322","TC-LOGIN-001: Valid credentials grant access to the product inventory","tests","Wed Jun 10 16:48:00 CST 2026","passed","Wed Jun 10 16:48:08 CST 2026","","test_login","",""
+"TC-INV-006 — Badge is hidden when cart is empty.","12","TC-INV-006: Cart badge is hidden when no items are in cart","tests","Wed Jun 10 16:45:29 CST 2026","passed","Wed Jun 10 16:45:29 CST 2026","","test_inventory","",""
+"TC-CHK-002..004 — Empty field rejection.","136","TC-CHK-003: Empty last-name field is rejected on checkout","tests","Wed Jun 10 16:41:07 CST 2026","passed","Wed Jun 10 16:41:07 CST 2026","","test_checkout","",""
 "
 Data-driven login test.
 
 Each JSON entry drives one test case.  The *tc* dict carries
 id, title, story, severity, tags, username, password, and
 optionally expected_error (for negative cases).
-","21629","TC-LOGIN-003: Empty username triggers 'Username is required' error","tests","Wed Jun 10 10:21:18 CST 2026","passed","Wed Jun 10 10:21:39 CST 2026","","test_login","",""
-"TC-CHK-002..004 — Empty field rejection.","142","TC-CHK-004: Empty postal-code field is rejected on checkout","tests","Wed Jun 10 10:16:09 CST 2026","passed","Wed Jun 10 10:16:09 CST 2026","","test_checkout","",""
-"TC-CHK-005 — Cancel returns to cart without side effects.","102","TC-CHK-005: Cancel on checkout form returns to cart without changes","tests","Wed Jun 10 10:16:26 CST 2026","passed","Wed Jun 10 10:16:26 CST 2026","","test_checkout","",""
-"TC-CHK-002..004 — Empty field rejection.","156","TC-CHK-003: Empty last-name field is rejected on checkout","tests","Wed Jun 10 10:15:41 CST 2026","passed","Wed Jun 10 10:15:41 CST 2026","","test_checkout","",""
-"TC-INV-001..003 — Product listing, data integrity, images.","241","TC-INV-003: Every product tile has a visible image with valid src","tests","Wed Jun 10 10:18:05 CST 2026","passed","Wed Jun 10 10:18:05 CST 2026","","test_inventory","",""
-"Checkout button is visible and enabled when cart has items.","67331","TC-CART-005: Checkout button is visible and enabled when cart has items","tests","Wed Jun 10 10:14:08 CST 2026","passed","Wed Jun 10 10:15:15 CST 2026","","test_cart","",""
+","15171","TC-LOGIN-004: Empty password triggers 'Password is required' error","tests","Wed Jun 10 16:50:29 CST 2026","passed","Wed Jun 10 16:50:45 CST 2026","","test_login","",""
+"TC-CHK-005 — Cancel returns to cart without side effects.","85","TC-CHK-005: Cancel on checkout form returns to cart without changes","tests","Wed Jun 10 16:41:26 CST 2026","passed","Wed Jun 10 16:41:26 CST 2026","","test_checkout","",""
+"Checkout button is visible and enabled when cart has items.","13691","TC-CART-005: Checkout button is visible and enabled when cart has items","tests","Wed Jun 10 16:39:29 CST 2026","passed","Wed Jun 10 16:39:42 CST 2026","","test_cart","",""
 "
 Data-driven login test.
 
 Each JSON entry drives one test case.  The *tc* dict carries
 id, title, story, severity, tags, username, password, and
 optionally expected_error (for negative cases).
-","10145","TC-LOGIN-001: Valid credentials grant access to the product inventory","tests","Wed Jun 10 10:20:56 CST 2026","passed","Wed Jun 10 10:21:06 CST 2026","","test_login","",""
+","9396","TC-LOGIN-003: Empty username triggers 'Username is required' error","tests","Wed Jun 10 16:50:16 CST 2026","passed","Wed Jun 10 16:50:26 CST 2026","","test_login","",""
+"TC-INV-007 — Badge increments with each item added.","108","TC-INV-007: Cart badge increments as items are added","tests","Wed Jun 10 16:45:53 CST 2026","passed","Wed Jun 10 16:45:53 CST 2026","","test_inventory","",""
+"TC-CHK-001 — Full purchase flow.","253","TC-CHK-001: Customer completes a purchase from cart to confirmation","tests","Wed Jun 10 16:40:07 CST 2026","passed","Wed Jun 10 16:40:07 CST 2026","","test_checkout","",""
+"DDT-driven cart tests: display, removal, empty, button.","28058","TC-CART-001: Cart page displays all items added from inventory","tests","Wed Jun 10 16:38:16 CST 2026","passed","Wed Jun 10 16:38:44 CST 2026","","test_cart","",""
+"TC-LOGIN-006 — Static GUI check (not parametrized — no interaction).","153142","TC-LOGIN-006: Login page renders all required form elements on initial load","tests","Wed Jun 10 16:51:09 CST 2026","passed","Wed Jun 10 16:53:43 CST 2026","","test_login","",""
+"DDT-driven cart tests: display, removal, empty, button.","9128","TC-CART-002: Removing an item decrements count and removes from list","tests","Wed Jun 10 16:38:49 CST 2026","passed","Wed Jun 10 16:38:58 CST 2026","","test_cart","",""
+"TC-CHK-002..004 — Empty field rejection.","150","TC-CHK-004: Empty postal-code field is rejected on checkout","tests","Wed Jun 10 16:41:15 CST 2026","passed","Wed Jun 10 16:41:16 CST 2026","","test_checkout","",""
+"TC-INV-001..003 — Product listing, data integrity, images.","64","TC-INV-001: Inventory page displays exactly 6 products after login","tests","Wed Jun 10 16:41:49 CST 2026","passed","Wed Jun 10 16:41:49 CST 2026","","test_inventory","",""
