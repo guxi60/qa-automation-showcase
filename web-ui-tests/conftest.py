@@ -66,12 +66,23 @@ def logged_in_page(page: Page) -> Page:
 def _safe_screenshot(page: Page, name: str, full_page: bool = True):
     """Take a screenshot and attach to Allure.  Silently skip if page is closed.
 
-    Also captures the ``.primary_header`` element individually — headless
-    Chromium does not reliably composite CSS ``background-image`` on
-    ``::before`` pseudo-elements during a full-page capture, but an
-    element-level screenshot forces the browser to render that specific
-    DOM subtree to a dedicated pixel buffer, which triggers the
-    background-image decode + paint.
+    **Cart icon workaround**
+
+    The cart icon is an external SVG loaded as CSS ``background-image`` on
+    ``.shopping_cart_link`` itself (NOT ``::before``)::
+
+        background-image: url("https://.../cart3x.xxx.svg")
+
+    Headless Chromium's compositor does not deterministically paint CSS
+    background-images — the image decode and paint decisions happen on a
+    separate thread from JS.  ``requestAnimationFrame`` / ``getComputedStyle``
+    / display toggles can influence timing but never guarantee the pixel
+    buffer is ready.
+
+    The fix: extract the SVG URL from computed style, inject a real
+    ``<img>`` child with that URL, and **wait for the <img> to finish
+    loading** before capturing.  Real DOM elements with ``complete``
+    load state are always painted.
     """
     try:
         try:
@@ -79,17 +90,54 @@ def _safe_screenshot(page: Page, name: str, full_page: bool = True):
         except Exception:
             pass
         page.evaluate("window.scrollTo(0, 0)")
+
+        # ── Inject real cart icon <img> ───────────────────────
+        # Extract the SVG URL from computed background-image via string
+        # splitting (avoids regex-in-Python-string-literal escaping hell).
+        page.evaluate("""
+            () => {
+              if (document.querySelector('.qa-cart-icon-fix')) return;
+              const link = document.querySelector('.shopping_cart_link');
+              if (!link) return;
+              const bg = getComputedStyle(link).backgroundImage;
+              if (bg === 'none') return;
+              // bg looks like: url("https://...cart.svg")
+              const start = bg.indexOf('url(');
+              if (start === -1) return;
+              const rest = bg.substring(start + 4).trim();
+              const quote = rest.charAt(0);
+              const url = (quote === '"' || quote === "'")
+                ? rest.substring(1, rest.indexOf(quote, 1))
+                : rest.substring(0, rest.indexOf(')'));
+              if (!url) return;
+              const img = document.createElement('img');
+              img.src = url;
+              img.className = 'qa-cart-icon-fix';
+              img.style.cssText = 'display:inline-block;width:26px;height:26px;vertical-align:middle;margin-right:0.25rem;';
+              link.insertBefore(img, link.firstChild);
+            }
+        """)
+        # Wait for the injected <img> to fully load before capture
+        try:
+            page.wait_for_function(
+                "() => {"
+                "  const i = document.querySelector('.qa-cart-icon-fix');"
+                "  return i && i.complete && i.naturalWidth > 0;"
+                "}",
+                timeout=5000,
+            )
+        except Exception:
+            pass
         page.evaluate(
             "() => new Promise(r => requestAnimationFrame("
             "    () => requestAnimationFrame(r)))"
         )
+
         # ── Full-page screenshot ─────────────────────────────
         png = page.screenshot(full_page=full_page, timeout=10000)
         allure.attach(png, name=name, attachment_type=allure.attachment_type.PNG)
+
         # ── Header element screenshot ────────────────────────
-        # Element-level capture forces headless Chromium to render
-        # the header subtree (including ::before background-images
-        # like the cart SVG icon) to its own pixel buffer.
         hdr = page.locator(".primary_header")
         if hdr.count() > 0:
             hdr_png = hdr.first.screenshot(timeout=5000)
@@ -98,6 +146,14 @@ def _safe_screenshot(page: Page, name: str, full_page: bool = True):
                 name="Header (cart icon + badge)",
                 attachment_type=allure.attachment_type.PNG,
             )
+
+        # ── Remove injected element ──────────────────────────
+        page.evaluate(
+            "() => {"
+            "  const icon = document.querySelector('.qa-cart-icon-fix');"
+            "  if (icon) icon.remove();"
+            "}"
+        )
     except Exception:
         pass
 

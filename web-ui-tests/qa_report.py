@@ -66,8 +66,12 @@ def note(*lines: str):
 def capture(page: "Page", name: str = ""):
     """
     Take a full-page screenshot and attach it to the Allure report.
-    Also captures the ``.primary_header`` element individually as a
-    guaranteed cart-icon + badge reference.
+    Also captures the ``.primary_header`` element individually.
+
+    Injects a real ``<img>`` element to mirror the cart icon's CSS
+    ``background-image`` before capture, then removes it.  This
+    guarantees the icon renders regardless of headless Chromium's
+    compositor timing.
 
     Usage from any test:
 
@@ -76,6 +80,39 @@ def capture(page: "Page", name: str = ""):
     """
     try:
         page.evaluate("window.scrollTo(0, 0)")
+        # Inject real cart icon <img> — see conftest._safe_screenshot() for rationale
+        page.evaluate("""
+            () => {
+              if (document.querySelector('.qa-cart-icon-fix')) return;
+              const link = document.querySelector('.shopping_cart_link');
+              if (!link) return;
+              const bg = getComputedStyle(link).backgroundImage;
+              if (bg === 'none') return;
+              const start = bg.indexOf('url(');
+              if (start === -1) return;
+              const rest = bg.substring(start + 4).trim();
+              const quote = rest.charAt(0);
+              const url = (quote === '"' || quote === "'")
+                ? rest.substring(1, rest.indexOf(quote, 1))
+                : rest.substring(0, rest.indexOf(')'));
+              if (!url) return;
+              const img = document.createElement('img');
+              img.src = url;
+              img.className = 'qa-cart-icon-fix';
+              img.style.cssText = 'display:inline-block;width:26px;height:26px;vertical-align:middle;margin-right:0.25rem;';
+              link.insertBefore(img, link.firstChild);
+            }
+        """)
+        try:
+            page.wait_for_function(
+                "() => {"
+                "  const i = document.querySelector('.qa-cart-icon-fix');"
+                "  return i && i.complete && i.naturalWidth > 0;"
+                "}",
+                timeout=5000,
+            )
+        except Exception:
+            pass
         page.evaluate(
             "() => new Promise(r => requestAnimationFrame("
             "    () => requestAnimationFrame(r)))"
@@ -91,6 +128,7 @@ def capture(page: "Page", name: str = ""):
                 name="Header (cart icon + badge)",
                 attachment_type=allure.attachment_type.PNG,
             )
+        page.evaluate("() => { const i = document.querySelector('.qa-cart-icon-fix'); if (i) i.remove(); }")
         if name:
             print(f"    📷 {name}")
     except Exception:
