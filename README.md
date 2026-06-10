@@ -31,8 +31,18 @@ Mobile Testing:  Maestro
 Performance:     JMeter
 CI/CD:           GitHub Actions
 Lang:            Python 3.x
-Reports:         Allure
+Reports:         Allure  |  [Live Report ↗](https://guxi60.github.io/qa-automation-showcase/#)
 ```
+
+---
+
+## 📊 Live Allure Report
+
+[![Allure Report](https://img.shields.io/badge/Allure-Report-ff69b4?logo=java)](https://guxi60.github.io/qa-automation-showcase/#)
+
+> Frozen snapshot of the latest Playwright run — 24 tests with screenshots, severity, and traceability tags.
+
+Open [**guxi60.github.io/qa-automation-showcase**](https://guxi60.github.io/qa-automation-showcase/#) to browse the report without running anything locally.
 
 ---
 
@@ -71,6 +81,8 @@ qa-automation-showcase/
 ---
 
 ## 🚀 Quick Start
+
+> 💡 **Don't want to install anything?** Browse the [hosted Allure report](https://guxi60.github.io/qa-automation-showcase/#) — frozen snapshot of the latest Playwright run with 24 tests, screenshots, and traceability metadata.
 
 ```bash
 # 1. Clone
