@@ -46,14 +46,14 @@ def page(browser: Browser) -> Page:
     ctx = browser.new_context(viewport={"width": 1280, "height": 720},
                               locale="en-US")
     pg = ctx.new_page()
-    pg.set_default_navigation_timeout(60000)
+    pg.set_default_navigation_timeout(90000)
     yield pg
     ctx.close()
 
 
 @pytest.fixture
 def logged_in_page(page: Page) -> Page:
-    page.goto(BASE_URL)
+    page.goto(BASE_URL, wait_until="domcontentloaded")
     page.fill('[data-test="username"]', "standard_user")
     page.fill('[data-test="password"]', "secret_sauce")
     page.click('[data-test="login-button"]')
@@ -64,99 +64,70 @@ def logged_in_page(page: Page) -> Page:
 # ── Allure: screenshot capture ────────────────────────────────
 
 def _safe_screenshot(page: Page, name: str, full_page: bool = True):
-    """Take a screenshot and attach to Allure.  Silently skip if page is closed.
+    """Take a full-page screenshot and attach to Allure.
 
-    **Cart icon workaround**
-
-    The cart icon is an external SVG loaded as CSS ``background-image`` on
-    ``.shopping_cart_link`` itself (NOT ``::before``)::
-
-        background-image: url("https://.../cart3x.xxx.svg")
-
-    Headless Chromium's compositor does not deterministically paint CSS
-    background-images — the image decode and paint decisions happen on a
-    separate thread from JS.  ``requestAnimationFrame`` / ``getComputedStyle``
-    / display toggles can influence timing but never guarantee the pixel
-    buffer is ready.
-
-    The fix: extract the SVG URL from computed style, inject a real
-    ``<img>`` child with that URL, and **wait for the <img> to finish
-    loading** before capturing.  Real DOM elements with ``complete``
-    load state are always painted.
+    SauceDemo uses a CSS ``background-image`` for the cart icon — this is
+    inherently less reliable than a real ``<img>`` element.  We extract
+    the SVG URL, inject a real ``<img>``, and wait for it to load before
+    capturing.
     """
     try:
-        try:
-            page.wait_for_load_state("networkidle", timeout=5000)
-        except Exception:
-            pass
-        page.evaluate("window.scrollTo(0, 0)")
+        page.wait_for_load_state("networkidle", timeout=8000)
+    except Exception:
+        pass
+    page.evaluate("window.scrollTo(0, 0)")
 
-        # ── Inject real cart icon <img> ───────────────────────
-        # Extract the SVG URL from computed background-image via string
-        # splitting (avoids regex-in-Python-string-literal escaping hell).
-        page.evaluate("""
-            () => {
-              if (document.querySelector('.qa-cart-icon-fix')) return;
-              const link = document.querySelector('.shopping_cart_link');
-              if (!link) return;
-              const bg = getComputedStyle(link).backgroundImage;
-              if (bg === 'none') return;
-              // bg looks like: url("https://...cart.svg")
-              const start = bg.indexOf('url(');
-              if (start === -1) return;
-              const rest = bg.substring(start + 4).trim();
-              const quote = rest.charAt(0);
-              const url = (quote === '"' || quote === "'")
-                ? rest.substring(1, rest.indexOf(quote, 1))
-                : rest.substring(0, rest.indexOf(')'));
-              if (!url) return;
-              const img = document.createElement('img');
-              img.src = url;
-              img.className = 'qa-cart-icon-fix';
-              img.style.cssText = 'display:inline-block;width:26px;height:26px;vertical-align:middle;margin-right:0.25rem;';
-              link.insertBefore(img, link.firstChild);
-            }
-        """)
-        # Wait for the injected <img> to fully load before capture
-        try:
-            page.wait_for_function(
-                "() => {"
-                "  const i = document.querySelector('.qa-cart-icon-fix');"
-                "  return i && i.complete && i.naturalWidth > 0;"
-                "}",
-                timeout=5000,
-            )
-        except Exception:
-            pass
-        page.evaluate(
-            "() => new Promise(r => requestAnimationFrame("
-            "    () => requestAnimationFrame(r)))"
-        )
-
-        # ── Full-page screenshot ─────────────────────────────
-        png = page.screenshot(full_page=full_page, timeout=10000)
-        allure.attach(png, name=name, attachment_type=allure.attachment_type.PNG)
-
-        # ── Header element screenshot ────────────────────────
-        hdr = page.locator(".primary_header")
-        if hdr.count() > 0:
-            hdr_png = hdr.first.screenshot(timeout=5000)
-            allure.attach(
-                hdr_png,
-                name="Header (cart icon + badge)",
-                attachment_type=allure.attachment_type.PNG,
-            )
-
-        # ── Remove injected element ──────────────────────────
-        page.evaluate(
+    # ── Inject real cart icon <img> ───────────────────────────
+    page.evaluate("""
+        () => {
+          if (document.querySelector('.qa-cart-icon-fix')) return;
+          const link = document.querySelector('.shopping_cart_link');
+          if (!link) return;
+          const bg = getComputedStyle(link).backgroundImage;
+          if (bg === 'none') return;
+          const start = bg.indexOf('url(');
+          if (start === -1) return;
+          const rest = bg.substring(start + 4).trim();
+          const quote = rest.charAt(0);
+          const url = (quote === '"' || quote === "'")
+            ? rest.substring(1, rest.indexOf(quote, 1))
+            : rest.substring(0, rest.indexOf(')'));
+          if (!url) return;
+          const img = document.createElement('img');
+          img.src = url;
+          img.className = 'qa-cart-icon-fix';
+          img.style.cssText = 'display:inline-block;width:26px;height:26px;vertical-align:middle;margin-right:0.25rem;';
+          link.insertBefore(img, link.firstChild);
+        }
+    """)
+    try:
+        page.wait_for_function(
             "() => {"
-            "  const icon = document.querySelector('.qa-cart-icon-fix');"
-            "  if (icon) icon.remove();"
-            "}"
+            "  const i = document.querySelector('.qa-cart-icon-fix');"
+            "  return i && i.complete && i.naturalWidth > 0;"
+            "}",
+            timeout=8000,
         )
     except Exception:
         pass
 
+    page.evaluate(
+        "() => new Promise(r => requestAnimationFrame("
+        "    () => requestAnimationFrame(r)))"
+    )
+
+    png = page.screenshot(full_page=full_page, timeout=10000)
+    allure.attach(png, name=name, attachment_type=allure.attachment_type.PNG)
+
+    page.evaluate(
+        "() => {"
+        "  const icon = document.querySelector('.qa-cart-icon-fix');"
+        "  if (icon) icon.remove();"
+        "}"
+    )
+
+
+# ── Allure: per-test hooks ────────────────────────────────────
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
@@ -166,13 +137,12 @@ def pytest_runtest_makereport(item, call):
 
     if report.when == "call" and pg:
         if report.failed:
-            # Always capture on failure (full-page for debugging context)
             SCREENSHOT_DIR.mkdir(exist_ok=True)
             ts = datetime.now().strftime("%Y%m%d_%H%M%S")
             path = str(SCREENSHOT_DIR / f"{item.name}_{ts}.png")
             try:
                 try:
-                    pg.wait_for_load_state("networkidle", timeout=5000)
+                    pg.wait_for_load_state("networkidle", timeout=8000)
                 except Exception:
                     pass
                 pg.evaluate("window.scrollTo(0, 0)")
@@ -186,35 +156,17 @@ def pytest_runtest_makereport(item, call):
             except Exception:
                 pass
         else:
-            # Capture a final-state screenshot for passing tests.
-            # full_page=True forces a full-document composite pass,
-            # which is necessary for CSS background-images on ::before
-            # pseudo-elements (e.g. the cart SVG icon) to render
-            # reliably in headless Chromium.
             _safe_screenshot(pg, "Final State", full_page=True)
 
 
-# ── Allure: step screenshot hook (triggered via --screenshot-on-step) ──
-
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item):
-    """Wrap each test call — if --screenshot-on-step, capture after each allure step.
-
-    We do this by monkey-patching allure.step on the fly so that every step
-    takes a screenshot when it exits.
-    """
     yield
 
 
 # ── Allure: environment info ──────────────────────────────────
 
 def pytest_sessionfinish(session):
-    """Write environment.properties for the Allure report.
-
-    NOTE: Uses plain ASCII ('x' not '×') to avoid encoding issues —
-    Java .properties files use ISO 8859-1 and GBK-written files get
-    mangled on Chinese Windows.
-    """
     env_dir = Path("allure-results")
     env_dir.mkdir(exist_ok=True)
     (env_dir / "environment.properties").write_text(
