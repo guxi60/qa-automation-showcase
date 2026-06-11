@@ -27,7 +27,7 @@ Each framework has its own POM implementation, test cases, and network resilienc
 ```
 Web UI Testing:  Selenium  |  Playwright  |  Robot Framework
 API Testing:     pytest + requests  |  JSON Schema Validation
-Mobile Testing:  Maestro
+
 Performance:     locust
 CI/CD:           GitHub Actions
 Lang:            Python 3.x
@@ -73,7 +73,6 @@ qa-automation-showcase/
 │   ├── tests/                   # API test cases
 │   └── schemas/                 # JSON Schema definitions
 ├── performance/                 # locust performance tests
-├── mobile-tests/                # Maestro mobile tests
 ├── .github/workflows/           # GitHub Actions CI
 └── requirements.txt             # Python dependencies
 ```
@@ -182,7 +181,7 @@ Requirements (REQ-*.md)
 
 **Gu Xiang** | Senior QA Engineer | 15+ years of testing experience
 
-- Proficient in Selenium / Robot Framework / Playwright / Maestro / JMeter
+- Proficient in Selenium / Robot Framework / Playwright / locust
 - Former QA Lead / Scrum Master, leading cross-timezone testing teams
 - Cross-industry delivery experience — from CT medical imaging to Web3 digital wallets
 - Passionate about engineering the intersection of AI + test automation
