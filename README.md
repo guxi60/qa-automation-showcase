@@ -27,7 +27,6 @@ Each framework has its own POM implementation, test cases, and network resilienc
 ```
 Web UI Testing:  Selenium  |  Playwright  |  Robot Framework
 API Testing:     pytest + requests  |  JSON Schema Validation
-
 Performance:     locust
 CI/CD:           GitHub Actions
 Lang:            Python 3.x
@@ -50,31 +49,31 @@ Open [**guxi60.github.io/qa-automation-showcase**](https://guxi60.github.io/qa-a
 
 ```
 qa-automation-showcase/
-├── docs/requirements/            # Requirements specs & traceability matrix
-│   ├── README.md                 # Methodology overview
-│   ├── REQ-AUTH.md               # Authentication requirements (6)
-│   ├── REQ-INVENTORY.md          # Inventory requirements (8)
-│   ├── REQ-CART.md               # Cart requirements (5)
-│   ├── REQ-CHECKOUT.md           # Checkout requirements (5)
-│   └── traceability-matrix.md    # Requirements Traceability Matrix (RTM)
-├── web-ui-tests/                # Playwright + pytest (modern)
-│   ├── pages/                   # Page Object Model
-│   ├── tests/                   # Test cases
-│   ├── test_data/               # Test data (shared with Selenium)
-│   └── conftest.py              # Fixtures & config
-├── selenium-tests/              # Selenium + pytest (classic)
-│   ├── pages/                   # Page Object Model
-│   ├── tests/                   # Test cases
-│   └── conftest.py              # Fixtures & config
-├── robot-tests/                 # Robot Framework (keyword-driven)
-│   ├── resources/               # Shared keywords & page objects
-│   └── tests/                   # .robot test files
-├── api-tests/                   # API tests
-│   ├── tests/                   # API test cases
-│   └── schemas/                 # JSON Schema definitions
-├── performance/                 # locust performance tests
-├── .github/workflows/           # GitHub Actions CI
-└── requirements.txt             # Python dependencies
+├── docs/requirements/                    # Requirements specs & traceability matrix
+│   ├── README.md                         # Methodology overview
+│   ├── REQ-AUTH.md                       # Authentication requirements (6)
+│   ├── REQ-INVENTORY.md                  # Inventory requirements (8)
+│   ├── REQ-CART.md                       # Cart requirements (5)
+│   ├── REQ-CHECKOUT.md                   # Checkout requirements (5)
+│   └── traceability-matrix.md            # Requirements Traceability Matrix (RTM)
+├── web-ui-tests/                         # Playwright + pytest (modern)
+│   ├── pages/                            # Page Object Model
+│   ├── tests/                            # Test cases
+│   ├── test_data/                        # Test data (shared with Selenium)
+│   └── conftest.py                       # Fixtures & config
+├── selenium-tests/                       # Selenium + pytest (classic)
+│   ├── pages/                            # Page Object Model
+│   ├── tests/                            # Test cases
+│   └── conftest.py                       # Fixtures & config
+├── robot-tests/                          # Robot Framework (keyword-driven)
+│   ├── resources/                        # Shared keywords & page objects
+│   └── tests/                            # .robot test files
+├── api-tests/                            # API tests
+│   ├── tests/                            # API test cases
+│   └── schemas/                          # JSON Schema definitions
+├── performance/                          # locust performance tests
+├── .github/workflows/                    # GitHub Actions CI
+└── requirements.txt                      # Python dependencies
 ```
 
 ---
@@ -115,6 +114,10 @@ allure open allure-report
 # 6. Run API tests
 cd api-tests
 pytest -v
+
+# 7. Run performance tests (locust)
+cd ../performance
+locust -f locustfile.py --headless -u 10 -r 2 -t 60s --html report.html
 ```
 
 ---
@@ -129,7 +132,7 @@ pytest -v
 | Checkout E2E (incl. validation) | ✅ (5) | ✅ (5) | ✅ (5) | — | — |
 | User CRUD | — | — | — | ✅ (7) | — |
 | Post CRUD | — | — | — | ✅ (7) | — |
-| Schema validation | — | — | — | ✅ | — |
+| Schema validation | — | — | — | ✅ (embedded) | — |
 | Performance / Load | — | — | — | — | ✅ (5 scenarios) |
 
 ---
