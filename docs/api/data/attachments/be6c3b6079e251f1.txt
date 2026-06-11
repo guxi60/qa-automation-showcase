@@ -1,0 +1,9 @@
+
+  ▸ POST /users
+    ▶ POST https://jsonplaceholder.typicode.com/users
+
+  ▸ Assert HTTP 201
+
+  ▸ Assert echoed fields match submitted payload
+
+  ▸ Assert id is auto-assigned

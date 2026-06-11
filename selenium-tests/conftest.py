@@ -37,13 +37,22 @@ def driver():
     chrome_options.add_argument("--window-size=1280,720")
 
     # Match ChromeDriver version to the bundled Chromium (v147).
-    try:
-        driver_path = ChromeDriverManager(
-            driver_version="147.0.7727.15",
-            chrome_type="chromium",
-        ).install()
-    except Exception:
-        driver_path = ChromeDriverManager().install()
+    # Prefer cached binary to avoid webdriver_manager connectivity issues.
+    _cached = list(
+        (Path(os.environ.get("USERPROFILE", "")) / ".wdm" / "drivers" / "chromedriver" / "win64")
+        .glob("147*/chromedriver-win64/chromedriver.exe"),
+    )
+    if _cached:
+        driver_path = str(_cached[0])
+        print(f"Using cached ChromeDriver: {driver_path}")
+    else:
+        try:
+            driver_path = ChromeDriverManager(
+                driver_version="147.0.7727.15",
+                chrome_type="chromium",
+            ).install()
+        except Exception:
+            driver_path = ChromeDriverManager().install()
 
     driver = webdriver.Chrome(
         service=Service(driver_path),

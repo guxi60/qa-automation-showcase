@@ -1,0 +1,9 @@
+
+  ▸ Navigate to SauceDemo login page
+    ▶ Opened https://www.saucedemo.com/
+
+  ▸ Submit credentials  |  user='locked_out_user'
+    ▶ Filled username='locked_out_user'  password=***  → clicked [Login]
+
+  ▸ Verify error message contains 'locked out'
+    · Displayed: 'Epic sadface: Sorry, this user has been locked out.'

@@ -1,0 +1,7 @@
+
+  ▸ GET /posts
+    ▶ GET https://jsonplaceholder.typicode.com/posts?userId=1
+
+  ▸ Assert HTTP 200
+
+  ▸ Assert every post.userId == 1

@@ -1,0 +1,9 @@
+
+  ▸ GET /posts
+    ▶ GET https://jsonplaceholder.typicode.com/posts
+
+  ▸ Assert HTTP 200
+
+  ▸ Assert list of 100 posts
+
+  ▸ Assert every post has required fields

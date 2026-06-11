@@ -1,0 +1,7 @@
+
+  ▸ PUT /users/1
+    ▶ PUT https://jsonplaceholder.typicode.com/users/1
+
+  ▸ Assert HTTP 200
+
+  ▸ Assert response reflects submitted update

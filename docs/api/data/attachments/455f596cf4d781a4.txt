@@ -1,0 +1,35 @@
+POST https://jsonplaceholder.typicode.com/users
+
+Headers:
+{
+  "User-Agent": "qa-automation-showcase/1.0 (API test suite)",
+  "Accept-Encoding": "gzip, deflate, br, zstd",
+  "Accept": "*/*",
+  "Connection": "keep-alive",
+  "Content-Length": "383",
+  "Content-Type": "application/json"
+}
+
+Body:
+{
+  "name": "Gu Xiang",
+  "username": "guxi60",
+  "email": "guxi60@example.com",
+  "address": {
+    "street": "QA Lane",
+    "suite": "Suite 42",
+    "city": "Shanghai",
+    "zipcode": "200000",
+    "geo": {
+      "lat": "31.2304",
+      "lng": "121.4737"
+    }
+  },
+  "phone": "+86-21-1234-5678",
+  "website": "github.com/guxi60",
+  "company": {
+    "name": "QA Automation Inc.",
+    "catchPhrase": "Quality at speed",
+    "bs": "automate everything"
+  }
+}

@@ -1,0 +1,6 @@
+
+  ▸ DELETE /posts/1
+    ▶ DELETE https://jsonplaceholder.typicode.com/posts/1
+
+  ▸ Assert HTTP 200
+    · DELETE returned 200 OK (JSONPlaceholder convention)

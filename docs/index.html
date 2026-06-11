@@ -1,34 +1,73 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="en">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>Allure Report</title>
-    <link rel="icon" href="favicon.ico">
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <link rel="stylesheet" type="text/css" href="plugin/screen-diff/styles.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QA Automation Showcase — Reports</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+         background: #f5f7fa; color: #333; line-height: 1.6; }
+  .container { max-width: 900px; margin: 0 auto; padding: 3rem 1.5rem; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
+  .sub { color: #666; margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+          gap: 1.25rem; }
+  .card { background: #fff; border-radius: 10px; padding: 1.5rem; box-shadow: 0 1px 4px rgba(0,0,0,.08);
+          transition: box-shadow .15s; text-decoration: none; color: inherit; display: block; }
+  .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+  .card h2 { font-size: 1.1rem; margin-bottom: 0.4rem; }
+  .card .tech { color: #888; font-size: 0.85rem; }
+  .card .stat { margin-top: 0.6rem; font-size: 0.9rem; color: #555; }
+  .tag { display: inline-block; background: #e8f0fe; color: #1a73e8; padding: 0.15rem 0.5rem;
+         border-radius: 4px; font-size: 0.75rem; margin-right: 0.3rem; }
+  footer { margin-top: 3rem; color: #aaa; font-size: 0.8rem; text-align: center; }
+</style>
 </head>
 <body>
-    <div id="alert"></div>
-    <div id="content">
-        <span class="spinner">
-            <span class="spinner__circle"></span>
-        </span>
-    </div>
-    <div id="popup"></div>
-    <script src="app.js"></script>
-    <script src="plugin/behaviors/index.js"></script>
-    <script src="plugin/packages/index.js"></script>
-    <script src="plugin/screen-diff/index.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FVWC4GKEYS"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-FVWC4GKEYS', {
-          'allureVersion': '2.34.0',
-          'reportUuid': 'b10a298c-b664-438e-b201-ebb2dff28297',
-          'single_file': false
-        });
-    </script>
+<div class="container">
+  <h1>QA Automation Showcase — Test Reports</h1>
+  <p class="sub">Five frameworks, one project.  <a href="https://github.com/guxi60/qa-automation-showcase">Source on GitHub ↗</a></p>
+
+  <div class="grid">
+
+    <a class="card" href="playwright/">
+      <h2>Playwright + pytest</h2>
+      <div class="tech">Web UI · Chromium · Allure</div>
+      <div class="stat"><span class="tag">24 tests</span> Screenshots + traceability</div>
+    </a>
+
+    <a class="card" href="selenium/">
+      <h2>Selenium + pytest</h2>
+      <div class="tech">Web UI · Chrome · Allure</div>
+      <div class="stat"><span class="tag">24 tests</span> Screenshots + traceability</div>
+    </a>
+
+    <a class="card" href="robot/">
+      <h2>Robot Framework</h2>
+      <div class="tech">Web UI · Keyword-driven · Allure</div>
+      <div class="stat"><span class="tag">24 tests</span> BDD-style keyword cases</div>
+    </a>
+
+    <a class="card" href="api/">
+      <h2>pytest + requests (API)</h2>
+      <div class="tech">REST · JSON Schema · Allure</div>
+      <div class="stat"><span class="tag">14 tests</span> Request / response details</div>
+    </a>
+
+    <a class="card" href="perf/">
+      <h2>locust (Performance)</h2>
+      <div class="tech">Load testing · locust · HTML</div>
+      <div class="stat"><span class="tag">5 scenarios</span> RPS · P95 latency</div>
+    </a>
+
+  </div>
+
+  <footer>
+    <p>Frozen snapshot — regenerated periodically.
+    System under test: <a href="https://www.saucedemo.com/">SauceDemo</a> (UI) +
+    <a href="https://jsonplaceholder.typicode.com/">JSONPlaceholder</a> (API / Perf).</p>
+  </footer>
+</div>
 </body>
 </html>

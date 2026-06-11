@@ -1,0 +1,36 @@
+PUT https://jsonplaceholder.typicode.com/users/1
+
+Headers:
+{
+  "User-Agent": "qa-automation-showcase/1.0 (API test suite)",
+  "Accept-Encoding": "gzip, deflate, br, zstd",
+  "Accept": "*/*",
+  "Connection": "keep-alive",
+  "Content-Length": "400",
+  "Content-Type": "application/json"
+}
+
+Body:
+{
+  "id": 1,
+  "name": "Updated Name",
+  "username": "updated_user",
+  "email": "updated@example.com",
+  "address": {
+    "street": "New Street",
+    "suite": "Apt. 1",
+    "city": "Beijing",
+    "zipcode": "100000",
+    "geo": {
+      "lat": "39.9042",
+      "lng": "116.4074"
+    }
+  },
+  "phone": "+86-10-0000-0000",
+  "website": "updated.example.com",
+  "company": {
+    "name": "Updated Corp.",
+    "catchPhrase": "Better every day",
+    "bs": "continuous delivery"
+  }
+}

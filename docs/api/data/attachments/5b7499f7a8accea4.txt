@@ -1,0 +1,8 @@
+
+  ▸ GET /posts
+    ▶ GET https://jsonplaceholder.typicode.com/posts
+
+  ▸ Assert HTTP 200
+
+  ▸ Validate each of 100 posts against schema
+    · All 100 posts passed schema validation

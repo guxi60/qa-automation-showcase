@@ -1,0 +1,12 @@
+GET https://jsonplaceholder.typicode.com/posts/1
+
+Headers:
+{
+  "User-Agent": "qa-automation-showcase/1.0 (API test suite)",
+  "Accept-Encoding": "gzip, deflate, br, zstd",
+  "Accept": "*/*",
+  "Connection": "keep-alive"
+}
+
+Body:
+(no body)

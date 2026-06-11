@@ -1,0 +1,6 @@
+
+  ▸ GET /users/999
+    ▶ GET https://jsonplaceholder.typicode.com/users/999
+
+  ▸ Assert HTTP 404
+    · Confirmed: /users/999 returns 404 as expected

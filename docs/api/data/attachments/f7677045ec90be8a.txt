@@ -1,0 +1,8 @@
+
+  ▸ GET /users
+    ▶ GET https://jsonplaceholder.typicode.com/users
+
+  ▸ Assert HTTP 200
+
+  ▸ Validate each of 10 users against schema
+    · All 10 users passed schema validation

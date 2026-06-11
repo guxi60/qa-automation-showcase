@@ -1,0 +1,1 @@
+[{"values":["https://jsonplaceholder.typicode.com"],"name":"API.Base.URL"},{"values":["0.6s"],"name":"API.Rate.Limit.Interval"},{"values":["Draft 7"],"name":"Schema.Draft"},{"values":["Python 3"],"name":"Language"},{"values":["pytest + requests + jsonschema"],"name":"Framework"}]

@@ -1,0 +1,13 @@
+DELETE https://jsonplaceholder.typicode.com/posts/1
+
+Headers:
+{
+  "User-Agent": "qa-automation-showcase/1.0 (API test suite)",
+  "Accept-Encoding": "gzip, deflate, br, zstd",
+  "Accept": "*/*",
+  "Connection": "keep-alive",
+  "Content-Length": "0"
+}
+
+Body:
+(no body)

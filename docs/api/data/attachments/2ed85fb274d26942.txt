@@ -1,0 +1,9 @@
+
+  ▸ GET /users
+    ▶ GET https://jsonplaceholder.typicode.com/users
+
+  ▸ Assert HTTP 200
+
+  ▸ Assert list of 10 users
+
+  ▸ Assert every user has required fields

@@ -1,0 +1,9 @@
+
+  ▸ GET /posts/1
+    ▶ GET https://jsonplaceholder.typicode.com/posts/1
+
+  ▸ Assert HTTP 200
+
+  ▸ Validate response against Post JSON Schema
+
+  ▸ Assert id == 1

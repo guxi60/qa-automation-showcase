@@ -15,7 +15,16 @@ from webdriver_manager.chrome import ChromeDriverManager
 # ── ChromeDriver ────────────────────────────────────────────────
 
 def _get_chromedriver_path() -> str:
-    """Download and cache the correct ChromeDriver for our Chromium."""
+    """Return the path to a cached ChromeDriver binary matching our Chromium.
+
+    Uses cached v147 driver to avoid webdriver_manager connectivity issues.
+    """
+    _cached = list(
+        (Path(os.environ.get("USERPROFILE", "")) / ".wdm" / "drivers" / "chromedriver" / "win64")
+        .glob("147*/chromedriver-win64/chromedriver.exe"),
+    )
+    if _cached:
+        return str(_cached[0])
     try:
         return ChromeDriverManager(
             driver_version="147.0.7727.15",
