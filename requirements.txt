@@ -18,6 +18,9 @@ allure-robotframework>=2.13.0
 requests>=2.31.0
 jsonschema>=4.20.0
 
+# Performance Testing
+locust>=2.20.0
+
 # Utilities
 python-dotenv>=1.0.0
 PyYAML>=6.0

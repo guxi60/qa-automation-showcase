@@ -28,7 +28,7 @@ Each framework has its own POM implementation, test cases, and network resilienc
 Web UI Testing:  Selenium  |  Playwright  |  Robot Framework
 API Testing:     pytest + requests  |  JSON Schema Validation
 Mobile Testing:  Maestro
-Performance:     JMeter
+Performance:     locust
 CI/CD:           GitHub Actions
 Lang:            Python 3.x
 Reports:         Allure  |  [Live Report ↗](https://guxi60.github.io/qa-automation-showcase/#)
@@ -72,7 +72,7 @@ qa-automation-showcase/
 ├── api-tests/                   # API tests
 │   ├── tests/                   # API test cases
 │   └── schemas/                 # JSON Schema definitions
-├── performance/                 # JMeter performance tests
+├── performance/                 # locust performance tests
 ├── mobile-tests/                # Maestro mobile tests
 ├── .github/workflows/           # GitHub Actions CI
 └── requirements.txt             # Python dependencies
@@ -122,16 +122,16 @@ pytest -v
 
 ## 📊 Test Coverage Matrix
 
-| Feature | Playwright | Selenium | Robot Framework | API |
-|---------|-----------|----------|-----------------|-----|
-| Login (happy/negative/boundary) | ✅ (6 cases) | ✅ (6 cases) | ✅ (6 cases) | — |
-| Inventory (sort/display/images) | ✅ (8 cases) | ✅ (8 cases) | ✅ (8 cases) | — |
-| Cart (add/remove/persistence) | ✅ (5 cases) | ✅ (5 cases) | ✅ (5 cases) | — |
-| Checkout E2E (incl. validation) | ✅ (5 cases) | ✅ (5 cases) | ✅ (5 cases) | — |
-| User CRUD | — | — | — | ✅ (7 cases) |
-| Post CRUD | — | — | — | ✅ (7 cases) |
-| Schema validation | — | — | — | ✅ (included above) |
-| Performance / Load | — | — | — | — |
+| Feature | Playwright | Selenium | Robot Framework | API | Performance |
+|---------|-----------|----------|-----------------|-----|-------------|
+| Login (happy/negative/boundary) | ✅ (6) | ✅ (6) | ✅ (6) | — | — |
+| Inventory (sort/display/images) | ✅ (8) | ✅ (8) | ✅ (8) | — | — |
+| Cart (add/remove/persistence) | ✅ (5) | ✅ (5) | ✅ (5) | — | — |
+| Checkout E2E (incl. validation) | ✅ (5) | ✅ (5) | ✅ (5) | — | — |
+| User CRUD | — | — | — | ✅ (7) | — |
+| Post CRUD | — | — | — | ✅ (7) | — |
+| Schema validation | — | — | — | ✅ | — |
+| Performance / Load | — | — | — | — | ✅ (5 scenarios) |
 
 ---
 
@@ -151,6 +151,7 @@ Each module has a corresponding requirements specification in [docs/requirements
 | [REQ-CHECKOUT.md](docs/requirements/REQ-CHECKOUT.md) | 5 | E2E purchase flow, form validation |
 | [REQ-API-USERS.md](docs/requirements/REQ-API-USERS.md) | 7 | User CRUD — list / single / create / update / delete / 404 / schema |
 | [REQ-API-POSTS.md](docs/requirements/REQ-API-POSTS.md) | 7 | Post CRUD — list / single / create / update / delete / filter / schema |
+| [REQ-PERF.md](docs/requirements/REQ-PERF.md) | 5 | Load & stress baseline — throughput, latency, report |
 
 ### Requirements Traceability Matrix
 
@@ -161,7 +162,8 @@ Requirements (REQ-*.md)
   ├── Web UI: Test Data (test_data/*.yaml ↔ *.json) → Playwright ✅ (24)
   │                                                   → Selenium    ✅ (24)
   │                                                   → Robot       ✅ (24)
-  └── API:    Test Data (test_data/*.yaml)           → pytest+requests ✅ (14)
+  ├── API:    Test Data (test_data/*.yaml)           → pytest+requests ✅ (14)
+  └── Perf:   locustfile.py                          → locust ✅ (5 scenarios)
 ```
 
 ---

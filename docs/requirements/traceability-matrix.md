@@ -8,15 +8,16 @@
 
 ## Coverage Overview
 
-| Module | Reqs | Playwright | Selenium | Robot Framework | API |
-|--------|------|------------|----------|-----------------|-----|
-| AUTH | 6 | 6/6 ✅ | 6/6 ✅ | 6/6 ✅ | — |
-| INVENTORY | 8 | 8/8 ✅ | 8/8 ✅ | 8/8 ✅ | — |
-| CART | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — |
-| CHECKOUT | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — |
-| API-USERS | 7 | — | — | — | 7/7 ✅ |
-| API-POSTS | 7 | — | — | — | 7/7 ✅ |
-| **Total** | **38** | **24/24 (100%)** | **24/24 (100%)** | **24/24 (100%)** | **14/14 (100%)** |
+| Module | Reqs | Playwright | Selenium | Robot Framework | API | Performance |
+|--------|------|------------|----------|-----------------|-----|-------------|
+| AUTH | 6 | 6/6 ✅ | 6/6 ✅ | 6/6 ✅ | — | — |
+| INVENTORY | 8 | 8/8 ✅ | 8/8 ✅ | 8/8 ✅ | — | — |
+| CART | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — | — |
+| CHECKOUT | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — | — |
+| API-USERS | 7 | — | — | — | 7/7 ✅ | — |
+| API-POSTS | 7 | — | — | — | 7/7 ✅ | — |
+| PERF | 5 | — | — | — | — | 5/5 ✅ |
+| **Total** | **43** | **24/24 (100%)** | **24/24 (100%)** | **24/24 (100%)** | **14/14 (100%)** | **5/5 (100%)** |
 
 ---
 
@@ -90,7 +91,18 @@
 | [REQ-API-POSTS-006](REQ-API-POSTS.md#req-api-posts-006-filter-posts-by-user-id) | Filter by userId | NORMAL | TC-API-POSTS-006 ✅ |
 | [REQ-API-POSTS-007](REQ-API-POSTS.md#req-api-posts-007-batch-json-schema-validation-across-all-posts) | Batch schema | BLOCKER | TC-API-POSTS-007 ✅ |
 
+### PERF — Performance & Load
+
+| Req ID | Description | Priority | Performance |
+|--------|------------|----------|-------------|
+| [REQ-PERF-001](REQ-PERF.md#req-perf-001-baseline-throughput--10-concurrent-users-sustain--5-rps-with-zero-failures) | Baseline 10 users, 0 % failures | CRITICAL | TC-PERF-001 ✅ |
+| [REQ-PERF-002](REQ-PERF.md#req-perf-002-read-latency-p95--1000-ms) | Read latency P95 ≤ 1000 ms | CRITICAL | TC-PERF-002 ✅ |
+| [REQ-PERF-003](REQ-PERF.md#req-perf-003-write-latency-p95--2000-ms) | Write latency P95 ≤ 2000 ms | NORMAL | TC-PERF-003 ✅ |
+| [REQ-PERF-004](REQ-PERF.md#req-perf-004-no-degradation-at-2-baseline-load) | 2× baseline stress test | NORMAL | TC-PERF-004 ✅ |
+| [REQ-PERF-005](REQ-PERF.md#req-perf-005-test-report-is-human-readable-and-ci-friendly) | HTML report, CI-friendly | NORMAL | TC-PERF-005 ✅ |
+
 ---
+
 
 ## TDD Closed-Loop Verification
 
