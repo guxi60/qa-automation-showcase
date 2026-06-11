@@ -19,6 +19,7 @@ test-results/
 *.html
 !web-ui-tests/templates/*.html
 !docs/*.html
+!docs/*/index.html
 report/
 results/
 output/
