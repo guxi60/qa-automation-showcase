@@ -35,13 +35,21 @@ Reports:         Allure  |  [Live Report ↗](https://guxi60.github.io/qa-automa
 
 ---
 
-## 📊 Live Allure Report
+## 📊 Live Test Reports
 
-[![Allure Report](https://img.shields.io/badge/Allure-Report-ff69b4?logo=java)](https://guxi60.github.io/qa-automation-showcase/#)
+[![Reports Portal](https://img.shields.io/badge/Allure-Report-ff69b4?logo=java)](https://guxi60.github.io/qa-automation-showcase/#)
 
-> Frozen snapshot of the latest Playwright run — 24 tests with screenshots, severity, and traceability tags.
+> **Five frameworks, one report portal.** All reports are frozen snapshots regenerated periodically.
 
-Open [**guxi60.github.io/qa-automation-showcase**](https://guxi60.github.io/qa-automation-showcase/#) to browse the report without running anything locally.
+| Framework | Report |
+|-----------|--------|
+| Playwright + pytest | [Allure Report ↗](https://guxi60.github.io/qa-automation-showcase/playwright/) |
+| Selenium + pytest | [Allure Report ↗](https://guxi60.github.io/qa-automation-showcase/selenium/) |
+| Robot Framework | [Allure Report ↗](https://guxi60.github.io/qa-automation-showcase/robot/) |
+| pytest + requests (API) | [Allure Report ↗](https://guxi60.github.io/qa-automation-showcase/api/) |
+| locust (Performance) | [HTML Report ↗](https://guxi60.github.io/qa-automation-showcase/perf/) |
+
+Open the [**report portal**](https://guxi60.github.io/qa-automation-showcase/#) to browse all five reports without running anything locally.
 
 ---
 
