@@ -11,6 +11,15 @@ def _js_click(driver, element) -> None:
     driver.execute_script("arguments[0].click();", element)
 
 
+def _js_input(driver, element, text: str) -> None:
+    """Fill an input via JavaScript — reliable on Linux headless WebDriver."""
+    driver.execute_script(
+        "arguments[0].value=''; arguments[0].value=arguments[1];"
+        "arguments[0].dispatchEvent(new Event('input',{bubbles:true}));",
+        element, text,
+    )
+
+
 class LoginPage:
     """Page object for https://www.saucedemo.com/ login."""
 
@@ -54,10 +63,8 @@ class LoginPage:
 
     def login(self, username: str, password: str) -> None:
         """Fill credentials and click login.  Waits for the server response."""
-        self.username_input.clear()
-        self.username_input.send_keys(username)
-        self.password_input.clear()
-        self.password_input.send_keys(password)
+        _js_input(self.driver, self.username_input, username)
+        _js_input(self.driver, self.password_input, password)
         _js_click(self.driver, self.login_button)
         # Wait for either a successful redirect or an error message
         try:

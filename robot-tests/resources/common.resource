@@ -12,18 +12,18 @@ ${TIMEOUT}                20s
 ${RETRY_INTERVAL}         500ms
 
 *** Keywords ***
-Start Test Session
-    [Documentation]    Open browser and set window size. Called as Suite Setup.
+Start Browser
+    [Documentation]    Open a fresh browser instance. Called as Test Setup.
     Open Browser    ${BASE_URL}    Chrome    options=${CHROME_OPTIONS}    executable_path=${CHROMEDRIVER_PATH}
     Set Window Size    1280    720
     Set Selenium Timeout    ${TIMEOUT}
     Set Selenium Implicit Wait    10s
     Register Keyword To Run On Failure    Capture Screenshot On Failure
 
-End Test Session
-    [Documentation]    Close browser and allow driver process to terminate.
+Close Browser
+    [Documentation]    Close browser. Called as Test Teardown.
     Close All Browsers
-    Sleep    2s
+    Sleep    1s
 
 Capture Screenshot On Failure
     [Documentation]    Capture screenshot on failure (registered as run-on-failure).
@@ -44,3 +44,9 @@ JS Click Element
     [Arguments]    ${locator}
     ${el}=    Get WebElement    ${locator}
     Execute Javascript    arguments[0].click();    ARGUMENTS    ${el}
+
+JS Input Text
+    [Documentation]    Clear & fill an input via JavaScript (reliable on headless Linux).
+    [Arguments]    ${locator}    ${text}
+    ${el}=    Get WebElement    ${locator}
+    Execute Javascript    arguments[0].value=''; arguments[0].value=arguments[1]; arguments[0].dispatchEvent(new Event('input',{bubbles:true}));    ARGUMENTS    ${el}    ${text}

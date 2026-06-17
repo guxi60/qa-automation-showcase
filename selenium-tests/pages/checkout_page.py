@@ -17,6 +17,15 @@ def _js_click(driver, element) -> None:
     driver.execute_script("arguments[0].click();", element)
 
 
+def _js_input(driver, element, text: str) -> None:
+    """Fill an input via JavaScript — reliable on Linux headless WebDriver."""
+    driver.execute_script(
+        "arguments[0].value=''; arguments[0].value=arguments[1];"
+        "arguments[0].dispatchEvent(new Event('input',{bubbles:true}));",
+        element, text,
+    )
+
+
 class CheckoutStepOnePage:
     """Checkout: Your Information form."""
 
@@ -56,12 +65,9 @@ class CheckoutStepOnePage:
 
     def fill_info(self, first: str, last: str, postal: str) -> None:
         """Fill in all checkout fields."""
-        self.first_name.clear()
-        self.first_name.send_keys(first)
-        self.last_name.clear()
-        self.last_name.send_keys(last)
-        self.postal_code.clear()
-        self.postal_code.send_keys(postal)
+        _js_input(self.driver, self.first_name, first)
+        _js_input(self.driver, self.last_name, last)
+        _js_input(self.driver, self.postal_code, postal)
 
     def continue_checkout(self) -> None:
         """Click Continue. Does NOT wait — caller should wait based on context."""

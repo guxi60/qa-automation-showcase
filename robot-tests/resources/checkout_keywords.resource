@@ -5,9 +5,9 @@ Resource    common.resource
 Fill Checkout Info
     [Documentation]    Fill in all three checkout fields.
     [Arguments]    ${first}    ${last}    ${postal}
-    Input Text    css=[data-test="firstName"]    ${first}
-    Input Text    css=[data-test="lastName"]    ${last}
-    Input Text    css=[data-test="postalCode"]    ${postal}
+    JS Input Text    css=[data-test="firstName"]    ${first}
+    JS Input Text    css=[data-test="lastName"]    ${last}
+    JS Input Text    css=[data-test="postalCode"]    ${postal}
 
 Click Continue
     [Documentation]    Click Continue button on checkout Step One.

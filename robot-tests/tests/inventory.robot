@@ -1,7 +1,6 @@
 *** Settings ***
-Suite Setup       Start Test Session
-Suite Teardown    End Test Session
-Test Setup        Clear Session State
+Test Setup        Start Browser
+Test Teardown     Close Browser
 Resource          ../resources/login_keywords.resource
 Resource          ../resources/inventory_keywords.resource
 
