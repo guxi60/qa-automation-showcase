@@ -1,6 +1,0 @@
-
-  ▸ Add 'Sauce Labs Backpack' (expect badge = 1)
-    ▶ Added 'Sauce Labs Backpack' — badge now 1
-
-  ▸ Add 'Sauce Labs Bike Light' (expect badge = 2)
-    ▶ Added 'Sauce Labs Bike Light' — badge now 2

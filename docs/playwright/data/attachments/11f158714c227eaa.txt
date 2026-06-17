@@ -1,7 +1,0 @@
-
-  ▸ Navigate to checkout form
-
-  ▸ Submit form  |  first=''  last='Xiang'  postal='201318'
-
-  ▸ Verify error contains 'First Name'
-    · Displayed: 'Error: First Name is required'

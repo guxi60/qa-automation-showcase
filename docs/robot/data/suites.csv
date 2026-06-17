@@ -1,25 +1,75 @@
 "DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
-"","2008","TC-CHK-002: Empty First Name Rejected On Checkout","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
-"Cart page should display all items added from inventory.","2015","TC-CART-001: Items Added From Inventory Appear In Cart","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
-"","2006","TC-LOGIN-004: Empty Password Is Rejected","","2026-06-17","failed","2026-06-17","Login","Tests","",""
-"Removing one item from cart updates count and listing.","2006","TC-CART-002: Removing An Item Decrements Count And Removes From List","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
-"","2006","TC-LOGIN-002: Wrong Password Is Rejected","","2026-06-17","failed","2026-06-17","Login","Tests","",""
-"Checkout button should be present when cart has items.","2007","TC-CART-005: Checkout Button Is Visible And Enabled","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
-"Full E2E purchase flow: cart → checkout → finish → confirmation.","2006","TC-CHK-001: Complete Purchase From Cart To Confirmation","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
-"","2006","TC-LOGIN-003: Empty Username Is Rejected","","2026-06-17","failed","2026-06-17","Login","Tests","",""
-"Badge should not appear when no items added.","2006","TC-INV-006: Cart Badge Is Hidden When Cart Is Empty","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
-"","2007","TC-CHK-004: Empty Postal Code Rejected On Checkout","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
-"Login with valid credentials should redirect to inventory.","2006","TC-LOGIN-001: Valid Credentials Grant Access","","2026-06-17","failed","2026-06-17","Login","Tests","",""
-"Each sort option should return correct first product.","2006","TC-INV-004: Products Sort Correctly By Each Criterion","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
-"","2007","TC-CHK-003: Empty Last Name Rejected On Checkout","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
-"Badge count should increase with each added item.","2007","TC-INV-007: Cart Badge Increments As Items Are Added","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
-"Each product tile image must be visible with valid src.","2006","TC-INV-003: Every Product Image Has Valid Source","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
-"Navigating to cart without adding items shows empty cart.","2007","TC-CART-004: Empty Cart Shows Zero Items","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
-"Adding then removing the same item returns badge to 0.","2006","TC-INV-008: Add Then Remove Resets Cart Badge To Zero","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
-"Cancel button returns to cart page without side effects.","2006","TC-CHK-005: Cancel On Checkout Returns To Cart","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
-"Each product tile must have name and price > $0.","2007","TC-INV-002: Every Product Has Non-Empty Name And Positive Price","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
-"After login, inventory page shows 6 products with Products title.","2007","TC-INV-001: Inventory Displays Exactly 6 Products After Login","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
-"All form controls must be visible on initial load.","2007","TC-LOGIN-006: Login Page Renders Required Elements","","2026-06-17","failed","2026-06-17","Login","Tests","",""
-"Prices must be in non-decreasing order.","2006","TC-INV-005: Price Low-To-High Sort Is Numerically Correct","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
-"Cart badge persists across page navigation.","2007","TC-CART-003: Cart Badge Survives Navigation Away And Back","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
-"","2007","TC-LOGIN-005: Locked-Out User Is Denied","","2026-06-17","failed","2026-06-17","Login","Tests","",""
+"Given the user added N items from the Inventory
+When navigating to the Cart page
+Then the cart displays N items with names matching those added","2015","TC-CART-001: Items Added From Inventory Appear In Cart","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
+"Given the cart has 2 items
+When clicking Remove on 1 of them
+Then the item count drops to 1 and the removed item is no longer in the list","2006","TC-CART-002: Removing An Item Decrements Count And Removes From List","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
+"Given the cart has items
+When viewing the checkout button
+Then the button is visible and enabled","2006","TC-CART-005: Checkout Button Is Visible And Enabled","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
+"Given the user visits the login page
+When the page finishes loading
+Then the username input, password input, and Login button are all visible,
+and the button reads ""Login""","2006","TC-LOGIN-006: Login Page Renders Required Elements","","2026-06-17","failed","2026-06-17","Login","Tests","",""
+"Given the user has just logged in without adding items
+When navigating to the Cart page
+Then the cart is empty (item count = 0)","2006","TC-CART-004: Empty Cart Shows Zero Items","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
+"Given the user is on the checkout form
+When Last Name is empty and Continue is clicked
+Then an error containing ""Last Name"" is displayed","2006","TC-CHK-003: Empty Last Name Rejected On Checkout","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
+"Given the user is on the login page
+When the username is empty and password is non-empty, then click Login
+Then the error ""Username is required"" is displayed","2006","TC-LOGIN-003: Empty Username Is Rejected","","2026-06-17","failed","2026-06-17","Login","Tests","",""
+"Given the user is logged in
+When they land on the Inventory page
+Then 6 products are displayed with the title ""Products""","2006","TC-INV-001: Inventory Displays Exactly 6 Products After Login","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
+"Given the user is on the login page
+When they enter a correct username and password and click Login
+Then the page redirects to /inventory.html, displaying the ""Products"" title","2007","TC-LOGIN-001: Valid Credentials Grant Access","","2026-06-17","failed","2026-06-17","Login","Tests","",""
+"Given the user is on the login page
+When the username is non-empty and password is empty, then click Login
+Then the error ""Password is required"" is displayed","2006","TC-LOGIN-004: Empty Password Is Rejected","","2026-06-17","failed","2026-06-17","Login","Tests","",""
+"Given the user is on the checkout form
+When they click Cancel (without filling any fields)
+Then they are returned to the cart page with no side effects","2007","TC-CHK-005: Cancel On Checkout Returns To Cart","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
+"Given the user is on the checkout form
+When First Name is empty and Continue is clicked
+Then an error containing ""First Name"" is displayed","2006","TC-CHK-002: Empty First Name Rejected On Checkout","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
+"Given the cart is empty
+When 2 items are added sequentially
+Then the badge shows 1, then 2","2006","TC-INV-007: Cart Badge Increments As Items Are Added","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
+"Given the user's cart has items
+When they complete the shipping form, review the order, and click Finish
+Then a ""Thank you"" confirmation is displayed
+and clicking Back Home returns to Inventory","2007","TC-CHK-001: Complete Purchase From Cart To Confirmation","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
+"Given the user selects ""Price (low to high)""
+When iterating over the price list
+Then prices are in non-decreasing order","2006","TC-INV-005: Price Low-To-High Sort Is Numerically Correct","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
+"Given the user is on the Inventory page
+When selecting each sort option
+Then the first product matches the expected sort order","2007","TC-INV-004: Products Sort Correctly By Each Criterion","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
+"Given the user adds 1 item
+When clicking Remove on that item
+Then the badge returns to zero","2006","TC-INV-008: Add Then Remove Resets Cart Badge To Zero","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
+"Given the user added 1 item (badge shows 1)
+When navigating to the cart and back to Inventory
+Then the badge still shows 1 and the item remains in the cart","2007","TC-CART-003: Cart Badge Survives Navigation Away And Back","","2026-06-17","failed","2026-06-17","Cart","Tests","",""
+"Given the user is on the login page
+When they attempt to log in with a locked-out account
+Then an error containing ""locked out"" is displayed and the user remains on the login page","2006","TC-LOGIN-005: Locked-Out User Is Denied","","2026-06-17","failed","2026-06-17","Login","Tests","",""
+"Given the user is on the Inventory page
+When viewing each product
+Then every product image is visible and has a valid src attribute","2006","TC-INV-003: Every Product Image Has Valid Source","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
+"Given the user is on the checkout form
+When Postal Code is empty and Continue is clicked
+Then an error containing ""Postal Code"" is displayed","2006","TC-CHK-004: Empty Postal Code Rejected On Checkout","","2026-06-17","failed","2026-06-17","Checkout","Tests","",""
+"Given the user has just logged in and landed on the Inventory page
+When the cart is empty
+Then the cart badge is not displayed","2006","TC-INV-006: Cart Badge Is Hidden When Cart Is Empty","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""
+"Given the user is on the login page
+When they enter a correct username but a wrong password and click Login
+Then the page stays on the login page and displays an error containing ""do not match""","2006","TC-LOGIN-002: Wrong Password Is Rejected","","2026-06-17","failed","2026-06-17","Login","Tests","",""
+"Given the user is on the Inventory page
+When iterating over all products
+Then every product has a non-empty name and a price > $0","2006","TC-INV-002: Every Product Has Non-Empty Name And Positive Price","","2026-06-17","failed","2026-06-17","Inventory","Tests","",""

@@ -1,7 +1,0 @@
-
-  ▸ Navigate to login page
-
-  ▸ Verify all form controls are present and visible
-    ▶ Username input ✓
-    ▶ Password input ✓
-    ▶ Login button ✓
