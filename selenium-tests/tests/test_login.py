@@ -68,6 +68,7 @@ def test_login_page_elements_visible(driver):
         "severity": "BLOCKER",
         "tags": ["smoke", "gui"],
         "level": "System",
+        "req": "REQ-AUTH-006",
     }
     set_meta(tc)
 

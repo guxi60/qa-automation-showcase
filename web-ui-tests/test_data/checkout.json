@@ -1,68 +1,88 @@
-{
-  "checkout": [
-    {
-      "id": "TC-CHK-001",
-      "title": "Customer completes a purchase from cart to confirmation",
-      "story": "Happy-path purchase",
-      "severity": "BLOCKER",
-      "tags": ["smoke", "e2e", "happy-path"],
-      "level": "E2E",
-      "first_name": "Gu",
-      "last_name": "Xiang",
-      "postal_code": "201318",
-      "_comment": "E2E — full checkout flow"
-    }
-  ],
-  "validation": [
-    {
-      "id": "TC-CHK-002",
-      "title": "Empty first-name field is rejected on checkout",
-      "story": "Checkout form validation",
-      "severity": "CRITICAL",
-      "tags": ["negative", "validation"],
-      "level": "System",
-      "first_name": "",
-      "last_name": "Xiang",
-      "postal_code": "201318",
-      "expected_error": "First Name",
-      "_comment": "Negative — empty first name"
-    },
-    {
-      "id": "TC-CHK-003",
-      "title": "Empty last-name field is rejected on checkout",
-      "story": "Checkout form validation",
-      "severity": "CRITICAL",
-      "tags": ["negative", "validation"],
-      "level": "System",
-      "first_name": "Gu",
-      "last_name": "",
-      "postal_code": "201318",
-      "expected_error": "Last Name",
-      "_comment": "Negative — empty last name"
-    },
-    {
-      "id": "TC-CHK-004",
-      "title": "Empty postal-code field is rejected on checkout",
-      "story": "Checkout form validation",
-      "severity": "CRITICAL",
-      "tags": ["negative", "validation"],
-      "level": "System",
-      "first_name": "Gu",
-      "last_name": "Xiang",
-      "postal_code": "",
-      "expected_error": "Postal Code",
-      "_comment": "Negative — empty postal code"
-    }
-  ],
-  "navigation": [
-    {
-      "id": "TC-CHK-005",
-      "title": "Cancel on checkout form returns to cart without changes",
-      "story": "Checkout navigation",
-      "severity": "NORMAL",
-      "tags": ["navigation"],
-      "level": "System",
-      "_comment": "Navigation — cancel from checkout"
-    }
-  ]
+﻿{
+    "checkout":  [
+                     {
+                         "id":  "TC-CHK-001",
+                         "title":  "Customer completes a purchase from cart to confirmation",
+                         "story":  "Happy-path purchase",
+                         "severity":  "BLOCKER",
+                         "tags":  [
+                                      "smoke",
+                                      "e2e",
+                                      "happy-path"
+                                  ],
+                         "level":  "E2E",
+                         "first_name":  "Gu",
+                         "last_name":  "Xiang",
+                         "postal_code":  "201318",
+                         "_comment":  "E2E 鈥?full checkout flow",
+                         "req":  "REQ-CHK-001"
+                     }
+                 ],
+    "validation":  [
+                       {
+                           "id":  "TC-CHK-002",
+                           "title":  "Empty first-name field is rejected on checkout",
+                           "story":  "Checkout form validation",
+                           "severity":  "CRITICAL",
+                           "tags":  [
+                                        "negative",
+                                        "validation"
+                                    ],
+                           "level":  "System",
+                           "first_name":  "",
+                           "last_name":  "Xiang",
+                           "postal_code":  "201318",
+                           "expected_error":  "First Name",
+                           "_comment":  "Negative 鈥?empty first name",
+                           "req":  "REQ-CHK-002"
+                       },
+                       {
+                           "id":  "TC-CHK-003",
+                           "title":  "Empty last-name field is rejected on checkout",
+                           "story":  "Checkout form validation",
+                           "severity":  "CRITICAL",
+                           "tags":  [
+                                        "negative",
+                                        "validation"
+                                    ],
+                           "level":  "System",
+                           "first_name":  "Gu",
+                           "last_name":  "",
+                           "postal_code":  "201318",
+                           "expected_error":  "Last Name",
+                           "_comment":  "Negative 鈥?empty last name",
+                           "req":  "REQ-CHK-003"
+                       },
+                       {
+                           "id":  "TC-CHK-004",
+                           "title":  "Empty postal-code field is rejected on checkout",
+                           "story":  "Checkout form validation",
+                           "severity":  "CRITICAL",
+                           "tags":  [
+                                        "negative",
+                                        "validation"
+                                    ],
+                           "level":  "System",
+                           "first_name":  "Gu",
+                           "last_name":  "Xiang",
+                           "postal_code":  "",
+                           "expected_error":  "Postal Code",
+                           "_comment":  "Negative 鈥?empty postal code",
+                           "req":  "REQ-CHK-004"
+                       }
+                   ],
+    "navigation":  [
+                       {
+                           "id":  "TC-CHK-005",
+                           "title":  "Cancel on checkout form returns to cart without changes",
+                           "story":  "Checkout navigation",
+                           "severity":  "NORMAL",
+                           "tags":  [
+                                        "navigation"
+                                    ],
+                           "level":  "System",
+                           "_comment":  "Navigation 鈥?cancel from checkout",
+                           "req":  "REQ-CHK-005"
+                       }
+                   ]
 }

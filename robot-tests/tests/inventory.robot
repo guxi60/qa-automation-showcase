@@ -17,8 +17,10 @@ Go To Inventory With Clean Cart
 
 *** Test Cases ***
 TC-INV-001: Inventory Displays Exactly 6 Products After Login
-    [Tags]    smoke
-    [Documentation]    After login, inventory page shows 6 products with Products title.
+    [Tags]    smoke    REQ-INV-001
+    [Documentation]    Given the user is logged in
+    ...                When they land on the Inventory page
+    ...                Then 6 products are displayed with the title "Products"
     Go To Inventory With Clean Cart
     Inventory Should Be Loaded
     ${count}=    Get Product Count
@@ -27,8 +29,10 @@ TC-INV-001: Inventory Displays Exactly 6 Products After Login
     Length Should Be    ${names}    6
 
 TC-INV-002: Every Product Has Non-Empty Name And Positive Price
-    [Tags]    functional    data-integrity
-    [Documentation]    Each product tile must have name and price > $0.
+    [Tags]    functional    data-integrity    REQ-INV-002
+    [Documentation]    Given the user is on the Inventory page
+    ...                When iterating over all products
+    ...                Then every product has a non-empty name and a price > $0
     Go To Inventory With Clean Cart
     ${names}=    Get Product Names
     ${prices}=    Get Product Prices
@@ -40,8 +44,10 @@ TC-INV-002: Every Product Has Non-Empty Name And Positive Price
     END
 
 TC-INV-003: Every Product Image Has Valid Source
-    [Tags]    gui    data-integrity
-    [Documentation]    Each product tile image must be visible with valid src.
+    [Tags]    gui    data-integrity    REQ-INV-003
+    [Documentation]    Given the user is on the Inventory page
+    ...                When viewing each product
+    ...                Then every product image is visible and has a valid src attribute
     Go To Inventory With Clean Cart
     ${images}=    Get WebElements    css=.inventory_item img.inventory_item_img
     FOR    ${img}    IN    @{images}
@@ -52,8 +58,10 @@ TC-INV-003: Every Product Image Has Valid Source
     END
 
 TC-INV-004: Products Sort Correctly By Each Criterion
-    [Tags]    functional
-    [Documentation]    Each sort option should return correct first product.
+    [Tags]    functional    REQ-INV-004
+    [Documentation]    Given the user is on the Inventory page
+    ...                When selecting each sort option
+    ...                Then the first product matches the expected sort order
     Go To Inventory With Clean Cart
     Sort Inventory By    Name (A to Z)
     ${names}=    Get Product Names
@@ -69,8 +77,10 @@ TC-INV-004: Products Sort Correctly By Each Criterion
     Should Be Equal    ${names}[0]    Sauce Labs Fleece Jacket
 
 TC-INV-005: Price Low-To-High Sort Is Numerically Correct
-    [Tags]    functional
-    [Documentation]    Prices must be in non-decreasing order.
+    [Tags]    functional    REQ-INV-005
+    [Documentation]    Given the user selects "Price (low to high)"
+    ...                When iterating over the price list
+    ...                Then prices are in non-decreasing order
     Go To Inventory With Clean Cart
     Sort Inventory By    Price (low to high)
     ${prices}=    Get Product Prices
@@ -79,15 +89,19 @@ TC-INV-005: Price Low-To-High Sort Is Numerically Correct
     Lists Should Be Equal    ${prices}    ${sorted}
 
 TC-INV-006: Cart Badge Is Hidden When Cart Is Empty
-    [Tags]    functional
-    [Documentation]    Badge should not appear when no items added.
+    [Tags]    functional    REQ-INV-006
+    [Documentation]    Given the user has just logged in and landed on the Inventory page
+    ...                When the cart is empty
+    ...                Then the cart badge is not displayed
     Go To Inventory With Clean Cart
     ${count}=    Get Cart Badge Count
     Should Be Equal As Integers    ${count}    0
 
 TC-INV-007: Cart Badge Increments As Items Are Added
-    [Tags]    functional
-    [Documentation]    Badge count should increase with each added item.
+    [Tags]    functional    REQ-INV-007
+    [Documentation]    Given the cart is empty
+    ...                When 2 items are added sequentially
+    ...                Then the badge shows 1, then 2
     Go To Inventory With Clean Cart
     Add Item To Cart    Sauce Labs Backpack
     ${count}=    Get Cart Badge Count
@@ -97,8 +111,10 @@ TC-INV-007: Cart Badge Increments As Items Are Added
     Should Be Equal As Integers    ${count}    2
 
 TC-INV-008: Add Then Remove Resets Cart Badge To Zero
-    [Tags]    functional
-    [Documentation]    Adding then removing the same item returns badge to 0.
+    [Tags]    functional    REQ-INV-008
+    [Documentation]    Given the user adds 1 item
+    ...                When clicking Remove on that item
+    ...                Then the badge returns to zero
     Go To Inventory With Clean Cart
     Add Item To Cart    Sauce Labs Backpack
     ${count}=    Get Cart Badge Count

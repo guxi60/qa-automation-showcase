@@ -15,21 +15,14 @@ Go To Cart Ready For Checkout
     Go To Cart
     Cart Should Be Loaded
 
-Checkout Validation Template
-    [Documentation]    DDT template for empty-field checkout tests.
-    [Arguments]    ${first}    ${last}    ${postal}    ${expected_error}
-    Go To Cart Ready For Checkout
-    Click Checkout
-    Fill Checkout Info    ${first}    ${last}    ${postal}
-    Click Continue
-    ${error}=    Get Checkout Error Text
-    Should Contain    ${error}    ${expected_error}
-
 
 *** Test Cases ***
 TC-CHK-001: Complete Purchase From Cart To Confirmation
-    [Tags]    smoke    e2e    happy-path
-    [Documentation]    Full E2E purchase flow: cart → checkout → finish → confirmation.
+    [Tags]    smoke    e2e    happy-path    REQ-CHK-001
+    [Documentation]    Given the user's cart has items
+    ...                When they complete the shipping form, review the order, and click Finish
+    ...                Then a "Thank you" confirmation is displayed
+    ...                and clicking Back Home returns to Inventory
     Go To Cart Ready For Checkout
     Click Checkout
     Fill Checkout Info    Gu    Xiang    201318
@@ -48,23 +41,46 @@ TC-CHK-001: Complete Purchase From Cart To Confirmation
     Location Should Be    ${INVENTORY_URL}
 
 TC-CHK-002: Empty First Name Rejected On Checkout
-    [Tags]    negative    validation
-    [Template]    Checkout Validation Template
-    ${EMPTY}    Xiang    201318    First Name
+    [Tags]    negative    validation    REQ-CHK-002
+    [Documentation]    Given the user is on the checkout form
+    ...                When First Name is empty and Continue is clicked
+    ...                Then an error containing "First Name" is displayed
+    Go To Cart Ready For Checkout
+    Click Checkout
+    Fill Checkout Info    ${EMPTY}    Xiang    201318
+    Click Continue
+    ${error}=    Get Checkout Error Text
+    Should Contain    ${error}    First Name
 
 TC-CHK-003: Empty Last Name Rejected On Checkout
-    [Tags]    negative    validation
-    [Template]    Checkout Validation Template
-    Gu    ${EMPTY}    201318    Last Name
+    [Tags]    negative    validation    REQ-CHK-003
+    [Documentation]    Given the user is on the checkout form
+    ...                When Last Name is empty and Continue is clicked
+    ...                Then an error containing "Last Name" is displayed
+    Go To Cart Ready For Checkout
+    Click Checkout
+    Fill Checkout Info    Gu    ${EMPTY}    201318
+    Click Continue
+    ${error}=    Get Checkout Error Text
+    Should Contain    ${error}    Last Name
 
 TC-CHK-004: Empty Postal Code Rejected On Checkout
-    [Tags]    negative    validation
-    [Template]    Checkout Validation Template
-    Gu    Xiang    ${EMPTY}    Postal Code
+    [Tags]    negative    validation    REQ-CHK-004
+    [Documentation]    Given the user is on the checkout form
+    ...                When Postal Code is empty and Continue is clicked
+    ...                Then an error containing "Postal Code" is displayed
+    Go To Cart Ready For Checkout
+    Click Checkout
+    Fill Checkout Info    Gu    Xiang    ${EMPTY}
+    Click Continue
+    ${error}=    Get Checkout Error Text
+    Should Contain    ${error}    Postal Code
 
 TC-CHK-005: Cancel On Checkout Returns To Cart
-    [Tags]    navigation
-    [Documentation]    Cancel button returns to cart page without side effects.
+    [Tags]    navigation    REQ-CHK-005
+    [Documentation]    Given the user is on the checkout form
+    ...                When they click Cancel (without filling any fields)
+    ...                Then they are returned to the cart page with no side effects
     Go To Cart Ready For Checkout
     Click Checkout
     Cancel Checkout

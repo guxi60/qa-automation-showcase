@@ -1,4 +1,4 @@
-# Checkout test cases â€” shared across Playwright, Selenium, and Robot Framework
+# Checkout test cases â€?shared across Playwright, Selenium, and Robot Framework
 checkout:
   - id: TC-CHK-001
     title: "Customer completes a purchase from cart to confirmation"
@@ -9,7 +9,7 @@ checkout:
     first_name: &fn Gu
     last_name: &ln Xiang
     postal_code: &pc "201318"
-    # E2E â€” full checkout flow
+    # E2E â€?full checkout flow
 
 validation:
   - id: TC-CHK-002
@@ -18,11 +18,13 @@ validation:
     severity: CRITICAL
     tags: [negative, validation]
     level: System
+    req: REQ-CHK-001
+    req: REQ-CHK-002
     first_name: ""
     last_name: *ln
     postal_code: *pc
     expected_error: "First Name"
-    # Negative â€” empty first name
+    # Negative â€?empty first name
 
   - id: TC-CHK-003
     title: "Empty last-name field is rejected on checkout"
@@ -30,11 +32,12 @@ validation:
     severity: CRITICAL
     tags: [negative, validation]
     level: System
+    req: REQ-CHK-003
     first_name: *fn
     last_name: ""
     postal_code: *pc
     expected_error: "Last Name"
-    # Negative â€” empty last name
+    # Negative â€?empty last name
 
   - id: TC-CHK-004
     title: "Empty postal-code field is rejected on checkout"
@@ -42,11 +45,12 @@ validation:
     severity: CRITICAL
     tags: [negative, validation]
     level: System
+    req: REQ-CHK-004
     first_name: *fn
     last_name: *ln
     postal_code: ""
     expected_error: "Postal Code"
-    # Negative â€” empty postal code
+    # Negative â€?empty postal code
 
 navigation:
   - id: TC-CHK-005
@@ -55,4 +59,5 @@ navigation:
     severity: NORMAL
     tags: [navigation]
     level: System
-    # Navigation â€” cancel from checkout
+    req: REQ-CHK-005
+    # Navigation â€?cancel from checkout

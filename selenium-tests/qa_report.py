@@ -119,6 +119,9 @@ def set_meta(tc: dict):
     if tc.get("level"):
         allure.dynamic.label("test_level", tc["level"])
 
+    if tc.get("req"):
+        allure.dynamic.label("requirement", tc["req"])
+
 
 def register_tags_as_markers(items: list) -> None:
     """Map YAML ``tags`` fields to pytest markers (for -m filtering)."""

@@ -1,8 +1,8 @@
-# Authentication test cases â€” shared across Playwright, Selenium, and Robot Framework
+# Authentication test cases â€?shared across Playwright, Selenium, and Robot Framework
 #
 # Anchors used to reduce repetition:
-#   &secret  â€” standard password
-#   &std     â€” standard username
+#   &secret  â€?standard password
+#   &std     â€?standard username
 login:
   - id: TC-LOGIN-001
     title: "Valid credentials grant access to the product inventory"
@@ -10,10 +10,11 @@ login:
     severity: BLOCKER
     tags: [smoke, happy-path]
     level: System
+    req: REQ-AUTH-001
     username: &std standard_user
     password: &secret secret_sauce
     expected_title: Products
-    # Happy path â€” smoke test
+    # Happy path â€?smoke test
 
   - id: TC-LOGIN-002
     title: "Wrong password is rejected with a descriptive error"
@@ -21,10 +22,11 @@ login:
     severity: CRITICAL
     tags: [negative, validation]
     level: System
+    req: REQ-AUTH-002
     username: *std
     password: wrong_password
     expected_error: "do not match"
-    # Negative â€” wrong password
+    # Negative â€?wrong password
 
   - id: TC-LOGIN-003
     title: "Empty username triggers 'Username is required' error"
@@ -32,10 +34,11 @@ login:
     severity: CRITICAL
     tags: [negative, validation, boundary]
     level: System
+    req: REQ-AUTH-003
     username: ""
     password: *secret
     expected_error: "Username is required"
-    # Boundary â€” empty username
+    # Boundary â€?empty username
 
   - id: TC-LOGIN-004
     title: "Empty password triggers 'Password is required' error"
@@ -43,10 +46,11 @@ login:
     severity: CRITICAL
     tags: [negative, validation, boundary]
     level: System
+    req: REQ-AUTH-004
     username: *std
     password: ""
     expected_error: "Password is required"
-    # Boundary â€” empty password
+    # Boundary â€?empty password
 
   - id: TC-LOGIN-005
     title: "Locked-out user is denied access"
@@ -54,7 +58,8 @@ login:
     severity: CRITICAL
     tags: [negative, access-control]
     level: System
+    req: REQ-AUTH-005
     username: locked_out_user
     password: *secret
     expected_error: "locked out"
-    # Access control â€” locked account
+    # Access control â€?locked account

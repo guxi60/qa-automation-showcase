@@ -1,4 +1,4 @@
-# Inventory test cases â€” shared across Playwright, Selenium, and Robot Framework
+# Inventory test cases â€?shared across Playwright, Selenium, and Robot Framework
 display:
   - id: TC-INV-001
     title: "Inventory page displays exactly 6 products after login"
@@ -6,6 +6,7 @@ display:
     severity: BLOCKER
     tags: [smoke]
     level: System
+    req: REQ-INV-001
     expected_count: 6
     expected_names: &all_products
       - "Sauce Labs Backpack"
@@ -14,7 +15,7 @@ display:
       - "Sauce Labs Fleece Jacket"
       - "Sauce Labs Onesie"
       - "Test.allTheThings() T-Shirt (Red)"
-    # Display â€” 6 products listed
+    # Display â€?6 products listed
 
   - id: TC-INV-002
     title: "Every product tile has a non-empty name and price > $0"
@@ -22,8 +23,9 @@ display:
     severity: CRITICAL
     tags: [functional, data-integrity]
     level: System
+    req: REQ-INV-002
     expected_count: 6
-    # Data integrity â€” names and prices
+    # Data integrity â€?names and prices
 
   - id: TC-INV-003
     title: "Every product tile has a visible image with valid src"
@@ -31,7 +33,8 @@ display:
     severity: CRITICAL
     tags: [gui, data-integrity]
     level: System
-    # GUI â€” product images
+    req: REQ-INV-003
+    # GUI â€?product images
 
 sorting:
   - id: TC-INV-004
@@ -40,12 +43,13 @@ sorting:
     severity: CRITICAL
     tags: [functional]
     level: System
+    req: REQ-INV-004
     scenarios:
       - {sort: "Name (A to Z)",       first: "Sauce Labs Backpack"}
       - {sort: "Name (Z to A)",       first: "Test.allTheThings() T-Shirt (Red)"}
       - {sort: "Price (low to high)",  first: "Sauce Labs Onesie"}
       - {sort: "Price (high to low)",  first: "Sauce Labs Fleece Jacket"}
-    # Sorting â€” parametrized 4 ways
+    # Sorting â€?parametrized 4 ways
 
   - id: TC-INV-005
     title: "Price (low to high) sort must be numerically correct"
@@ -53,8 +57,9 @@ sorting:
     severity: MINOR
     tags: [functional]
     level: System
+    req: REQ-INV-005
     sort: "Price (low to high)"
-    # Sort â€” numerical correctness
+    # Sort â€?numerical correctness
 
 cart_badge:
   - id: TC-INV-006
@@ -63,7 +68,8 @@ cart_badge:
     severity: CRITICAL
     tags: [functional]
     level: System
-    # Badge â€” starts empty
+    req: REQ-INV-006
+    # Badge â€?starts empty
 
   - id: TC-INV-007
     title: "Cart badge increments as items are added"
@@ -71,10 +77,11 @@ cart_badge:
     severity: CRITICAL
     tags: [functional]
     level: System
+    req: REQ-INV-007
     add_items:
       - "Sauce Labs Backpack"
       - "Sauce Labs Bike Light"
-    # Badge â€” increments
+    # Badge â€?increments
 
   - id: TC-INV-008
     title: "Adding then removing same item resets cart count to zero"
@@ -82,5 +89,6 @@ cart_badge:
     severity: NORMAL
     tags: [functional]
     level: System
+    req: REQ-INV-008
     add_remove: "Sauce Labs Backpack"
-    # Badge â€” add then remove
+    # Badge â€?add then remove

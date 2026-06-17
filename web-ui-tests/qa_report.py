@@ -154,6 +154,9 @@ def set_meta(tc: dict):
     if tc.get("level"):
         allure.dynamic.label("test_level", tc["level"])
 
+    if tc.get("req"):
+        allure.dynamic.label("requirement", tc["req"])
+
 
 # ═══════════════════════════════════════════════════════════════
 #  Dynamic pytest markers from YAML tags
