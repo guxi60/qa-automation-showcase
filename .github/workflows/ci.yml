@@ -345,12 +345,17 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   #  Report Generation & GitHub Pages Publish
   # ═══════════════════════════════════════════════════════════════
+  #
+  #  Publishes on push to main OR manual dispatch on main.
+  #  When only some suites run (manual/PR), only their reports
+  #  are regenerated — other suites keep their existing reports.
+  # ═══════════════════════════════════════════════════════════════
   publish-reports:
     name: 'Generate & Publish Reports'
-    needs: [test-api, test-playwright, test-selenium, test-robot, test-performance]
+    needs: [scope, test-api, test-playwright, test-selenium, test-robot, test-performance]
     if: |
       always() &&
-      github.event_name == 'push' &&
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
       github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -369,61 +374,84 @@ jobs:
 
       - name: Download API allure-results
         uses: actions/download-artifact@v4
+        if: needs.scope.outputs.run-api == 'true'
         with:
           name: allure-results-api
           path: _results/api
 
+      - name: Generate API Allure report
+        if: needs.scope.outputs.run-api == 'true'
+        run: |
+          allure generate _results/api -o docs/api --clean
+          sed -i "s|<head>|<head><base href=\"/qa-automation-showcase/api/\">|" docs/api/index.html
+
       - name: Download Playwright allure-results
         uses: actions/download-artifact@v4
+        if: needs.scope.outputs.run-playwright == 'true'
         with:
           name: allure-results-playwright
           path: _results/playwright
 
+      - name: Generate Playwright Allure report
+        if: needs.scope.outputs.run-playwright == 'true'
+        run: |
+          allure generate _results/playwright -o docs/playwright --clean
+          sed -i "s|<head>|<head><base href=\"/qa-automation-showcase/playwright/\">|" docs/playwright/index.html
+
       - name: Download Selenium allure-results
         uses: actions/download-artifact@v4
+        if: needs.scope.outputs.run-selenium == 'true'
         with:
           name: allure-results-selenium
           path: _results/selenium
 
+      - name: Generate Selenium Allure report
+        if: needs.scope.outputs.run-selenium == 'true'
+        run: |
+          allure generate _results/selenium -o docs/selenium --clean
+          sed -i "s|<head>|<head><base href=\"/qa-automation-showcase/selenium/\">|" docs/selenium/index.html
+
       - name: Download Robot allure-results
         uses: actions/download-artifact@v4
+        if: needs.scope.outputs.run-robot == 'true'
         with:
           name: allure-results-robot
           path: _results/robot
 
+      - name: Generate Robot Allure report
+        if: needs.scope.outputs.run-robot == 'true'
+        run: |
+          allure generate _results/robot -o docs/robot --clean
+          sed -i "s|<head>|<head><base href=\"/qa-automation-showcase/robot/\">|" docs/robot/index.html
+
       - name: Download Locust HTML report
         uses: actions/download-artifact@v4
+        if: needs.scope.outputs.run-performance == 'true'
         with:
           name: locust-report
           path: _results/perf
 
-      - name: Generate Allure reports
-        run: |
-          allure generate _results/api        -o docs/api        --clean
-          allure generate _results/playwright  -o docs/playwright --clean
-          allure generate _results/selenium    -o docs/selenium   --clean
-          allure generate _results/robot       -o docs/robot      --clean
-
-      - name: Fix Allure base paths for GitHub Pages
-        run: |
-          for suite in api playwright selenium robot; do
-            sed -i "s|<head>|<head><base href=\"/qa-automation-showcase/${suite}/\">|" \
-              "docs/${suite}/index.html"
-          done
-
       - name: Publish Locust report
+        if: needs.scope.outputs.run-performance == 'true'
         run: |
           mkdir -p docs/perf
           cp _results/perf/report.html docs/perf/index.html
 
+      # ── Commit & push → triggers GitHub Pages rebuild ───────
       - name: Deploy to GitHub Pages
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/api/ docs/playwright/ docs/selenium/ docs/robot/ docs/perf/
+
+          # Stage only directories that were regenerated
+          for d in api playwright selenium robot perf; do
+            [ -d "docs/$d" ] && git add "docs/$d/"
+          done
+
           if git diff --cached --quiet; then
             echo "No report changes. Skipping commit."
             exit 0
           fi
+
           git commit -m "ci: update Allure & Locust reports [skip ci]"
           git push origin main
