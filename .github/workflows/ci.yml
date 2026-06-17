@@ -340,6 +340,16 @@ jobs:
           allure generate _results/selenium    -o docs/selenium   --clean
           allure generate _results/robot       -o docs/robot      --clean
 
+      # Allure SPAs use absolute paths (/data/...).  GitHub Pages
+      # serves from a subdirectory.  Inject a <base> tag so the
+      # browser resolves all assets & API calls correctly.
+      - name: Fix Allure base paths for GitHub Pages
+        run: |
+          for suite in api playwright selenium robot; do
+            sed -i "s|<head>|<head><base href=\"/qa-automation-showcase/${suite}/\">|" \
+              "docs/${suite}/index.html"
+          done
+
       # ── Publish Locust report ───────────────────────────────
       - name: Publish Locust report
         run: |
