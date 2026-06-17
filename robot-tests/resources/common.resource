@@ -14,8 +14,6 @@ ${RETRY_INTERVAL}         500ms
 *** Keywords ***
 Start Test Session
     [Documentation]    Open browser and set window size. Called as Suite Setup.
-    # Suppress per-keyword HTML attachments (noisy 404 in Allure)
-    Set Environment Variable    ALLURE_MAX_STEP_MESSAGE_COUNT    999999
     Open Browser    ${BASE_URL}    Chrome    options=${CHROME_OPTIONS}    executable_path=${CHROMEDRIVER_PATH}
     Set Window Size    1280    720
     Set Selenium Timeout    ${TIMEOUT}

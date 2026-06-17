@@ -1,140 +1,140 @@
-﻿{
-    "display":  [
-                    {
-                        "id":  "TC-INV-001",
-                        "title":  "Inventory page displays exactly 6 products after login",
-                        "story":  "Product listing",
-                        "severity":  "BLOCKER",
-                        "tags":  [
-                                     "smoke"
-                                 ],
-                        "level":  "System",
-                        "expected_count":  6,
-                        "expected_names":  [
-                                               "Sauce Labs Backpack",
-                                               "Sauce Labs Bike Light",
-                                               "Sauce Labs Bolt T-Shirt",
-                                               "Sauce Labs Fleece Jacket",
-                                               "Sauce Labs Onesie",
-                                               "Test.allTheThings() T-Shirt (Red)"
-                                           ],
-                        "_comment":  "Display 鈥?6 products listed",
-                        "req":  "REQ-INV-001"
-                    },
-                    {
-                        "id":  "TC-INV-002",
-                        "title":  "Every product tile has a non-empty name and price \u003e $0",
-                        "story":  "Product data integrity",
-                        "severity":  "CRITICAL",
-                        "tags":  [
-                                     "functional",
-                                     "data-integrity"
-                                 ],
-                        "level":  "System",
-                        "expected_count":  6,
-                        "_comment":  "Data integrity 鈥?names and prices",
-                        "req":  "REQ-INV-002"
-                    },
-                    {
-                        "id":  "TC-INV-003",
-                        "title":  "Every product tile has a visible image with valid src",
-                        "story":  "Product data integrity",
-                        "severity":  "CRITICAL",
-                        "tags":  [
-                                     "gui",
-                                     "data-integrity"
-                                 ],
-                        "level":  "System",
-                        "_comment":  "GUI 鈥?product images",
-                        "req":  "REQ-INV-003"
-                    }
-                ],
-    "sorting":  [
-                    {
-                        "id":  "TC-INV-004",
-                        "title":  "Products sort correctly for each sort criterion",
-                        "story":  "Product sorting",
-                        "severity":  "CRITICAL",
-                        "tags":  [
-                                     "functional"
-                                 ],
-                        "level":  "System",
-                        "scenarios":  [
-                                          {
-                                              "sort":  "Name (A to Z)",
-                                              "first":  "Sauce Labs Backpack"
-                                          },
-                                          {
-                                              "sort":  "Name (Z to A)",
-                                              "first":  "Test.allTheThings() T-Shirt (Red)"
-                                          },
-                                          {
-                                              "sort":  "Price (low to high)",
-                                              "first":  "Sauce Labs Onesie"
-                                          },
-                                          {
-                                              "sort":  "Price (high to low)",
-                                              "first":  "Sauce Labs Fleece Jacket"
-                                          }
-                                      ],
-                        "_comment":  "Sorting 鈥?parametrized 4 ways",
-                        "req":  "REQ-INV-004"
-                    },
-                    {
-                        "id":  "TC-INV-005",
-                        "title":  "Price (low to high) sort must be numerically correct",
-                        "story":  "Product sorting",
-                        "severity":  "MINOR",
-                        "tags":  [
-                                     "functional"
-                                 ],
-                        "level":  "System",
-                        "sort":  "Price (low to high)",
-                        "_comment":  "Sort 鈥?numerical correctness",
-                        "req":  "REQ-INV-005"
-                    }
-                ],
-    "cart_badge":  [
-                       {
-                           "id":  "TC-INV-006",
-                           "title":  "Cart badge is hidden when no items are in cart",
-                           "story":  "Cart badge lifecycle",
-                           "severity":  "CRITICAL",
-                           "tags":  [
-                                        "functional"
-                                    ],
-                           "level":  "System",
-                           "_comment":  "Badge 鈥?starts empty",
-                           "req":  "REQ-INV-006"
-                       },
-                       {
-                           "id":  "TC-INV-007",
-                           "title":  "Cart badge increments as items are added",
-                           "story":  "Cart badge lifecycle",
-                           "severity":  "CRITICAL",
-                           "tags":  [
-                                        "functional"
-                                    ],
-                           "level":  "System",
-                           "add_items":  [
-                                             "Sauce Labs Backpack",
-                                             "Sauce Labs Bike Light"
-                                         ],
-                           "_comment":  "Badge 鈥?increments",
-                           "req":  "REQ-INV-007"
-                       },
-                       {
-                           "id":  "TC-INV-008",
-                           "title":  "Adding then removing same item resets cart count to zero",
-                           "story":  "Cart badge lifecycle",
-                           "severity":  "NORMAL",
-                           "tags":  [
-                                        "functional"
-                                    ],
-                           "level":  "System",
-                           "add_remove":  "Sauce Labs Backpack",
-                           "_comment":  "Badge 鈥?add then remove",
-                           "req":  "REQ-INV-008"
-                       }
-                   ]
+{
+  "display": [
+    {
+      "id": "TC-INV-001",
+      "title": "Inventory page displays exactly 6 products after login",
+      "story": "Product listing",
+      "severity": "BLOCKER",
+      "tags": [
+        "smoke"
+      ],
+      "level": "System",
+      "expected_count": 6,
+      "expected_names": [
+        "Sauce Labs Backpack",
+        "Sauce Labs Bike Light",
+        "Sauce Labs Bolt T-Shirt",
+        "Sauce Labs Fleece Jacket",
+        "Sauce Labs Onesie",
+        "Test.allTheThings() T-Shirt (Red)"
+      ],
+      "_comment": "Display — 6 products listed",
+      "req": "REQ-INV-001"
+    },
+    {
+      "id": "TC-INV-002",
+      "title": "Every product tile has a non-empty name and price > $0",
+      "story": "Product data integrity",
+      "severity": "CRITICAL",
+      "tags": [
+        "functional",
+        "data-integrity"
+      ],
+      "level": "System",
+      "expected_count": 6,
+      "_comment": "Data integrity — names and prices",
+      "req": "REQ-INV-002"
+    },
+    {
+      "id": "TC-INV-003",
+      "title": "Every product tile has a visible image with valid src",
+      "story": "Product data integrity",
+      "severity": "CRITICAL",
+      "tags": [
+        "gui",
+        "data-integrity"
+      ],
+      "level": "System",
+      "_comment": "GUI — product images",
+      "req": "REQ-INV-003"
+    }
+  ],
+  "sorting": [
+    {
+      "id": "TC-INV-004",
+      "title": "Products sort correctly for each sort criterion",
+      "story": "Product sorting",
+      "severity": "CRITICAL",
+      "tags": [
+        "functional"
+      ],
+      "level": "System",
+      "scenarios": [
+        {
+          "sort": "Name (A to Z)",
+          "first": "Sauce Labs Backpack"
+        },
+        {
+          "sort": "Name (Z to A)",
+          "first": "Test.allTheThings() T-Shirt (Red)"
+        },
+        {
+          "sort": "Price (low to high)",
+          "first": "Sauce Labs Onesie"
+        },
+        {
+          "sort": "Price (high to low)",
+          "first": "Sauce Labs Fleece Jacket"
+        }
+      ],
+      "_comment": "Sorting — parametrized 4 ways",
+      "req": "REQ-INV-004"
+    },
+    {
+      "id": "TC-INV-005",
+      "title": "Price (low to high) sort must be numerically correct",
+      "story": "Product sorting",
+      "severity": "MINOR",
+      "tags": [
+        "functional"
+      ],
+      "level": "System",
+      "sort": "Price (low to high)",
+      "_comment": "Sort — numerical correctness",
+      "req": "REQ-INV-005"
+    }
+  ],
+  "cart_badge": [
+    {
+      "id": "TC-INV-006",
+      "title": "Cart badge is hidden when no items are in cart",
+      "story": "Cart badge lifecycle",
+      "severity": "CRITICAL",
+      "tags": [
+        "functional"
+      ],
+      "level": "System",
+      "_comment": "Badge — starts empty",
+      "req": "REQ-INV-006"
+    },
+    {
+      "id": "TC-INV-007",
+      "title": "Cart badge increments as items are added",
+      "story": "Cart badge lifecycle",
+      "severity": "CRITICAL",
+      "tags": [
+        "functional"
+      ],
+      "level": "System",
+      "add_items": [
+        "Sauce Labs Backpack",
+        "Sauce Labs Bike Light"
+      ],
+      "_comment": "Badge — increments",
+      "req": "REQ-INV-007"
+    },
+    {
+      "id": "TC-INV-008",
+      "title": "Adding then removing same item resets cart count to zero",
+      "story": "Cart badge lifecycle",
+      "severity": "NORMAL",
+      "tags": [
+        "functional"
+      ],
+      "level": "System",
+      "add_remove": "Sauce Labs Backpack",
+      "_comment": "Badge — add then remove",
+      "req": "REQ-INV-008"
+    }
+  ]
 }
