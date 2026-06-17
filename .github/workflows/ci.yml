@@ -1,0 +1,354 @@
+# =============================================================================
+# CI/CD — QA Automation Showcase
+# =============================================================================
+#
+# Runs all five test suites in parallel and publishes Allure + Locust reports
+# to GitHub Pages on push to main.
+#
+# Triggers:
+#   push to main      — full run + report publish
+#   pull_request      — all suites run, no publish
+#   workflow_dispatch  — manual trigger from Actions tab
+#
+# Architecture:
+#   test-api          pytest + requests       → allure-results
+#   test-playwright    Playwright + pytest      → allure-results
+#   test-selenium      Selenium + pytest        → allure-results
+#   test-robot         Robot Framework           → allure-results
+#   test-performance   Locust (headless)         → HTML report
+#   publish-reports    Allure generate + commit  → GitHub Pages  (main only)
+# =============================================================================
+
+name: QA Automation CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/requirements/**'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# ── Global concurrency: cancel redundant runs ─────────────────
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# ═══════════════════════════════════════════════════════════════
+#  API Tests  —  pytest + requests + jsonschema
+# ═══════════════════════════════════════════════════════════════
+jobs:
+  test-api:
+    name: 'API (pytest+requests)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Clean stale results & run tests
+        run: |
+          cd api-tests
+          rm -rf allure-results
+          pytest -v
+
+      - name: Upload allure-results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-api
+          path: api-tests/allure-results/
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════════
+  #  Playwright Tests  —  modern CDP-based browser automation
+  # ═══════════════════════════════════════════════════════════════
+  test-playwright:
+    name: 'Web UI (Playwright+pytest)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Playwright Chromium
+        run: playwright install chromium --with-deps
+
+      - name: Clean stale results & run tests
+        run: |
+          cd web-ui-tests
+          rm -rf allure-results
+          pytest -v
+
+      - name: Upload allure-results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-playwright
+          path: web-ui-tests/allure-results/
+          retention-days: 7
+
+      - name: Upload screenshots (debugging)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-playwright
+          path: web-ui-tests/screenshots/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # ═══════════════════════════════════════════════════════════════
+  #  Selenium Tests  —  classic WebDriver-based browser automation
+  # ═══════════════════════════════════════════════════════════════
+  test-selenium:
+    name: 'Web UI (Selenium+pytest)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      # The Selenium conftest.py contains Windows-only path logic
+      # (LOCALAPPDATA, win64/*.exe).  Installing Google Chrome gives
+      # ChromeDriverManager a Linux browser to auto-detect and match.
+      - name: Install Google Chrome
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq google-chrome-stable
+
+      - name: Clean stale results & run tests
+        run: |
+          cd selenium-tests
+          rm -rf allure-results
+          pytest -v
+
+      - name: Upload allure-results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-selenium
+          path: selenium-tests/allure-results/
+          retention-days: 7
+
+      - name: Upload screenshots (debugging)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-selenium
+          path: selenium-tests/screenshots/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # ═══════════════════════════════════════════════════════════════
+  #  Robot Framework Tests  —  keyword-driven acceptance testing
+  # ═══════════════════════════════════════════════════════════════
+  test-robot:
+    name: 'Web UI (Robot Framework)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      # The Robot variable file (test_data.py) has the same
+      # Windows-only ChromeDriver/Chromium path logic as Selenium.
+      # System Chrome gives ChromeDriverManager a Linux target.
+      - name: Install Google Chrome
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq google-chrome-stable
+
+      - name: Clean stale results & run Robot tests
+        run: |
+          cd robot-tests
+          rm -rf allure-results
+          robot \
+            --listener allure_robotframework:allure-results \
+            --pythonpath resources \
+            tests/
+
+      - name: Upload allure-results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-robot
+          path: robot-tests/allure-results/
+          retention-days: 7
+
+      - name: Upload Robot logs (debugging)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-logs
+          path: |
+            robot-tests/log.html
+            robot-tests/report.html
+            robot-tests/output.xml
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # ═══════════════════════════════════════════════════════════════
+  #  Performance Tests  —  Locust load testing
+  # ═══════════════════════════════════════════════════════════════
+  test-performance:
+    name: 'Performance (Locust)'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Locust headless
+        run: |
+          cd performance
+          locust -f locustfile.py --headless -u 10 -r 2 -t 60s --html report.html
+
+      - name: Upload Locust HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: locust-report
+          path: performance/report.html
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════════
+  #  Report Generation & GitHub Pages Publish
+  # ═══════════════════════════════════════════════════════════════
+  #
+  #  Only runs on push to main.  Downloads all allure-results
+  #  artifacts, generates HTML reports into docs/<suite>/, and
+  #  commits them back to main.  GitHub Pages (source: main/docs)
+  #  picks them up automatically.
+  # ═══════════════════════════════════════════════════════════════
+  publish-reports:
+    name: 'Generate & Publish Reports'
+    needs: [test-api, test-playwright, test-selenium, test-robot, test-performance]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Allure CLI ──────────────────────────────────────────
+      - name: Install Allure CLI
+        run: |
+          ALLURE_VERSION=2.32.0
+          curl -sL "https://github.com/allure-frameworks/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz" \
+            | sudo tar -xz -C /opt/
+          sudo ln -sf /opt/allure-${ALLURE_VERSION}/bin/allure /usr/local/bin/allure
+          allure --version
+
+      # ── Download artifacts from all upstream jobs ───────────
+      - name: Download API allure-results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-api
+          path: _results/api
+
+      - name: Download Playwright allure-results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-playwright
+          path: _results/playwright
+
+      - name: Download Selenium allure-results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-selenium
+          path: _results/selenium
+
+      - name: Download Robot allure-results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-robot
+          path: _results/robot
+
+      - name: Download Locust HTML report
+        uses: actions/download-artifact@v4
+        with:
+          name: locust-report
+          path: _results/perf
+
+      # ── Generate Allure HTML reports ────────────────────────
+      - name: Generate Allure reports
+        run: |
+          allure generate _results/api        -o docs/api        --clean
+          allure generate _results/playwright  -o docs/playwright --clean
+          allure generate _results/selenium    -o docs/selenium   --clean
+          allure generate _results/robot       -o docs/robot      --clean
+
+      # ── Publish Locust report ───────────────────────────────
+      - name: Publish Locust report
+        run: |
+          mkdir -p docs/perf
+          cp _results/perf/report.html docs/perf/index.html
+
+      # ── Commit & push → triggers GitHub Pages rebuild ───────
+      - name: Deploy to GitHub Pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add docs/api/ docs/playwright/ docs/selenium/ docs/robot/ docs/perf/
+
+          if git diff --cached --quiet; then
+            echo "No report changes. Skipping commit."
+            exit 0
+          fi
+
+          git commit -m "ci: update Allure & Locust reports [skip ci]"
+          git push origin main
