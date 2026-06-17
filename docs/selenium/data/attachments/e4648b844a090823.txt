@@ -1,6 +1,0 @@
-
-  ▸ Navigate to checkout form
-
-  ▸ Submit form  |  first='Gu'  last='Xiang'  postal=''
-
-  ▸ Verify error contains 'Postal Code'

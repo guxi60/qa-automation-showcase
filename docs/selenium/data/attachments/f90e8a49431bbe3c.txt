@@ -1,6 +1,0 @@
-
-  ▸ Navigate to checkout form
-
-  ▸ Submit form  |  first='Gu'  last=''  postal='201318'
-
-  ▸ Verify error contains 'Last Name'

@@ -1,6 +1,0 @@
-
-  ▸ Log in and add items to cart
-    ▶ Cart contains 2 item(s)
-
-  ▸ Remove 'Sauce Labs Backpack' from cart
-    ▶ Clicked [Remove] — count 2 → 1

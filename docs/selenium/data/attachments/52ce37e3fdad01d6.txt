@@ -1,8 +1,0 @@
-
-  ▸ Proceed from cart to checkout form
-    ▶ Clicked [Checkout] on cart page
-
-  ▸ Fill shipping information
-    ▶ First Name: Gu
-    ▶ Last Name:  Xiang
-    ▶ Postal:     201318
