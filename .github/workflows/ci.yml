@@ -58,20 +58,21 @@ jobs:
     name: 'Determine scope'
     runs-on: ubuntu-latest
     outputs:
-      run-api: ${{ steps.filter.outputs.api || steps.manual.outputs.api }}
-      run-playwright: ${{ steps.filter.outputs.playwright || steps.manual.outputs.playwright }}
-      run-selenium: ${{ steps.filter.outputs.selenium || steps.manual.outputs.selenium }}
-      run-robot: ${{ steps.filter.outputs.robot || steps.manual.outputs.robot }}
-      run-performance: ${{ steps.filter.outputs.performance || steps.manual.outputs.performance }}
-      pytest-markers: ${{ steps.level.outputs.pytest-markers }}
-      robot-include: ${{ steps.level.outputs.robot-include }}
+      run-api: ${{ steps.resolve.outputs.api }}
+      run-playwright: ${{ steps.resolve.outputs.playwright }}
+      run-selenium: ${{ steps.resolve.outputs.selenium }}
+      run-robot: ${{ steps.resolve.outputs.robot }}
+      run-performance: ${{ steps.resolve.outputs.performance }}
+      pytest-markers: ${{ steps.resolve.outputs.pytest-markers }}
+      robot-include: ${{ steps.resolve.outputs.robot-include }}
 
     steps:
       - uses: actions/checkout@v4
 
-      # Detect changed paths (dorny/paths-filter)
+      # ── Path-based detection (push / PR only) ─────────────────
       - uses: dorny/paths-filter@v3
         id: filter
+        if: github.event_name != 'workflow_dispatch'
         with:
           filters: |
             api:
@@ -88,42 +89,50 @@ jobs:
               - 'requirements.txt'
             performance:
               - 'performance/**'
-              - 'requirements.txt'
 
-      # Manual dispatch overrides: force specific suites
-      - name: Manual dispatch overrides
-        id: manual
+      # ── Resolve final scope ───────────────────────────────────
+      - name: Resolve scope
+        id: resolve
         run: |
+          EVT="${{ github.event_name }}"
           SUITE="${{ github.event.inputs.suite }}"
-          case "$SUITE" in
-            all)
-              echo "api=true" >> $GITHUB_OUTPUT
-              echo "playwright=true" >> $GITHUB_OUTPUT
-              echo "selenium=true" >> $GITHUB_OUTPUT
-              echo "robot=true" >> $GITHUB_OUTPUT
-              echo "performance=true" >> $GITHUB_OUTPUT
-              ;;
-            api)         echo "api=true" >> $GITHUB_OUTPUT ;;
-            playwright)  echo "playwright=true" >> $GITHUB_OUTPUT ;;
-            selenium)    echo "selenium=true" >> $GITHUB_OUTPUT ;;
-            robot)       echo "robot=true" >> $GITHUB_OUTPUT ;;
-            performance) echo "performance=true" >> $GITHUB_OUTPUT ;;
-          esac
-
-      # Level: smoke → only smoke-tagged tests
-      - name: Determine level
-        id: level
-        run: |
-          IS_PR="${{ github.event_name == 'pull_request' }}"
           LEVEL="${{ github.event.inputs.level }}"
-          if [ "$IS_PR" = "true" ] || [ "$LEVEL" = "smoke" ]; then
-            echo "pytest-markers=-m smoke" >> $GITHUB_OUTPUT
-            echo "robot-include=--include smoke" >> $GITHUB_OUTPUT
-            echo "SMOKE MODE — only smoke-tagged tests"
+
+          # ── Suite selection ──────────────────────────────────
+          if [ "$EVT" = "workflow_dispatch" ]; then
+            # Manual: only the selected suite(s)
+            case "$SUITE" in
+              all)
+                echo "api=true"           >> $GITHUB_OUTPUT
+                echo "playwright=true"    >> $GITHUB_OUTPUT
+                echo "selenium=true"      >> $GITHUB_OUTPUT
+                echo "robot=true"         >> $GITHUB_OUTPUT
+                echo "performance=true"   >> $GITHUB_OUTPUT
+                ;;
+              api)         echo "api=true"           >> $GITHUB_OUTPUT ;;
+              playwright)  echo "playwright=true"    >> $GITHUB_OUTPUT ;;
+              selenium)    echo "selenium=true"      >> $GITHUB_OUTPUT ;;
+              robot)       echo "robot=true"         >> $GITHUB_OUTPUT ;;
+              performance) echo "performance=true"   >> $GITHUB_OUTPUT ;;
+            esac
           else
-            echo "pytest-markers=" >> $GITHUB_OUTPUT
-            echo "robot-include=" >> $GITHUB_OUTPUT
-            echo "FULL MODE — all tests"
+            # Push/PR: path-based (true if filter matches, false otherwise)
+            echo "api=${{ steps.filter.outputs.api }}"                     >> $GITHUB_OUTPUT
+            echo "playwright=${{ steps.filter.outputs.playwright }}"       >> $GITHUB_OUTPUT
+            echo "selenium=${{ steps.filter.outputs.selenium }}"           >> $GITHUB_OUTPUT
+            echo "robot=${{ steps.filter.outputs.robot }}"                 >> $GITHUB_OUTPUT
+            echo "performance=${{ steps.filter.outputs.performance }}"     >> $GITHUB_OUTPUT
+          fi
+
+          # ── Level selection ──────────────────────────────────
+          if [ "$EVT" = "pull_request" ] || [ "$LEVEL" = "smoke" ]; then
+            echo "pytest-markers=-m smoke"      >> $GITHUB_OUTPUT
+            echo "robot-include=--include smoke" >> $GITHUB_OUTPUT
+            echo "::notice::🔹 SMOKE MODE — only smoke-tagged tests"
+          else
+            echo "pytest-markers="   >> $GITHUB_OUTPUT
+            echo "robot-include="    >> $GITHUB_OUTPUT
+            echo "::notice::🔹 FULL MODE — all tests"
           fi
 
 
