@@ -1,0 +1,7 @@
+
+  ▸ Add 'Sauce Labs Backpack'
+
+  ▸ Remove 'Sauce Labs Backpack'
+    ▶ Clicked [Remove]
+
+  ▸ Verify badge returns to 0

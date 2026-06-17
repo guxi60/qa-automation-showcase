@@ -1,0 +1,7 @@
+
+  ▸ Log in and add items to cart
+    ▶ Cart contains 2 item(s)
+
+  ▸ Verify cart contents
+    · [1] Sauce Labs Backpack
+    · [2] Sauce Labs Onesie
