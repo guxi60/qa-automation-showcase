@@ -288,6 +288,7 @@ jobs:
         run: |
           cd robot-tests
           rm -rf allure-results
+          export ALLURE_MAX_STEP_MESSAGE_COUNT=999999
           robot \
             --listener allure_robotframework:allure-results \
             --pythonpath resources \
