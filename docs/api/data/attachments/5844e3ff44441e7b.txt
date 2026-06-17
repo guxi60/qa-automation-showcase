@@ -1,0 +1,19 @@
+PUT https://jsonplaceholder.typicode.com/posts/1
+
+Headers:
+{
+  "User-Agent": "qa-automation-showcase/1.0 (API test suite)",
+  "Accept-Encoding": "gzip, deflate, br",
+  "Accept": "*/*",
+  "Connection": "keep-alive",
+  "Content-Length": "126",
+  "Content-Type": "application/json"
+}
+
+Body:
+{
+  "id": 1,
+  "userId": 1,
+  "title": "[UPDATED] API Testing with pytest + requests",
+  "body": "This post has been updated via PUT."
+}

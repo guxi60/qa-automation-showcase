@@ -1,8 +1,0 @@
-Using cached ChromeDriver: C:\Users\guxi6\.wdm\drivers\chromedriver\win64\147.0.7727.15\chromedriver-win64\chromedriver.exe
-
-  ▸ Log in and add items to cart
-    ▶ Cart contains 2 item(s)
-
-  ▸ Verify cart contents
-    · [1] Sauce Labs Backpack
-    · [2] Sauce Labs Onesie

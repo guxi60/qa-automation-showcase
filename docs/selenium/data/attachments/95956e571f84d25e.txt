@@ -1,0 +1,8 @@
+
+  ▸ Navigate to SauceDemo login page
+    ▶ Opened https://www.saucedemo.com/
+
+  ▸ Submit credentials  |  user='standard_user'
+    ▶ Filled username='standard_user'  password=***  → clicked [Login]
+
+  ▸ Verify redirect to inventory page

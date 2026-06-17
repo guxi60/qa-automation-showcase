@@ -1,0 +1,2 @@
+
+  ▸ Sort by 'Name (A to Z)' → expect first='Sauce Labs Backpack'
