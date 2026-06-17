@@ -29,9 +29,12 @@ Capture Screenshot On Failure
     [Documentation]    Capture screenshot on failure (registered as run-on-failure).
     Capture Page Screenshot
 
-Navigate To Login
-    [Documentation]    Reset session and go to the SauceDemo login page.
+Clear Session State
+    [Documentation]    Delete all cookies to prevent cross-test session carry-over.
     Go To    ${BASE_URL}
     Delete All Cookies
+
+Navigate To Login
+    [Documentation]    Go to the SauceDemo login page.
     Go To    ${BASE_URL}
     Wait Until Element Is Visible    css=[data-test="login-button"]    timeout=${TIMEOUT}

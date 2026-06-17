@@ -36,19 +36,19 @@ def _find_playwright_chromium() -> str | None:
 _CHROME_BINARY = _find_playwright_chromium()
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def driver():
-    """Create a Chrome WebDriver instance for the entire session.
+    """Create a Chrome WebDriver instance per test — clean state isolation.
 
     Uses Playwright's bundled Chromium binary when no system Chrome is present.
     """
     chrome_options = Options()
     if _CHROME_BINARY:
         chrome_options.binary_location = _CHROME_BINARY
-    chrome_options.add_argument("--headless=new")
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--disable-blink-features=AutomationControlled")
     chrome_options.add_argument("--window-size=1280,720")
 
     # Resolve a ChromeDriver whose version matches our Chromium.

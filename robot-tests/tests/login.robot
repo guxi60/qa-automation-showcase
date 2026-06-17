@@ -1,6 +1,7 @@
 *** Settings ***
 Suite Setup       Start Test Session
 Suite Teardown    End Test Session
+Test Setup        Clear Session State
 Resource          ../resources/login_keywords.resource
 Resource          ../resources/inventory_keywords.resource
 
