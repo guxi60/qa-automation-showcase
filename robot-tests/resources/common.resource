@@ -30,6 +30,8 @@ Capture Screenshot On Failure
     Capture Page Screenshot
 
 Navigate To Login
-    [Documentation]    Go to the SauceDemo login page.
+    [Documentation]    Reset session and go to the SauceDemo login page.
+    Go To    ${BASE_URL}
+    Delete All Cookies
     Go To    ${BASE_URL}
     Wait Until Element Is Visible    css=[data-test="login-button"]    timeout=${TIMEOUT}

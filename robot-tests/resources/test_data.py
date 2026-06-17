@@ -86,6 +86,7 @@ _options = ChromeOptions()
 _options.add_argument("--headless=new")
 _options.add_argument("--no-sandbox")
 _options.add_argument("--disable-dev-shm-usage")
+_options.add_argument("--disable-blink-features=AutomationControlled")
 _options.add_argument("--window-size=1280,720")
 
 # Reuse Playwright's bundled Chromium (cross-platform)

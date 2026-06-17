@@ -48,12 +48,20 @@ class LoginPage:
                 time.sleep(3 * (attempt + 1))
 
     def login(self, username: str, password: str) -> None:
-        """Fill credentials and click login."""
+        """Fill credentials and click login.  Waits for the server response."""
         self.username_input.clear()
         self.username_input.send_keys(username)
         self.password_input.clear()
         self.password_input.send_keys(password)
         self.login_button.click()
+        # Wait for either a successful redirect or an error message
+        try:
+            WebDriverWait(self.driver, 10).until(
+                lambda d: "/inventory.html" in d.current_url
+                or d.find_elements(By.CSS_SELECTOR, '[data-test="error"]')
+            )
+        except TimeoutException:
+            pass  # caller decides how to handle
 
     def get_error_text(self) -> str:
         """Return the error message text, or empty string if none."""

@@ -22,6 +22,9 @@ def cart_ready(driver) -> CartPage:
     login = LoginPage(driver)
     login.goto()
     login.login("standard_user", "secret_sauce")
+    # Ensure the inventory page has loaded before interacting with it
+    WebDriverWait(driver, 10).until(
+        EC.url_contains("/inventory.html"))
     inv = InventoryPage(driver)
     inv.remove_all_items()   # reset cart from any previous test
     inv.add_item_to_cart("Sauce Labs Backpack")
