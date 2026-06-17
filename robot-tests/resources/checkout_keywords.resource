@@ -11,16 +11,16 @@ Fill Checkout Info
 
 Click Continue
     [Documentation]    Click Continue button on checkout Step One.
-    Click Element    css=[data-test="continue"]
+    JS Click Element    css=[data-test="continue"]
 
 Click Finish
     [Documentation]    Click Finish button on checkout Step Two.
-    Click Element    css=[data-test="finish"]
+    JS Click Element    css=[data-test="finish"]
     Wait Until Element Is Visible    css=.complete-header    timeout=${TIMEOUT}
 
 Click Back Home
     [Documentation]    Click Back Home on the confirmation page.
-    Click Element    css=[data-test="back-to-products"]
+    JS Click Element    css=[data-test="back-to-products"]
 
 Get Checkout Error Text
     [Documentation]    Return the error message text from Step One.
@@ -47,4 +47,4 @@ Get Confirmation Header
 
 Cancel Checkout
     [Documentation]    Click Cancel on checkout form.
-    Click Element    css=[data-test="cancel"]
+    JS Click Element    css=[data-test="cancel"]

@@ -98,7 +98,8 @@ def logged_in_driver(driver):
     driver.get(BASE_URL)
     driver.find_element("css selector", '[data-test="username"]').send_keys("standard_user")
     driver.find_element("css selector", '[data-test="password"]').send_keys("secret_sauce")
-    driver.find_element("css selector", '[data-test="login-button"]').click()
+    el = driver.find_element("css selector", '[data-test="login-button"]')
+    driver.execute_script("arguments[0].click();", el)
     return driver
 
 

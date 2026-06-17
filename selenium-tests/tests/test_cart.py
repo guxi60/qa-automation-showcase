@@ -95,7 +95,8 @@ def test_cart_persists_after_navigation(driver):
 
     with step("Navigate to cart, then back to inventory"):
         inv.go_to_cart()
-        CartPage(driver).continue_shopping.click()
+        btn = CartPage(driver).continue_shopping
+        driver.execute_script("arguments[0].click();", btn)
     action("Cart → Continue Shopping → back to inventory")
 
     with step("Verify badge still = 1"):

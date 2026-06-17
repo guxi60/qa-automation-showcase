@@ -12,6 +12,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 
+def _js_click(driver, element) -> None:
+    """Click via JavaScript — reliable on Linux headless WebDriver."""
+    driver.execute_script("arguments[0].click();", element)
+
+
 class CheckoutStepOnePage:
     """Checkout: Your Information form."""
 
@@ -60,7 +65,7 @@ class CheckoutStepOnePage:
 
     def continue_checkout(self) -> None:
         """Click Continue. Does NOT wait — caller should wait based on context."""
-        self.continue_button.click()
+        _js_click(self.driver, self.continue_button)
 
     def get_error_text(self) -> str:
         """Return error text, or empty string if none visible."""
@@ -111,7 +116,7 @@ class CheckoutStepTwoPage:
 
     def finish(self) -> None:
         """Click Finish and wait for complete page."""
-        self.finish_button.click()
+        _js_click(self.driver, self.finish_button)
         self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, '.complete-header')))
 
@@ -137,4 +142,4 @@ class CheckoutCompletePage:
         return self.header.text.strip()
 
     def back_home(self) -> None:
-        self.back_home_button.click()
+        _js_click(self.driver, self.back_home_button)

@@ -5,6 +5,11 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
+def _js_click(driver, element) -> None:
+    """Click via JavaScript — reliable on Linux headless WebDriver."""
+    driver.execute_script("arguments[0].click();", element)
+
+
 class CartPage:
     """Page object for the shopping cart page."""
 
@@ -54,11 +59,11 @@ class CartPage:
             By.XPATH,
             f"//div[@class='cart_item' and contains(.,'{product_name}')]//button"
         )
-        btn.click()
+        _js_click(self.driver, btn)
 
     def go_to_checkout(self) -> None:
         """Click the checkout button and wait for the form."""
-        self.checkout_button.click()
+        _js_click(self.driver, self.checkout_button)
         self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, '[data-test="firstName"]')))
 

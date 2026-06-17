@@ -7,6 +7,11 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 
 
+def _js_click(driver, element) -> None:
+    """Click via JavaScript — reliable on Linux headless WebDriver."""
+    driver.execute_script("arguments[0].click();", element)
+
+
 class InventoryPage:
     """Page object for the inventory/products listing page."""
 
@@ -73,7 +78,7 @@ class InventoryPage:
             By.XPATH,
             f"//div[@class='inventory_item' and contains(.,'{product_name}')]//button"
         )
-        btn.click()
+        _js_click(self.driver, btn)
 
     def remove_item(self, product_name: str) -> None:
         """Click 'Remove' for the given product by name.
@@ -84,7 +89,7 @@ class InventoryPage:
             By.XPATH,
             f"//div[@class='inventory_item' and contains(.,'{product_name}')]//button"
         )
-        btn.click()
+        _js_click(self.driver, btn)
 
     def get_cart_count(self) -> int:
         """Return the cart badge count. Returns 0 if badge not visible."""
@@ -102,7 +107,7 @@ class InventoryPage:
 
     def go_to_cart(self) -> None:
         """Navigate to the cart page and wait for it to load."""
-        self.cart_link.click()
+        _js_click(self.driver, self.cart_link)
         self.wait.until(EC.presence_of_element_located(
             (By.CSS_SELECTOR, '[data-test="checkout"]')))
 
@@ -116,4 +121,4 @@ class InventoryPage:
         btns = self.driver.find_elements(
             By.XPATH, "//div[@class='inventory_item']//button[contains(text(),'Remove')]")
         for btn in btns:
-            btn.click()
+            _js_click(self.driver, btn)

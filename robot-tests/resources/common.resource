@@ -38,3 +38,9 @@ Navigate To Login
     [Documentation]    Go to the SauceDemo login page.
     Go To    ${BASE_URL}
     Wait Until Element Is Visible    css=[data-test="login-button"]    timeout=${TIMEOUT}
+
+JS Click Element
+    [Documentation]    Click an element via JavaScript (reliable on headless Linux).
+    [Arguments]    ${locator}
+    ${el}=    Get WebElement    ${locator}
+    Execute Javascript    arguments[0].click();    ARGUMENTS    ${el}

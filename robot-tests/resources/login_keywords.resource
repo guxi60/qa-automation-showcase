@@ -7,7 +7,7 @@ Login With Credentials
     [Arguments]    ${username}    ${password}
     Input Text    css=[data-test="username"]    ${username}
     Input Text    css=[data-test="password"]    ${password}
-    Click Button    css=[data-test="login-button"]
+    JS Click Element    css=[data-test="login-button"]
 
 Get Login Error Text
     [Documentation]    Return the error message text.

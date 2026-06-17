@@ -23,7 +23,7 @@ Remove Item From Cart
     [Arguments]    ${product_name}
     ${btn}=    Get WebElement
     ...    xpath=//div[@class='cart_item' and contains(.,'${product_name}')]//button
-    Click Button    ${btn}
+    JS Click Element    ${btn}
 
 Cart Should Be Loaded
     [Documentation]    Verify the checkout button is visible.
@@ -31,11 +31,11 @@ Cart Should Be Loaded
 
 Click Continue Shopping
     [Documentation]    Click Continue Shopping to return to Inventory.
-    Click Element    css=[data-test="continue-shopping"]
+    JS Click Element    css=[data-test="continue-shopping"]
 
 Click Checkout
     [Documentation]    Click the Checkout button to proceed.
-    Click Element    css=[data-test="checkout"]
+    JS Click Element    css=[data-test="checkout"]
     Wait Until Element Is Visible    css=[data-test="firstName"]    timeout=${TIMEOUT}
 
 Go To Cart Page

@@ -42,7 +42,7 @@ Remove Item From Inventory
     [Arguments]    ${product_name}
     ${btn}=    Get WebElement
     ...    xpath=//div[@class='inventory_item' and contains(.,'${product_name}')]//button
-    Click Button    ${btn}
+    JS Click Element    ${btn}
 
 Get Cart Badge Count
     [Documentation]    Return cart badge number, or 0 if not visible.
@@ -62,7 +62,7 @@ Sort Inventory By
 
 Go To Cart
     [Documentation]    Click the cart link and wait for cart page.
-    Click Element    css=.shopping_cart_link
+    JS Click Element    css=.shopping_cart_link
     Wait Until Element Is Visible    css=[data-test="checkout"]    timeout=${TIMEOUT}
 
 Inventory Should Be Loaded

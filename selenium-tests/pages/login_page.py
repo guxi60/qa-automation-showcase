@@ -6,6 +6,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 
 
+def _js_click(driver, element) -> None:
+    """Click via JavaScript — reliable on Linux headless WebDriver."""
+    driver.execute_script("arguments[0].click();", element)
+
+
 class LoginPage:
     """Page object for https://www.saucedemo.com/ login."""
 
@@ -53,7 +58,7 @@ class LoginPage:
         self.username_input.send_keys(username)
         self.password_input.clear()
         self.password_input.send_keys(password)
-        self.login_button.click()
+        _js_click(self.driver, self.login_button)
         # Wait for either a successful redirect or an error message
         try:
             WebDriverWait(self.driver, 10).until(

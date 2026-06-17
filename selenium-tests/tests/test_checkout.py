@@ -128,7 +128,8 @@ def test_checkout_cancel_returns_to_cart(cart_ready: CartPage, driver):
         cart_ready.go_to_checkout()
 
     with step("Click [Cancel] without filling the form"):
-        driver.find_element(By.CSS_SELECTOR, '[data-test="cancel"]').click()
+        btn = driver.find_element(By.CSS_SELECTOR, '[data-test="cancel"]')
+        driver.execute_script("arguments[0].click();", btn)
     action("Clicked [Cancel]")
 
     with step("Verify return to cart page"):
