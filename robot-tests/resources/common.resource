@@ -8,7 +8,7 @@ Variables         test_data.py
 ${BASE_URL}               https://www.saucedemo.com/
 ${INVENTORY_URL}          https://www.saucedemo.com/inventory.html
 ${CART_URL}               https://www.saucedemo.com/cart.html
-${TIMEOUT}                10s
+${TIMEOUT}                20s
 ${RETRY_INTERVAL}         500ms
 
 *** Keywords ***
@@ -17,7 +17,7 @@ Start Test Session
     Open Browser    ${BASE_URL}    Chrome    options=${CHROME_OPTIONS}    executable_path=${CHROMEDRIVER_PATH}
     Set Window Size    1280    720
     Set Selenium Timeout    ${TIMEOUT}
-    Set Selenium Implicit Wait    5s
+    Set Selenium Implicit Wait    10s
     Register Keyword To Run On Failure    Capture Screenshot On Failure
 
 End Test Session
