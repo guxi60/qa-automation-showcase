@@ -58,6 +58,7 @@ def test_login(driver, tc: dict):
 
 
 @allure.feature("Authentication")
+@pytest.mark.smoke
 def test_login_page_elements_visible(driver):
     """TC-LOGIN-006 — Static GUI check (not parametrized — no interaction)."""
     tc = {

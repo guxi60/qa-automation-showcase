@@ -71,6 +71,22 @@ def set_meta(tc: dict):
         allure.dynamic.label("test_level", tc["level"])
 
 
+def register_tags_as_markers(items: list) -> None:
+    """Map YAML ``tags`` fields to pytest markers (for -m filtering)."""
+    import pytest as _pytest
+    for item in items:
+        if not hasattr(item, "callspec"):
+            continue
+        tc = item.callspec.params.get("tc")
+        if not isinstance(tc, dict):
+            continue
+        for tag in tc.get("tags", []):
+            safe = tag.replace(" ", "_").replace("-", "_")
+            if not safe:
+                continue
+            item.add_marker(_pytest.mark.__getattr__(safe))
+
+
 # ═══════════════════════════════════════════════════════════════
 #  Console + Allure dual-output helpers
 # ═══════════════════════════════════════════════════════════════

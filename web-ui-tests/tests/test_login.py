@@ -54,6 +54,7 @@ def test_login(page: Page, tc: dict):
 
 
 @allure.feature("Authentication")
+@pytest.mark.smoke
 def test_login_page_elements_visible(page: Page):
     """TC-LOGIN-006 — Static GUI check (not parametrized — no interaction)."""
     tc = {

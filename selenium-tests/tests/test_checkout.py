@@ -37,6 +37,7 @@ def cart_ready(driver) -> CartPage:
 # ═══════════════════════════════════════════════════════════════
 
 @allure.feature("Checkout")
+@pytest.mark.smoke
 def test_complete_checkout_e2e(cart_ready: CartPage, driver):
     """TC-CHK-001 — Full purchase flow."""
     tc = load_data("checkout.json")["checkout"][0]

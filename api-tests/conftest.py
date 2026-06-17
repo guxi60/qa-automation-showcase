@@ -175,6 +175,13 @@ def pytest_sessionfinish(session) -> None:
     )
 
 
+# ── Dynamic markers from YAML tags ──────────────────────────────
+
+def pytest_collection_modifyitems(items):
+    from api_reporter import register_tags_as_markers
+    register_tags_as_markers(items)
+
+
 # ── Markers ─────────────────────────────────────────────────────
 
 def pytest_configure(config):
