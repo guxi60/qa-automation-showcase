@@ -283,12 +283,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # ── Allure CLI ──────────────────────────────────────────
+      # ── Allure CLI (stable .zip download) ──────────────────
       - name: Install Allure CLI
         run: |
           ALLURE_VERSION=2.32.0
-          curl -sL "https://github.com/allure-frameworks/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.tgz" \
-            | sudo tar -xz -C /opt/
+          curl -fsSLO "https://github.com/allure-frameworks/allure2/releases/download/${ALLURE_VERSION}/allure-${ALLURE_VERSION}.zip"
+          sudo unzip -q "allure-${ALLURE_VERSION}.zip" -d /opt/
+          rm "allure-${ALLURE_VERSION}.zip"
           sudo ln -sf /opt/allure-${ALLURE_VERSION}/bin/allure /usr/local/bin/allure
           allure --version
 

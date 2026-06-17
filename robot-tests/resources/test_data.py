@@ -15,9 +15,10 @@ from webdriver_manager.chrome import ChromeDriverManager
 # ── ChromeDriver ────────────────────────────────────────────────
 
 def _get_chromedriver_path() -> str:
-    """Return the path to a cached ChromeDriver binary matching our Chromium.
+    """Return the path to a compatible ChromeDriver binary.
 
-    Uses cached v147 driver to avoid webdriver_manager connectivity issues.
+    Priority: 1) cached driver → 2) auto-detect (Linux CI) → 3) pinned v147
+    Auto-detect first is essential on Linux where system Chrome ≠ v147.
     """
     _cached = list(
         (Path(os.environ.get("USERPROFILE", "")) / ".wdm" / "drivers" / "chromedriver" / "win64")
@@ -25,10 +26,17 @@ def _get_chromedriver_path() -> str:
     )
     if _cached:
         return str(_cached[0])
+
+    # Auto-detect: matches whatever Chrome is installed (critical on Linux CI)
+    try:
+        return ChromeDriverManager().install()
+    except Exception:
+        pass
+
+    # Pinned v147: matches Playwright's bundled Chromium on Windows
     try:
         return ChromeDriverManager(
             driver_version="147.0.7727.15",
-            chrome_type="chromium",
         ).install()
     except Exception:
         return ChromeDriverManager().install()

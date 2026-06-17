@@ -36,23 +36,33 @@ def driver():
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--window-size=1280,720")
 
-    # Match ChromeDriver version to the bundled Chromium (v147).
-    # Prefer cached binary to avoid webdriver_manager connectivity issues.
-    _cached = list(
-        (Path(os.environ.get("USERPROFILE", "")) / ".wdm" / "drivers" / "chromedriver" / "win64")
-        .glob("147*/chromedriver-win64/chromedriver.exe"),
-    )
-    if _cached:
-        driver_path = str(_cached[0])
-        print(f"Using cached ChromeDriver: {driver_path}")
-    else:
+    # Resolve a ChromeDriver whose version matches the installed Chrome.
+    # Priority: 1) cached driver → 2) auto-detect (Linux CI) → 3) pinned v147
+    # Auto-detect first is essential on Linux where system Chrome ≠ v147.
+    def _resolve_chromedriver() -> str:
+        """Return path to a compatible ChromeDriver binary."""
+        _cached = list(
+            (Path(os.environ.get("USERPROFILE", "")) / ".wdm" / "drivers" / "chromedriver" / "win64")
+            .glob("147*/chromedriver-win64/chromedriver.exe"),
+        )
+        if _cached:
+            return str(_cached[0])
+
+        # Auto-detect: matches whatever Chrome is installed (critical on Linux CI)
         try:
-            driver_path = ChromeDriverManager(
+            return ChromeDriverManager().install()
+        except Exception:
+            pass
+
+        # Pinned v147: matches Playwright's bundled Chromium on Windows
+        try:
+            return ChromeDriverManager(
                 driver_version="147.0.7727.15",
-                chrome_type="chromium",
             ).install()
         except Exception:
-            driver_path = ChromeDriverManager().install()
+            return ChromeDriverManager().install()
+
+    driver_path = _resolve_chromedriver()
 
     driver = webdriver.Chrome(
         service=Service(driver_path),
