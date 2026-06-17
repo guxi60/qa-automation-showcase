@@ -1,5 +1,5 @@
 "BROKEN","EPIC","FAILED","FEATURE","PASSED","SKIPPED","STORY","UNKNOWN"
-"0","","0","Users API","1","0","Schema Validation","0"
-"0","","0","Posts API","6","0","Post CRUD","0"
 "0","","0","Users API","6","0","User CRUD","0"
+"0","","0","Posts API","6","0","Post CRUD","0"
+"0","","0","Users API","1","0","Schema Validation","0"
 "0","","0","Posts API","1","0","Schema Validation","0"
