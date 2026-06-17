@@ -163,7 +163,11 @@ def set_meta(tc: dict):
 # ═══════════════════════════════════════════════════════════════
 
 def register_tags_as_markers(items: list) -> None:
-    """Map YAML ``tags`` fields to pytest markers (for -m filtering)."""
+    """Map YAML ``tags`` fields to pytest markers (for -m filtering).
+
+    Only adds markers already declared in ``pytest.ini`` — undeclared
+    tags are still attached to Allure via ``set_meta()``.
+    """
     import pytest as _pytest
 
     for item in items:
@@ -173,9 +177,10 @@ def register_tags_as_markers(items: list) -> None:
         if not isinstance(tc, dict):
             continue
         for tag in tc.get("tags", []):
-            # Sanitise: pytest markers can't have spaces or special chars
             safe = tag.replace(" ", "_").replace("-", "_")
             if not safe:
                 continue
-            # Register the marker on the fly (pytest will warn but won't error)
-            item.add_marker(_pytest.mark.__getattr__(safe))
+            # Only add markers that pytest already knows about (avoids
+            # --strict-markers rejecting undeclared tags like "functional")
+            if safe in item.config.getini("markers"):
+                item.add_marker(_pytest.mark.__getattr__(safe))

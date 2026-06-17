@@ -124,7 +124,10 @@ def set_meta(tc: dict):
 
 
 def register_tags_as_markers(items: list) -> None:
-    """Map YAML ``tags`` fields to pytest markers (for -m filtering)."""
+    """Map YAML ``tags`` fields to pytest markers (for -m filtering).
+
+    Only adds markers already declared in ``pytest.ini``.
+    """
     import pytest as _pytest
     for item in items:
         if not hasattr(item, "callspec"):
@@ -136,4 +139,5 @@ def register_tags_as_markers(items: list) -> None:
             safe = tag.replace(" ", "_").replace("-", "_")
             if not safe:
                 continue
-            item.add_marker(_pytest.mark.__getattr__(safe))
+            if safe in item.config.getini("markers"):
+                item.add_marker(_pytest.mark.__getattr__(safe))
