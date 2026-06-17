@@ -18,10 +18,11 @@ def _js_click(driver, element) -> None:
 
 
 def _js_input(driver, element, text: str) -> None:
-    """Fill an input via JavaScript — reliable on Linux headless WebDriver."""
+    """Fill an input via native value setter — triggers React's synthetic events."""
     driver.execute_script(
-        "arguments[0].value=''; arguments[0].value=arguments[1];"
-        "arguments[0].dispatchEvent(new Event('input',{bubbles:true}));",
+        "var n=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;"
+        "n.call(arguments[0],arguments[1]);"
+        "arguments[0].dispatchEvent(new InputEvent('input',{bubbles:true}));",
         element, text,
     )
 

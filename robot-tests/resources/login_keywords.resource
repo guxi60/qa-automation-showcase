@@ -5,8 +5,8 @@ Resource    common.resource
 Login With Credentials
     [Documentation]    Fill username, password and click Login.
     [Arguments]    ${username}    ${password}
-    JS Input Text    css=[data-test="username"]    ${username}
-    JS Input Text    css=[data-test="password"]    ${password}
+    Input Text    css=[data-test="username"]    ${username}
+    Input Text    css=[data-test="password"]    ${password}
     JS Click Element    css=[data-test="login-button"]
 
 Get Login Error Text
