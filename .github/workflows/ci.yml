@@ -143,13 +143,17 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      # The Selenium conftest.py contains Windows-only path logic
-      # (LOCALAPPDATA, win64/*.exe).  Installing Google Chrome gives
-      # ChromeDriverManager a Linux browser to auto-detect and match.
-      - name: Install Google Chrome
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq google-chrome-stable
+      # Use Playwright's bundled Chromium (same version across all three
+      # UI frameworks).  conftest.py resolves the binary on both Windows
+      # and Linux and matches ChromeDriver to the detected version.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Playwright Chromium
+        run: playwright install chromium --with-deps
 
       - name: Clean stale results & run tests
         run: |
@@ -194,13 +198,17 @@ jobs:
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
-      # The Robot variable file (test_data.py) has the same
-      # Windows-only ChromeDriver/Chromium path logic as Selenium.
-      # System Chrome gives ChromeDriverManager a Linux target.
-      - name: Install Google Chrome
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq google-chrome-stable
+      # Use Playwright's bundled Chromium (same version across all three
+      # UI frameworks).  test_data.py resolves the binary on both Windows
+      # and Linux and matches ChromeDriver to the detected version.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Install Playwright Chromium
+        run: playwright install chromium --with-deps
 
       - name: Clean stale results & run Robot tests
         run: |

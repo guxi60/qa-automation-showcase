@@ -14,12 +14,26 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 # ── ChromeDriver ────────────────────────────────────────────────
 
-def _get_chromedriver_path() -> str:
-    """Return the path to a compatible ChromeDriver binary.
+def _find_chromium_binary() -> str | None:
+    """Return path to Playwright's bundled Chromium (cross-platform)."""
+    candidates = []
+    # Windows
+    candidates.extend(
+        (Path(os.environ.get("LOCALAPPDATA", "")) / "ms-playwright").glob(
+            "chromium-*/chrome-win*/chrome.exe"
+        )
+    )
+    # Linux
+    candidates.extend(
+        Path.home().glob(".cache/ms-playwright/chromium-*/chrome-linux*/chrome")
+    )
+    candidates.sort(reverse=True)
+    return str(candidates[0]) if candidates else None
 
-    Priority: 1) cached driver → 2) auto-detect (Linux CI) → 3) pinned v147
-    Auto-detect first is essential on Linux where system Chrome ≠ v147.
-    """
+
+def _get_chromedriver_path() -> str:
+    """Return the path to a compatible ChromeDriver binary."""
+    # 1. Cached driver (Windows)
     _cached = list(
         (Path(os.environ.get("USERPROFILE", "")) / ".wdm" / "drivers" / "chromedriver" / "win64")
         .glob("147*/chromedriver-win64/chromedriver.exe"),
@@ -27,19 +41,26 @@ def _get_chromedriver_path() -> str:
     if _cached:
         return str(_cached[0])
 
-    # Auto-detect: matches whatever Chrome is installed (critical on Linux CI)
-    try:
-        return ChromeDriverManager().install()
-    except Exception:
-        pass
+    # 2. If using Playwright's Chromium, detect its version & match ChromeDriver
+    _chromium = _find_chromium_binary()
+    if _chromium:
+        try:
+            import subprocess
+            out = subprocess.check_output(
+                [_chromium, "--version"],
+                stderr=subprocess.STDOUT, text=True, timeout=15,
+            )
+            m = __import__("re").search(r"(\d+\.\d+\.\d+\.\d+)", out)
+            if m:
+                return ChromeDriverManager(driver_version=m.group(1)).install()
+        except Exception:
+            pass
 
-    # Pinned v147: matches Playwright's bundled Chromium on Windows
+    # 3. Auto-detect (matches system Chrome / Playwright Chromium)
     try:
-        return ChromeDriverManager(
-            driver_version="147.0.7727.15",
-        ).install()
-    except Exception:
         return ChromeDriverManager().install()
+    except Exception:
+        return ChromeDriverManager(driver_version="147.0.7727.15").install()
 
 # ── shared test data ───────────────────────────────────────────
 
@@ -67,13 +88,10 @@ _options.add_argument("--no-sandbox")
 _options.add_argument("--disable-dev-shm-usage")
 _options.add_argument("--window-size=1280,720")
 
-# Reuse Playwright's bundled Chromium
-_playwright_dir = Path(os.environ.get("LOCALAPPDATA", "")) / "ms-playwright"
-_chromiums = sorted(
-    _playwright_dir.glob("chromium-*/chrome-win*/chrome.exe"), reverse=True
-)
-if _chromiums:
-    _options.binary_location = str(_chromiums[0])
+# Reuse Playwright's bundled Chromium (cross-platform)
+_chromium = _find_chromium_binary()
+if _chromium:
+    _options.binary_location = _chromium
 
 # ── exposed Robot variables ────────────────────────────────────
 

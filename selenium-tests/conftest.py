@@ -1,6 +1,8 @@
 """Selenium + pytest fixtures — Allure report integration."""
 
 import os
+import re
+import subprocess
 import pytest
 import allure
 from pathlib import Path
@@ -14,12 +16,24 @@ from webdriver_manager.chrome import ChromeDriverManager
 BASE_URL = "https://www.saucedemo.com"
 SCREENSHOT_DIR = Path(__file__).parent / "screenshots"
 
-# Reuse Playwright's bundled Chromium so Selenium works without a system Chrome.
-_PLAYWRIGHT_CHROMIUMS = sorted(
-    (Path(os.environ.get("LOCALAPPDATA", "")) / "ms-playwright").glob("chromium-*/chrome-win*/chrome.exe"),
-    reverse=True,  # newest first
-)
-_CHROME_BINARY = str(_PLAYWRIGHT_CHROMIUMS[0]) if _PLAYWRIGHT_CHROMIUMS else None
+# Reuse Playwright's bundled Chromium (cross-platform).
+def _find_playwright_chromium() -> str | None:
+    """Return the path to the newest Playwright-bundled Chromium, if any."""
+    candidates = []
+    # Windows
+    candidates.extend(
+        (Path(os.environ.get("LOCALAPPDATA", "")) / "ms-playwright").glob(
+            "chromium-*/chrome-win*/chrome.exe"
+        )
+    )
+    # Linux
+    candidates.extend(
+        Path.home().glob(".cache/ms-playwright/chromium-*/chrome-linux*/chrome")
+    )
+    candidates.sort(reverse=True)  # newest first
+    return str(candidates[0]) if candidates else None
+
+_CHROME_BINARY = _find_playwright_chromium()
 
 
 @pytest.fixture(scope="session")
@@ -36,11 +50,10 @@ def driver():
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--window-size=1280,720")
 
-    # Resolve a ChromeDriver whose version matches the installed Chrome.
-    # Priority: 1) cached driver → 2) auto-detect (Linux CI) → 3) pinned v147
-    # Auto-detect first is essential on Linux where system Chrome ≠ v147.
+    # Resolve a ChromeDriver whose version matches our Chromium.
     def _resolve_chromedriver() -> str:
         """Return path to a compatible ChromeDriver binary."""
+        # 1. Cached driver (Windows — matches Playwright's bundled Chromium)
         _cached = list(
             (Path(os.environ.get("USERPROFILE", "")) / ".wdm" / "drivers" / "chromedriver" / "win64")
             .glob("147*/chromedriver-win64/chromedriver.exe"),
@@ -48,19 +61,24 @@ def driver():
         if _cached:
             return str(_cached[0])
 
-        # Auto-detect: matches whatever Chrome is installed (critical on Linux CI)
-        try:
-            return ChromeDriverManager().install()
-        except Exception:
-            pass
+        # 2. If using Playwright's Chromium, detect its version & match ChromeDriver
+        if _CHROME_BINARY:
+            try:
+                out = subprocess.check_output(
+                    [_CHROME_BINARY, "--version"],
+                    stderr=subprocess.STDOUT, text=True, timeout=15,
+                )
+                m = re.search(r"(\d+\.\d+\.\d+\.\d+)", out)
+                if m:
+                    return ChromeDriverManager(driver_version=m.group(1)).install()
+            except Exception:
+                pass
 
-        # Pinned v147: matches Playwright's bundled Chromium on Windows
+        # 3. Auto-detect (matches system Chrome / Playwright Chromium)
         try:
-            return ChromeDriverManager(
-                driver_version="147.0.7727.15",
-            ).install()
-        except Exception:
             return ChromeDriverManager().install()
+        except Exception:
+            return ChromeDriverManager(driver_version="147.0.7727.15").install()
 
     driver_path = _resolve_chromedriver()
 
