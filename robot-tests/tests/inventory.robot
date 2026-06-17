@@ -11,7 +11,7 @@ Go To Inventory With Clean Cart
     Login And Go To Inventory
     ${btns}=    Get WebElements    xpath=//div[@class='inventory_item']//button[contains(text(),'Remove')]
     FOR    ${btn}    IN    @{btns}
-        Click Button    ${btn}
+        JS Click Element    ${btn}
     END
 
 

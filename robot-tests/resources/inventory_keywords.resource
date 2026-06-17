@@ -35,7 +35,7 @@ Add Item To Cart
     [Arguments]    ${product_name}
     ${btn}=    Get WebElement
     ...    xpath=//div[@class='inventory_item' and contains(.,'${product_name}')]//button
-    Click Button    ${btn}
+    JS Click Element    ${btn}
 
 Remove Item From Inventory
     [Documentation]    Click Remove button for the product matching ${product_name}.
