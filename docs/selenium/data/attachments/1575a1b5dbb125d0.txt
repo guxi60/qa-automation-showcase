@@ -1,0 +1,5 @@
+
+  ▸ Add items and go to cart
+
+  ▸ Verify checkout button state
+    ▶ Checkout button is ready

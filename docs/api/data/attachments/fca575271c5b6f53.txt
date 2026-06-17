@@ -1,0 +1,57 @@
+Status: 201 Created
+Duration: 16 ms
+URL: https://jsonplaceholder.typicode.com/users
+
+Headers:
+{
+  "Date": "Wed, 17 Jun 2026 09:30:26 GMT",
+  "Content-Type": "application/json; charset=utf-8",
+  "Content-Length": "469",
+  "Connection": "keep-alive",
+  "access-control-allow-credentials": "true",
+  "access-control-expose-headers": "Location",
+  "Cache-Control": "no-cache",
+  "etag": "W/\"1d5-AFZf+1AfByP8XYIQZM89EHqX2ao\"",
+  "expires": "-1",
+  "location": "https://jsonplaceholder.typicode.com/users/11",
+  "nel": "{\"report_to\":\"heroku-nel\",\"response_headers\":[\"Via\"],\"max_age\":3600,\"success_fraction\":0.01,\"failure_fraction\":0.1}",
+  "pragma": "no-cache",
+  "report-to": "{\"group\":\"heroku-nel\",\"endpoints\":[{\"url\":\"https://nel.heroku.com/reports?s=Z406fMo9ZYfx91GvLBMzH%2B72cOkgroWRgT6jHt7B38o%3D\\u0026sid=e11707d5-02a7-43ef-b45e-2cf4d2036f7d\\u0026ts=1781688626\"}],\"max_age\":3600}",
+  "reporting-endpoints": "heroku-nel=\"https://nel.heroku.com/reports?s=Z406fMo9ZYfx91GvLBMzH%2B72cOkgroWRgT6jHt7B38o%3D&sid=e11707d5-02a7-43ef-b45e-2cf4d2036f7d&ts=1781688626\"",
+  "Server": "cloudflare",
+  "vary": "Origin, X-HTTP-Method-Override, Accept-Encoding",
+  "via": "2.0 heroku-router",
+  "x-content-type-options": "nosniff",
+  "x-powered-by": "Express",
+  "x-ratelimit-limit": "1000",
+  "x-ratelimit-remaining": "996",
+  "x-ratelimit-reset": "1781688634",
+  "cf-cache-status": "DYNAMIC",
+  "CF-RAY": "a0d10918d86cd6cb-IAD",
+  "alt-svc": "h3=\":443\"; ma=86400"
+}
+
+Body:
+{
+  "name": "Gu Xiang",
+  "username": "guxi60",
+  "email": "guxi60@example.com",
+  "address": {
+    "street": "QA Lane",
+    "suite": "Suite 42",
+    "city": "Shanghai",
+    "zipcode": "200000",
+    "geo": {
+      "lat": "31.2304",
+      "lng": "121.4737"
+    }
+  },
+  "phone": "+86-21-1234-5678",
+  "website": "github.com/guxi60",
+  "company": {
+    "name": "QA Automation Inc.",
+    "catchPhrase": "Quality at speed",
+    "bs": "automate everything"
+  },
+  "id": 11
+}
