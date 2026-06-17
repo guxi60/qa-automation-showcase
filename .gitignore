@@ -32,7 +32,8 @@ screenshots/
 playwright-report/
 allure-results/
 allure-report/
-assets/
+# assets/ — re-enabled via !docs/*/assets/ above
+# (Allure reports need assets/ for JS/CSS bundles)
 
 # Robot Framework
 robot-tests/results/
