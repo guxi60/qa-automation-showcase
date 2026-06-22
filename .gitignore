@@ -23,6 +23,9 @@ test-results/
 !docs/*/*/index.html
 !docs/*/assets/
 !docs/*/assets/**
+# Perf reports — directories contain .html sub-pages, CSS, JS, fonts, etc.
+# JMeter dashboard in particular has content/pages/*.html at arbitrary depth
+!docs/perf/**
 report/
 results/
 output/
