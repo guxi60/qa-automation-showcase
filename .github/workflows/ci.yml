@@ -591,14 +591,17 @@ jobs:
       - name: Publish JMeter report
         if: needs.scope.outputs.run-performance-jmeter == 'true'
         run: |
-          # upload-artifact@v4 flattens directory contents to artifact root;
-          # JMeter's dashboard/index.html lands at _results/perf-jmeter/index.html
-          SRC="_results/perf-jmeter/index.html"
+          # When uploading multiple paths (dashboard/ + results.jtl), v4 uses
+          # the least common ancestor (performance/jmeter/) as artifact root.
+          # So dashboard/ stays as a subdirectory — not flattened.
+          SRC="_results/perf-jmeter/dashboard/index.html"
           if [ -f "$SRC" ]; then
             mkdir -p docs/perf/jmeter
-            cp -r _results/perf-jmeter/* docs/perf/jmeter/
+            cp -r _results/perf-jmeter/dashboard/* docs/perf/jmeter/
           else
-            echo "::warning::JMeter dashboard index.html not found — skipping"
+            echo "::warning::JMeter dashboard index.html not found at $SRC — skipping"
+            echo "Files in _results/perf-jmeter:"
+            find _results/perf-jmeter -maxdepth 3 -type f 2>/dev/null | head -20 || true
           fi
 
       # ── K6 report ────────────────────────────────────────────
