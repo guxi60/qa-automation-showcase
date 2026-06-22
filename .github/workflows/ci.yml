@@ -557,8 +557,13 @@ jobs:
       - name: Publish Locust report
         if: needs.scope.outputs.run-performance-locust == 'true'
         run: |
-          mkdir -p docs/perf/locust
-          cp _results/perf-locust/report.html docs/perf/locust/index.html
+          SRC="_results/perf-locust/report.html"
+          if [ -f "$SRC" ]; then
+            mkdir -p docs/perf/locust
+            cp "$SRC" docs/perf/locust/index.html
+          else
+            echo "::warning::Locust report.html not found — skipping"
+          fi
 
       # ── JMeter report ─────────────────────────────────────────
       - name: Download JMeter report
@@ -571,8 +576,13 @@ jobs:
       - name: Publish JMeter report
         if: needs.scope.outputs.run-performance-jmeter == 'true'
         run: |
-          mkdir -p docs/perf/jmeter
-          cp -r _results/perf-jmeter/dashboard/* docs/perf/jmeter/
+          SRC="_results/perf-jmeter/performance/jmeter/dashboard"
+          if [ -d "$SRC" ] && [ "$(ls -A "$SRC" 2>/dev/null)" ]; then
+            mkdir -p docs/perf/jmeter
+            cp -r "$SRC"/* docs/perf/jmeter/
+          else
+            echo "::warning::JMeter dashboard not found or empty — skipping"
+          fi
 
       # ── K6 report ────────────────────────────────────────────
       - name: Download K6 report
@@ -585,9 +595,14 @@ jobs:
       - name: Publish K6 report
         if: needs.scope.outputs.run-performance-k6 == 'true'
         run: |
-          mkdir -p docs/perf/k6
-          cp _results/perf-k6/report.html docs/perf/k6/index.html
-          cp _results/perf-k6/summary.json docs/perf/k6/summary.json
+          SRC="_results/perf-k6/performance/k6/report.html"
+          if [ -f "$SRC" ]; then
+            mkdir -p docs/perf/k6
+            cp "$SRC" docs/perf/k6/index.html
+            cp _results/perf-k6/performance/k6/summary.json docs/perf/k6/summary.json 2>/dev/null || true
+          else
+            echo "::warning::K6 report.html not found — skipping"
+          fi
 
       # ── Commit & push → triggers GitHub Pages rebuild ───────
       - name: Deploy to GitHub Pages
