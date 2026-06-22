@@ -546,6 +546,14 @@ jobs:
           allure generate _results/robot -o docs/robot --clean
           sed -i "s|<head>|<head><base href=\"/qa-automation-showcase/robot/\">|" docs/robot/index.html
 
+      # ── Debug: show downloaded artifact structures ──────────────
+      - name: Debug artifact structure
+        run: |
+          echo "=== Allure results ==="
+          find _results/api _results/playwright _results/selenium _results/robot -type f 2>/dev/null | head -20 || true
+          echo "=== Perf results ==="
+          find _results/perf-* -type f 2>/dev/null | head -30 || true
+
       # ── Locust report ──────────────────────────────────────────
       - name: Download Locust HTML report
         uses: actions/download-artifact@v4
