@@ -1,6 +1,6 @@
 # Contributing
 
-> How to add requirements, test cases, and frameworks while maintaining the TDD closed loop across all three frameworks.
+> How to add requirements, test cases, and frameworks while maintaining the TDD closed loop across all frameworks (Web UI, API, and Performance).
 
 ---
 
@@ -93,10 +93,11 @@ cd robot-tests && robot --pythonpath resources tests/  # expect all green
 
 ## Adding a New Framework
 
-If you add a fourth framework (e.g. Cypress, TestCafe):
+If you add a new framework (e.g. Cypress, TestCafe for UI; Gatling, Artillery for performance):
 
 ### File structure convention
 
+**Web UI frameworks:**
 ```
 {framework}-tests/
 ├── pages/          (or resources/ for Robot-style)
@@ -105,16 +106,24 @@ If you add a fourth framework (e.g. Cypress, TestCafe):
 └── allure-results/ (generated, gitignored)
 ```
 
+**Performance frameworks:**
+```
+performance/{tool}/
+├── {script file}   (.py / .jmx / .js — the test plan)
+├── run_report.sh   (headless runner)
+└── run_report.bat  (Windows, optional — if tool supports it)
+```
+
 ### Checklist
 
-1. **Consume shared test data** — read from `web-ui-tests/test_data/`, don't copy or fork
+1. **Consume shared test data** — for UI: read from `web-ui-tests/test_data/`, don't copy or fork. For performance: match the same 5 JSONPlaceholder scenarios (list_users, list_posts, get_user, filter_posts, create_post)
 2. **Match TC-IDs** — use the same `TC-XXX-NNN` identifiers as the other frameworks
-3. **Allure output** — produce `allure-results/` with `environment.properties` (brand the Framework name)
-4. **Same browser** — reuse Playwright's Chromium binary
+3. **Allure output** (UI/API) or **HTML report** (Performance) — produce report artifacts CI can publish
+4. **Same SUT** — SauceDemo for UI, JSONPlaceholder for API/Performance
 5. **Update RTM** — add a column for the new framework
 6. **Update README** — add to Test Coverage Matrix and Quick Start
 7. **Update all REQ-*.md files** — add Linked Test Cases row for the new framework
-8. **Run all three existing suites** first to confirm no regressions
+8. **Run all existing suites** first to confirm no regressions
 
 ---
 

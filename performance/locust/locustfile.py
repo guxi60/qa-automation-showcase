@@ -12,7 +12,7 @@ request rate well within the free tier ceiling (~100 req/min total).
 
 Run headless with HTML report
 -----------------------------
-    cd performance
+    cd performance/locust
     locust -f locustfile.py --headless -u 10 -r 2 -t 60s --html report.html
 
 - ``-u 10``   — peak 10 concurrent simulated users

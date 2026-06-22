@@ -2,13 +2,21 @@
 
 > **Module**: JSONPlaceholder REST API — `https://jsonplaceholder.typicode.com`
 >
-> **Tool**: [locust](https://locust.io/) — Python-native load testing framework
+> **Tools**: [Locust](https://locust.io/), [Apache JMeter](https://jmeter.apache.org/),
+> [Grafana k6](https://k6.io/) — three performance testing philosophies side-by-side
 >
-> **Why locust over JMeter**: locust uses pure Python (`locustfile.py`), matching
-> the project's pytest / requests / YAML DDT ecosystem.  Test logic is version-controlled
-> code, not GUI-generated XML.  JMeter is the industry default but its XML test plans
-> are opaque in code review and its Java runtime adds environment complexity without
-> benefit for this project.
+> **Why three tools**: The same 5 JSONPlaceholder scenarios are implemented in three
+> frameworks to demonstrate tool selection rationale:
+>
+> | Tool | Philosophy | Best For |
+> |------|-----------|----------|
+> | **Locust** | Pure Python, code-as-test (`locustfile.py`) | Dev-owned scripts, Python ecosystem |
+> | **JMeter** | XML test plan, GUI editor, enterprise standard | Legacy migration, test-ops team handoff |
+> | **K6** | JavaScript, CLI-native, Grafana Cloud ready | Greenfield, CI/CD integration, cloud scale |
+>
+> All three target the same endpoints with the same load profile
+> (10 users, 2/s ramp-up, 60s duration, 0.6–1.2s think time), making
+> their output directly comparable — apples-to-apples across paradigms.
 
 ---
 
@@ -23,7 +31,9 @@
 - **Linked Test Cases**:
   | Framework | Case ID | File | Status |
   |-----------|---------|------|--------|
-  | locust | TC-PERF-001 | performance/locustfile.py | ✅ |
+  | locust | TC-PERF-001 | performance/locust/locustfile.py | ✅ |
+  | JMeter | TC-PERF-001 | performance/jmeter/jsonplaceholder.jmx | ✅ |
+  | K6 | TC-PERF-001 | performance/k6/jsonplaceholder.js | ✅ |
 
 ---
 
@@ -37,7 +47,9 @@
 - **Linked Test Cases**:
   | Framework | Case ID | File | Status |
   |-----------|---------|------|--------|
-  | locust | TC-PERF-002 | performance/locustfile.py | ✅ |
+  | locust | TC-PERF-002 | performance/locust/locustfile.py | ✅ |
+  | JMeter | TC-PERF-002 | performance/jmeter/jsonplaceholder.jmx | ✅ |
+  | K6 | TC-PERF-002 | performance/k6/jsonplaceholder.js | ✅ |
 
 ---
 
@@ -51,7 +63,9 @@
 - **Linked Test Cases**:
   | Framework | Case ID | File | Status |
   |-----------|---------|------|--------|
-  | locust | TC-PERF-003 | performance/locustfile.py | ✅ |
+  | locust | TC-PERF-003 | performance/locust/locustfile.py | ✅ |
+  | JMeter | TC-PERF-003 | performance/jmeter/jsonplaceholder.jmx | ✅ |
+  | K6 | TC-PERF-003 | performance/k6/jsonplaceholder.js | ✅ |
 
 ---
 
@@ -66,7 +80,9 @@
 - **Linked Test Cases**:
   | Framework | Case ID | File | Status |
   |-----------|---------|------|--------|
-  | locust | TC-PERF-004 | performance/locustfile.py | ✅ |
+  | locust | TC-PERF-004 | performance/locust/locustfile.py | ✅ |
+  | JMeter | TC-PERF-004 | performance/jmeter/jsonplaceholder.jmx | ✅ |
+  | K6 | TC-PERF-004 | performance/k6/jsonplaceholder.js | ✅ |
 
 ---
 
@@ -84,4 +100,6 @@
 - **Linked Test Cases**:
   | Framework | Case ID | File | Status |
   |-----------|---------|------|--------|
-  | locust | TC-PERF-005 | performance/run_report.bat | ✅ |
+  | locust | TC-PERF-005 | performance/locust/run_report.sh | ✅ |
+  | JMeter | TC-PERF-005 | performance/jmeter/run_report.sh | ✅ |
+  | K6 | TC-PERF-005 | performance/k6/run_report.sh | ✅ |

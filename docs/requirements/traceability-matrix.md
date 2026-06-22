@@ -8,16 +8,16 @@
 
 ## Coverage Overview
 
-| Module | Reqs | Playwright | Selenium | Robot Framework | API | Performance |
-|--------|------|------------|----------|-----------------|-----|-------------|
-| AUTH | 6 | 6/6 ✅ | 6/6 ✅ | 6/6 ✅ | — | — |
-| INVENTORY | 8 | 8/8 ✅ | 8/8 ✅ | 8/8 ✅ | — | — |
-| CART | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — | — |
-| CHECKOUT | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — | — |
-| API-USERS | 7 | — | — | — | 7/7 ✅ | — |
-| API-POSTS | 7 | — | — | — | 7/7 ✅ | — |
-| PERF | 5 | — | — | — | — | 5/5 ✅ |
-| **Total** | **43** | **24/24 (100%)** | **24/24 (100%)** | **24/24 (100%)** | **14/14 (100%)** | **5/5 (100%)** |
+| Module | Reqs | Playwright | Selenium | Robot Framework | API | Locust | JMeter | K6 |
+|--------|------|------------|----------|-----------------|-----|--------|--------|-----|
+| AUTH | 6 | 6/6 ✅ | 6/6 ✅ | 6/6 ✅ | — | — | — | — |
+| INVENTORY | 8 | 8/8 ✅ | 8/8 ✅ | 8/8 ✅ | — | — | — | — |
+| CART | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — | — | — | — |
+| CHECKOUT | 5 | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ | — | — | — | — |
+| API-USERS | 7 | — | — | — | 7/7 ✅ | — | — | — |
+| API-POSTS | 7 | — | — | — | 7/7 ✅ | — | — | — |
+| PERF | 5 | — | — | — | — | 5/5 ✅ | 5/5 ✅ | 5/5 ✅ |
+| **Total** | **43** | **24/24 (100%)** | **24/24 (100%)** | **24/24 (100%)** | **14/14 (100%)** | **5/5 (100%)** | **5/5 (100%)** | **5/5 (100%)** |
 
 ---
 
@@ -93,13 +93,13 @@
 
 ### PERF — Performance & Load
 
-| Req ID | Description | Priority | Performance |
-|--------|------------|----------|-------------|
-| [REQ-PERF-001](REQ-PERF.md#req-perf-001-baseline-throughput--10-concurrent-users-sustain--5-rps-with-zero-failures) | Baseline 10 users, 0 % failures | CRITICAL | TC-PERF-001 ✅ |
-| [REQ-PERF-002](REQ-PERF.md#req-perf-002-read-latency-p95--1000-ms) | Read latency P95 ≤ 1000 ms | CRITICAL | TC-PERF-002 ✅ |
-| [REQ-PERF-003](REQ-PERF.md#req-perf-003-write-latency-p95--2000-ms) | Write latency P95 ≤ 2000 ms | NORMAL | TC-PERF-003 ✅ |
-| [REQ-PERF-004](REQ-PERF.md#req-perf-004-no-degradation-at-2-baseline-load) | 2× baseline stress test | NORMAL | TC-PERF-004 ✅ |
-| [REQ-PERF-005](REQ-PERF.md#req-perf-005-test-report-is-human-readable-and-ci-friendly) | HTML report, CI-friendly | NORMAL | TC-PERF-005 ✅ |
+| Req ID | Description | Priority | Locust | JMeter | K6 |
+|--------|------------|----------|--------|--------|-----|
+| [REQ-PERF-001](REQ-PERF.md#req-perf-001-baseline-throughput--10-concurrent-users-sustain--5-rps-with-zero-failures) | Baseline 10 users, 0 % failures | CRITICAL | TC-PERF-001 ✅ | TC-PERF-001 ✅ | TC-PERF-001 ✅ |
+| [REQ-PERF-002](REQ-PERF.md#req-perf-002-read-latency-p95--1000-ms) | Read latency P95 ≤ 1000 ms | CRITICAL | TC-PERF-002 ✅ | TC-PERF-002 ✅ | TC-PERF-002 ✅ |
+| [REQ-PERF-003](REQ-PERF.md#req-perf-003-write-latency-p95--2000-ms) | Write latency P95 ≤ 2000 ms | NORMAL | TC-PERF-003 ✅ | TC-PERF-003 ✅ | TC-PERF-003 ✅ |
+| [REQ-PERF-004](REQ-PERF.md#req-perf-004-no-degradation-at-2-baseline-load) | 2× baseline stress test | NORMAL | TC-PERF-004 ✅ | TC-PERF-004 ✅ | TC-PERF-004 ✅ |
+| [REQ-PERF-005](REQ-PERF.md#req-perf-005-test-report-is-human-readable-and-ci-friendly) | HTML report, CI-friendly | NORMAL | TC-PERF-005 ✅ | TC-PERF-005 ✅ | TC-PERF-005 ✅ |
 
 ---
 
@@ -115,9 +115,15 @@ Requirements Spec (REQ-*.md)
        │         ├──▶ Selenium tests   (selenium-tests/tests/) ✅
        │         └──▶ Robot tests      (robot-tests/tests/)    ✅
        │
-       └──▶ API    Test Data (test_data/*.yaml)
+       ├──▶ API    Test Data (test_data/*.yaml)
+       │         │
+       │         └──▶ pytest + requests  (api-tests/tests/)   ✅
+       │
+       └──▶ Perf  (no external test data — inline scenarios)
                  │
-                 └──▶ pytest + requests  (api-tests/tests/)   ✅
+                 ├──▶ Locust  (performance/locust/) ✅
+                 ├──▶ JMeter  (performance/jmeter/) ✅
+                 └──▶ K6      (performance/k6/)     ✅
 ```
 
 **Closed-loop rule**: Every requirement → at least one test case → implemented in the relevant framework(s) → test results traceable back to the requirement.

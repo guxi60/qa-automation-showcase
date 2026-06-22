@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+
+    <!-- ════════════════════════════════════════════════════════════
+         Test Plan — JSONPlaceholder API Performance
+
+         Same 5 scenarios as Locust &amp; K6:
+           list_users (w=3) · list_posts (w=3) · get_user (w=2)
+           filter_posts (w=2) · create_post (w=1)
+
+         Target: https://jsonplaceholder.typicode.com
+         ════════════════════════════════════════════════════════════ -->
+    <TestPlan guiclass="TestPlanGui" testname="JSONPlaceholder API — Performance" enabled="true">
+      <stringProp name="TestPlan.comments">Side-by-side comparison with Locust and K6.
+Same 5 endpoints, same load profile.</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+    </TestPlan>
+    <hashTree>
+
+      <!-- ── Thread Group: 10 users, 2/s ramp, 60s ───────────── -->
+      <ThreadGroup guiclass="ThreadGroupGui" testname="Baseline (10 users × 60s)" enabled="true">
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">60</stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <boolProp name="ThreadGroup.delayedStart">true</boolProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController">
+          <stringProp name="LoopController.loops">-1</stringProp>
+          <boolProp name="LoopController.continue_forever">true</boolProp>
+        </elementProp>
+      </ThreadGroup>
+      <hashTree>
+
+        <!-- ── HTTP Request Defaults ─────────────────────────── -->
+        <ConfigTestElement guiclass="HttpDefaultsGui" testname="HTTP Request Defaults" enabled="true">
+          <stringProp name="HTTPSampler.domain">jsonplaceholder.typicode.com</stringProp>
+          <stringProp name="HTTPSampler.protocol">https</stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.implementation">HttpClient4</stringProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+        </ConfigTestElement>
+        <hashTree/>
+
+        <!-- ── Think time: Uniform Random 600–1200 ms ────────── -->
+        <!--     (matches Locust wait_time = between(0.6, 1.2))   -->
+        <UniformRandomTimer guiclass="UniformRandomTimerGui" testname="Think Time (600-1200 ms)" enabled="true">
+          <stringProp name="ConstantTimer.delay">900</stringProp>
+          <stringProp name="RandomTimer.range">600</stringProp>
+        </UniformRandomTimer>
+        <hashTree/>
+
+        <!-- ════════════════════════════════════════════════════
+             Weighted scenarios via Throughput Controllers.
+             Weights: 27% / 27% / 18% / 18% / 9% (≈ 3:3:2:2:1)
+             ════════════════════════════════════════════════════ -->
+
+        <!-- ── Scenario 1: GET /users  (w=3, 27%) ────────────── -->
+        <ThroughputController guiclass="ThroughputControllerGui" testname="Weight 3/11 → 27%" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <stringProp name="ThroughputController.percentThroughput">27.0</stringProp>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testname="GET /users" enabled="true">
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <stringProp name="HTTPSampler.path">/users</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testname="Status = 200" enabled="true">
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <stringProp name="Assertion.custom_message">Expected HTTP 200</stringProp>
+              <stringProp name="Assertion.test_type">2</stringProp><!-- Equals -->
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+
+        <!-- ── Scenario 2: GET /posts  (w=3, 27%) ────────────── -->
+        <ThroughputController guiclass="ThroughputControllerGui" testname="Weight 3/11 → 27%" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <stringProp name="ThroughputController.percentThroughput">27.0</stringProp>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testname="GET /posts" enabled="true">
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <stringProp name="HTTPSampler.path">/posts</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testname="Status = 200" enabled="true">
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <stringProp name="Assertion.custom_message">Expected HTTP 200</stringProp>
+              <stringProp name="Assertion.test_type">2</stringProp>
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+
+        <!-- ── Scenario 3: GET /users/{id}  (w=2, 18%) ────────── -->
+        <ThroughputController guiclass="ThroughputControllerGui" testname="Weight 2/11 → 18%" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <stringProp name="ThroughputController.percentThroughput">18.0</stringProp>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testname="GET /users/{id}" enabled="true">
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <stringProp name="HTTPSampler.path">/users/${__Random(1,10)}</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testname="Status = 200" enabled="true">
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <stringProp name="Assertion.custom_message">Expected HTTP 200</stringProp>
+              <stringProp name="Assertion.test_type">2</stringProp>
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+
+        <!-- ── Scenario 4: GET /posts?userId={id}  (w=2, 18%) ── -->
+        <ThroughputController guiclass="ThroughputControllerGui" testname="Weight 2/11 → 18%" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <stringProp name="ThroughputController.percentThroughput">18.0</stringProp>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testname="GET /posts?userId={id}" enabled="true">
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <stringProp name="HTTPSampler.path">/posts</stringProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="userId" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">true</boolProp>
+                  <stringProp name="Argument.value">${__Random(1,10)}</stringProp>
+                  <stringProp name="Argument.name">userId</stringProp>
+                  <boolProp name="HTTPArgument.use_equals">true</boolProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <ResponseAssertion guiclass="AssertionGui" testname="Status = 200" enabled="true">
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <stringProp name="Assertion.custom_message">Expected HTTP 200</stringProp>
+              <stringProp name="Assertion.test_type">2</stringProp>
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">200</stringProp>
+              </collectionProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+
+        <!-- ── Scenario 5: POST /posts  (w=1, 9%) ────────────── -->
+        <ThroughputController guiclass="ThroughputControllerGui" testname="Weight 1/11 → 9%" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <stringProp name="ThroughputController.percentThroughput">9.0</stringProp>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testname="POST /posts" enabled="true">
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <stringProp name="HTTPSampler.path">/posts</stringProp>
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{"userId":1,"title":"perf test","body":"load test post"}</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <HeaderManager guiclass="HeaderPanel" testname="Content-Type: application/json" enabled="true">
+              <collectionProp name="HeaderManager.headers">
+                <elementProp name="" elementType="Header">
+                  <stringProp name="Header.name">Content-Type</stringProp>
+                  <stringProp name="Header.value">application/json</stringProp>
+                </elementProp>
+              </collectionProp>
+            </HeaderManager>
+            <hashTree/>
+            <ResponseAssertion guiclass="AssertionGui" testname="Status = 201" enabled="true">
+              <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+              <stringProp name="Assertion.custom_message">Expected HTTP 201 Created</stringProp>
+              <stringProp name="Assertion.test_type">2</stringProp>
+              <collectionProp name="Asserion.test_strings">
+                <stringProp name="49586">201</stringProp>
+              </collectionProp>
+            </ResponseAssertion>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+
+        <!-- ── Listeners ──────────────────────────────────────── -->
+
+        <!-- Summary Report (console-friendly table in CI logs) -->
+        <ResultCollector guiclass="SummaryReport" testname="Summary Report" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp><name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <hostname>true</hostname>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+
+        <!-- Simple Data Writer — JTL output for HTML dashboard -->
+        <ResultCollector guiclass="SimpleDataWriter" testname="JTL Results Writer" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp><name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <hostname>true</hostname>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename">results.jtl</stringProp>
+        </ResultCollector>
+        <hashTree/>
+
+      </hashTree><!-- end Thread Group children -->
+    </hashTree><!-- end Thread Group -->
+  </hashTree><!-- end Test Plan children -->
+</jmeterTestPlan>

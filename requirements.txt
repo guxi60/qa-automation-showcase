@@ -19,6 +19,9 @@ requests>=2.31.0
 jsonschema>=4.20.0
 
 # Performance Testing
+#   locust>=2.20.0         — pip-installable Python package
+#   Apache JMeter 5.6.3    — requires Java 17+ (brew install jmeter / apt install jmeter)
+#   Grafana k6             — Go binary (brew install k6 / apt install k6)
 locust>=2.20.0
 
 # Utilities

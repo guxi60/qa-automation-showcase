@@ -2,7 +2,7 @@
 # CI/CD — QA Automation Showcase
 # =============================================================================
 #
-# Runs all five test suites and publishes Allure + Locust reports
+# Runs all seven test suites and publishes Allure + Perf reports
 # to GitHub Pages on push to main.
 #
 # Triggers:
@@ -40,6 +40,11 @@ on:
         type: choice
         options: [all, api, playwright, selenium, robot, performance]
         default: all
+      perf_tool:
+        description: 'Performance tool (when suite=performance)'
+        type: choice
+        options: [all, locust, jmeter, k6]
+        default: all
       level:
         description: 'Test level'
         type: choice
@@ -62,7 +67,9 @@ jobs:
       run-playwright: ${{ steps.resolve.outputs.playwright }}
       run-selenium: ${{ steps.resolve.outputs.selenium }}
       run-robot: ${{ steps.resolve.outputs.robot }}
-      run-performance: ${{ steps.resolve.outputs.performance }}
+      run-performance-locust: ${{ steps.resolve.outputs.perf-locust }}
+      run-performance-jmeter: ${{ steps.resolve.outputs.perf-jmeter }}
+      run-performance-k6: ${{ steps.resolve.outputs.perf-k6 }}
       pytest-markers: ${{ steps.resolve.outputs.pytest-markers }}
       robot-include: ${{ steps.resolve.outputs.robot-include }}
 
@@ -88,7 +95,11 @@ jobs:
               - 'robot-tests/**'
               - 'requirements.txt'
             performance:
-              - 'performance/**'
+              - 'performance/locust/**'
+            performance_jmeter:
+              - 'performance/jmeter/**'
+            performance_k6:
+              - 'performance/k6/**'
 
       # ── Resolve final scope ───────────────────────────────────
       - name: Resolve scope
@@ -96,7 +107,19 @@ jobs:
         run: |
           EVT="${{ github.event_name }}"
           SUITE="${{ github.event.inputs.suite }}"
+          PFTOOL="${{ github.event.inputs.perf_tool }}"
           LEVEL="${{ github.event.inputs.level }}"
+
+          # ── Performance tool helper ────────────────────────────
+          # Expands a performance tool selector → three boolean flags.
+          perf_all() {
+            echo "perf-locust=true"   >> $GITHUB_OUTPUT
+            echo "perf-jmeter=true"   >> $GITHUB_OUTPUT
+            echo "perf-k6=true"       >> $GITHUB_OUTPUT
+          }
+          perf_locust()  { echo "perf-locust=true"   >> $GITHUB_OUTPUT; }
+          perf_jmeter()  { echo "perf-jmeter=true"   >> $GITHUB_OUTPUT; }
+          perf_k6()      { echo "perf-k6=true"       >> $GITHUB_OUTPUT; }
 
           # ── Suite selection ──────────────────────────────────
           if [ "$EVT" = "workflow_dispatch" ]; then
@@ -107,13 +130,20 @@ jobs:
                 echo "playwright=true"    >> $GITHUB_OUTPUT
                 echo "selenium=true"      >> $GITHUB_OUTPUT
                 echo "robot=true"         >> $GITHUB_OUTPUT
-                echo "performance=true"   >> $GITHUB_OUTPUT
+                perf_all
                 ;;
               api)         echo "api=true"           >> $GITHUB_OUTPUT ;;
               playwright)  echo "playwright=true"    >> $GITHUB_OUTPUT ;;
               selenium)    echo "selenium=true"      >> $GITHUB_OUTPUT ;;
               robot)       echo "robot=true"         >> $GITHUB_OUTPUT ;;
-              performance) echo "performance=true"   >> $GITHUB_OUTPUT ;;
+              performance)
+                case "$PFTOOL" in
+                  all)     perf_all ;;
+                  locust)  perf_locust ;;
+                  jmeter)  perf_jmeter ;;
+                  k6)      perf_k6 ;;
+                esac
+                ;;
             esac
           else
             # Push/PR: path-based (true if filter matches, false otherwise)
@@ -121,7 +151,9 @@ jobs:
             echo "playwright=${{ steps.filter.outputs.playwright }}"       >> $GITHUB_OUTPUT
             echo "selenium=${{ steps.filter.outputs.selenium }}"           >> $GITHUB_OUTPUT
             echo "robot=${{ steps.filter.outputs.robot }}"                 >> $GITHUB_OUTPUT
-            echo "performance=${{ steps.filter.outputs.performance }}"     >> $GITHUB_OUTPUT
+            echo "perf-locust=${{ steps.filter.outputs.performance }}"     >> $GITHUB_OUTPUT
+            echo "perf-jmeter=${{ steps.filter.outputs.performance_jmeter }}"  >> $GITHUB_OUTPUT
+            echo "perf-k6=${{ steps.filter.outputs.performance_k6 }}"      >> $GITHUB_OUTPUT
           fi
 
           # ── Level selection ──────────────────────────────────
@@ -314,12 +346,12 @@ jobs:
           if-no-files-found: ignore
 
   # ═══════════════════════════════════════════════════════════════
-  #  Performance Tests
+  #  Performance Tests — Locust
   # ═══════════════════════════════════════════════════════════════
-  test-performance:
+  test-performance-locust:
     name: 'Performance (Locust)'
     needs: scope
-    if: needs.scope.outputs.run-performance == 'true'
+    if: needs.scope.outputs.run-performance-locust == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     continue-on-error: true
@@ -333,14 +365,103 @@ jobs:
       - run: pip install -r requirements.txt
       - name: Run Locust headless
         run: |
-          cd performance
+          cd performance/locust
           locust -f locustfile.py --headless -u 10 -r 2 -t 60s --html report.html
       - name: Upload Locust HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: locust-report
-          path: performance/report.html
+          path: performance/locust/report.html
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════════
+  #  Performance Tests — JMeter
+  # ═══════════════════════════════════════════════════════════════
+  test-performance-jmeter:
+    name: 'Performance (JMeter)'
+    needs: scope
+    if: needs.scope.outputs.run-performance-jmeter == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java (Temurin 17)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache JMeter
+        uses: actions/cache@v4
+        with:
+          path: apache-jmeter-5.6.3
+          key: jmeter-5.6.3
+
+      - name: Install JMeter
+        run: |
+          if [ ! -d "apache-jmeter-5.6.3" ]; then
+            curl -fsSLO "https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.3.tgz"
+            tar -xzf apache-jmeter-5.6.3.tgz
+            rm apache-jmeter-5.6.3.tgz
+          fi
+          echo "$(pwd)/apache-jmeter-5.6.3/bin" >> $GITHUB_PATH
+
+      - name: Run JMeter headless
+        run: |
+          cd performance/jmeter
+          rm -rf results.jtl dashboard/
+          jmeter -n -t jsonplaceholder.jmx -l results.jtl -e -o dashboard/ -j jmeter.log
+
+      - name: Upload JMeter report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmeter-report
+          path: |
+            performance/jmeter/dashboard/
+            performance/jmeter/results.jtl
+          retention-days: 7
+
+  # ═══════════════════════════════════════════════════════════════
+  #  Performance Tests — K6
+  # ═══════════════════════════════════════════════════════════════
+  test-performance-k6:
+    name: 'Performance (K6)'
+    needs: scope
+    if: needs.scope.outputs.run-performance-k6 == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install K6
+        run: |
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install -y k6
+
+      - name: Run K6 headless
+        run: |
+          cd performance/k6
+          rm -rf report.html summary.json
+          k6 run jsonplaceholder.js --summary-export=summary.json
+
+      - name: Upload K6 report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: k6-report
+          path: |
+            performance/k6/report.html
+            performance/k6/summary.json
           retention-days: 7
 
   # ═══════════════════════════════════════════════════════════════
@@ -353,7 +474,7 @@ jobs:
   # ═══════════════════════════════════════════════════════════════
   publish-reports:
     name: 'Generate & Publish Reports'
-    needs: [scope, test-api, test-playwright, test-selenium, test-robot, test-performance]
+    needs: [scope, test-api, test-playwright, test-selenium, test-robot, test-performance-locust, test-performance-jmeter, test-performance-k6]
     if: |
       always() &&
       (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
@@ -425,18 +546,48 @@ jobs:
           allure generate _results/robot -o docs/robot --clean
           sed -i "s|<head>|<head><base href=\"/qa-automation-showcase/robot/\">|" docs/robot/index.html
 
+      # ── Locust report ──────────────────────────────────────────
       - name: Download Locust HTML report
         uses: actions/download-artifact@v4
-        if: needs.scope.outputs.run-performance == 'true'
+        if: needs.scope.outputs.run-performance-locust == 'true'
         with:
           name: locust-report
-          path: _results/perf
+          path: _results/perf-locust
 
       - name: Publish Locust report
-        if: needs.scope.outputs.run-performance == 'true'
+        if: needs.scope.outputs.run-performance-locust == 'true'
         run: |
-          mkdir -p docs/perf
-          cp _results/perf/report.html docs/perf/index.html
+          mkdir -p docs/perf/locust
+          cp _results/perf-locust/report.html docs/perf/locust/index.html
+
+      # ── JMeter report ─────────────────────────────────────────
+      - name: Download JMeter report
+        uses: actions/download-artifact@v4
+        if: needs.scope.outputs.run-performance-jmeter == 'true'
+        with:
+          name: jmeter-report
+          path: _results/perf-jmeter
+
+      - name: Publish JMeter report
+        if: needs.scope.outputs.run-performance-jmeter == 'true'
+        run: |
+          mkdir -p docs/perf/jmeter
+          cp -r _results/perf-jmeter/dashboard/* docs/perf/jmeter/
+
+      # ── K6 report ────────────────────────────────────────────
+      - name: Download K6 report
+        uses: actions/download-artifact@v4
+        if: needs.scope.outputs.run-performance-k6 == 'true'
+        with:
+          name: k6-report
+          path: _results/perf-k6
+
+      - name: Publish K6 report
+        if: needs.scope.outputs.run-performance-k6 == 'true'
+        run: |
+          mkdir -p docs/perf/k6
+          cp _results/perf-k6/report.html docs/perf/k6/index.html
+          cp _results/perf-k6/summary.json docs/perf/k6/summary.json
 
       # ── Commit & push → triggers GitHub Pages rebuild ───────
       - name: Deploy to GitHub Pages
@@ -454,5 +605,5 @@ jobs:
             exit 0
           fi
 
-          git commit -m "ci: update Allure & Locust reports [skip ci]"
+          git commit -m "ci: update Allure & Perf reports [skip ci]"
           git push origin main

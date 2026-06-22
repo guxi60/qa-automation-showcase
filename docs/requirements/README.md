@@ -16,7 +16,7 @@
 | Checkout | [REQ-CHECKOUT.md](REQ-CHECKOUT.md) | 5 | E2E purchase flow, form validation, cancel & return |
 | API — Users | [REQ-API-USERS.md](REQ-API-USERS.md) | 7 | List / single / create / update / delete / 404 / schema |
 | API — Posts | [REQ-API-POSTS.md](REQ-API-POSTS.md) | 7 | List / single / create / update / delete / filter / schema |
-| Performance | [REQ-PERF.md](REQ-PERF.md) | 5 | Load & stress baseline — throughput, latency, observability |
+| Performance | [REQ-PERF.md](REQ-PERF.md) | 5 | Load & stress baseline — throughput, latency, observability (Locust + JMeter + K6) |
 
 ---
 
@@ -46,3 +46,5 @@ See the full requirements → test traceability matrix at [traceability-matrix.m
 | Robot Framework | ✅ 24 test cases — full coverage |
 | pytest + requests (API) | ✅ 14 test cases — full coverage |
 | locust (Performance) | ✅ 5 scenarios — full coverage |
+| JMeter (Performance) | ✅ 5 scenarios — full coverage |
+| K6 (Performance) | ✅ 5 scenarios — full coverage |

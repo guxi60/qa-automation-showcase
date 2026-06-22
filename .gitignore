@@ -45,5 +45,10 @@ robot-tests/allure-results/
 robot-tests/allure-report/
 
 # JMeter
-*.jtl
-JMeterPluginsCMD.bat
+performance/jmeter/results.jtl
+performance/jmeter/dashboard/
+performance/jmeter/jmeter.log
+
+# K6
+performance/k6/report.html
+performance/k6/summary.json

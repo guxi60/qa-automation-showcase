@@ -1,8 +1,8 @@
 # QA Automation Showcase
 
-> **One system under test, three automation frameworks — a side-by-side comparison demonstrating tool selection rationale and technology migration capability.**
+> **One system under test, seven frameworks — a side-by-side comparison demonstrating tool selection rationale and technology migration capability.**
 >
-> System under test: [SauceDemo](https://www.saucedemo.com/) (standard e-commerce flow: Login → Browse → Cart → Checkout)
+> System under test: [SauceDemo](https://www.saucedemo.com/) (UI: Login → Browse → Cart → Checkout) + [JSONPlaceholder](https://jsonplaceholder.typicode.com/) (API + Performance)
 
 ---
 
@@ -27,7 +27,7 @@ Each framework has its own POM implementation, test cases, and network resilienc
 ```
 Web UI Testing:  Selenium  |  Playwright  |  Robot Framework
 API Testing:     pytest + requests  |  JSON Schema Validation
-Performance:     locust
+Performance:     locust, JMeter, k6
 CI/CD:           GitHub Actions
 Lang:            Python 3.x
 Reports:         Allure  |  [Live Report ↗](https://guxi60.github.io/qa-automation-showcase/#)
@@ -39,7 +39,7 @@ Reports:         Allure  |  [Live Report ↗](https://guxi60.github.io/qa-automa
 
 [![Reports Portal](https://img.shields.io/badge/Allure-Report-ff69b4?logo=java)](https://guxi60.github.io/qa-automation-showcase/#)
 
-> **Five frameworks, one report portal.** All reports are frozen snapshots regenerated periodically.
+> **Seven frameworks, one report portal.** All reports are frozen snapshots regenerated periodically.
 
 | Framework | Report |
 |-----------|--------|
@@ -47,9 +47,11 @@ Reports:         Allure  |  [Live Report ↗](https://guxi60.github.io/qa-automa
 | Selenium + pytest | [Allure Report ↗](https://guxi60.github.io/qa-automation-showcase/selenium/) |
 | Robot Framework | [Allure Report ↗](https://guxi60.github.io/qa-automation-showcase/robot/) |
 | pytest + requests (API) | [Allure Report ↗](https://guxi60.github.io/qa-automation-showcase/api/) |
-| locust (Performance) | [HTML Report ↗](https://guxi60.github.io/qa-automation-showcase/perf/) |
+| locust (Performance) | [HTML Report ↗](https://guxi60.github.io/qa-automation-showcase/perf/locust/) |
+| JMeter (Performance) | [Dashboard ↗](https://guxi60.github.io/qa-automation-showcase/perf/jmeter/) |
+| K6 (Performance) | [HTML Report ↗](https://guxi60.github.io/qa-automation-showcase/perf/k6/) |
 
-Open the [**report portal**](https://guxi60.github.io/qa-automation-showcase/#) to browse all five reports without running anything locally.
+Open the [**report portal**](https://guxi60.github.io/qa-automation-showcase/#) to browse all seven reports without running anything locally.
 
 ---
 
@@ -79,7 +81,10 @@ qa-automation-showcase/
 ├── api-tests/                            # API tests
 │   ├── tests/                            # API test cases
 │   └── schemas/                          # JSON Schema definitions
-├── performance/                          # locust performance tests
+├── performance/                          # Performance tests
+│   ├── locust/                           #   locust (Python)
+│   ├── jmeter/                           #   JMeter (XML / Java)
+│   └── k6/                               #   k6 (JavaScript / Go)
 ├── .github/workflows/                    # GitHub Actions CI
 └── requirements.txt                      # Python dependencies
 ```
@@ -123,25 +128,35 @@ allure open allure-report
 cd api-tests
 pytest -v
 
-# 7. Run performance tests (locust)
-cd ../performance
+# 7. Run performance tests — locust (Python)
+cd ../performance/locust
 locust -f locustfile.py --headless -u 10 -r 2 -t 60s --html report.html
+
+# 7b. Run performance tests — JMeter (Java)
+cd ../performance/jmeter
+# Requires Java 17+ and JMeter 5.6 on PATH
+./run_report.sh
+
+# 7c. Run performance tests — k6 (JavaScript / Go)
+cd ../performance/k6
+# Requires k6 on PATH (brew install k6 / apt install k6)
+./run_report.sh
 ```
 
 ---
 
 ## 📊 Test Coverage Matrix
 
-| Feature | Playwright | Selenium | Robot Framework | API | Performance |
-|---------|-----------|----------|-----------------|-----|-------------|
-| Login (happy/negative/boundary) | ✅ (6) | ✅ (6) | ✅ (6) | — | — |
-| Inventory (sort/display/images) | ✅ (8) | ✅ (8) | ✅ (8) | — | — |
-| Cart (add/remove/persistence) | ✅ (5) | ✅ (5) | ✅ (5) | — | — |
-| Checkout E2E (incl. validation) | ✅ (5) | ✅ (5) | ✅ (5) | — | — |
-| User CRUD | — | — | — | ✅ (7) | — |
-| Post CRUD | — | — | — | ✅ (7) | — |
-| Schema validation | — | — | — | ✅ (embedded) | — |
-| Performance / Load | — | — | — | — | ✅ (5 scenarios) |
+| Feature | Playwright | Selenium | Robot | API | Locust | JMeter | K6 |
+|---------|-----------|----------|-------|-----|--------|--------|-----|
+| Login (happy/negative/boundary) | ✅ (6) | ✅ (6) | ✅ (6) | — | — | — | — |
+| Inventory (sort/display/images) | ✅ (8) | ✅ (8) | ✅ (8) | — | — | — | — |
+| Cart (add/remove/persistence) | ✅ (5) | ✅ (5) | ✅ (5) | — | — | — | — |
+| Checkout E2E (incl. validation) | ✅ (5) | ✅ (5) | ✅ (5) | — | — | — | — |
+| User CRUD | — | — | — | ✅ (7) | — | — | — |
+| Post CRUD | — | — | — | ✅ (7) | — | — | — |
+| Schema validation | — | — | — | ✅ (embedded) | — | — | — |
+| Performance / Load | — | — | — | — | ✅ (5) | ✅ (5) | ✅ (5) |
 
 ---
 
@@ -173,7 +188,9 @@ Requirements (REQ-*.md)
   │                                                   → Selenium    ✅ (24)
   │                                                   → Robot       ✅ (24)
   ├── API:    Test Data (test_data/*.yaml)           → pytest+requests ✅ (14)
-  └── Perf:   locustfile.py                          → locust ✅ (5 scenarios)
+  └── Perf:   (inline scenarios)                     → Locust ✅ (5)
+  │                                                   → JMeter ✅ (5)
+  │                                                   → K6     ✅ (5)
 ```
 
 ---
@@ -192,7 +209,7 @@ Requirements (REQ-*.md)
 
 **Gu Xiang** | Senior QA Engineer | 15+ years of testing experience
 
-- Proficient in Selenium / Robot Framework / Playwright / locust
+- Proficient in Selenium / Robot Framework / Playwright / locust / JMeter / k6
 - Former QA Lead / Scrum Master, leading cross-timezone testing teams
 - Cross-industry delivery experience — from CT medical imaging to Web3 digital wallets
 - Passionate about engineering the intersection of AI + test automation
