@@ -415,6 +415,17 @@ jobs:
           cd performance/jmeter
           rm -rf results.jtl dashboard/
           jmeter -n -t jsonplaceholder.jmx -l results.jtl -e -o dashboard/ -j jmeter.log
+          echo "JMeter exit code: $?"
+
+      - name: Verify JMeter output
+        if: always()
+        run: |
+          echo "=== jmeter.log (last 40 lines) ==="
+          tail -40 performance/jmeter/jmeter.log 2>/dev/null || echo "(no log)"
+          echo "=== dashboard/ ==="
+          ls -laR performance/jmeter/dashboard/ 2>/dev/null || echo "(dashboard dir missing)"
+          echo "=== results.jtl size ==="
+          wc -c performance/jmeter/results.jtl 2>/dev/null || echo "(results.jtl missing)"
 
       - name: Upload JMeter report
         if: always()
