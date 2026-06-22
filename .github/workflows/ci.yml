@@ -414,7 +414,11 @@ jobs:
         run: |
           cd performance/jmeter
           rm -rf results.jtl dashboard/
-          jmeter -n -t jsonplaceholder.jmx -l results.jtl -e -o dashboard/ -j jmeter.log
+          jmeter -n -t jsonplaceholder.jmx \
+            -l results.jtl \
+            -e -o dashboard/ \
+            -j jmeter.log \
+            -Jjmeter.save.saveservice.output_format=csv
           echo "JMeter exit code: $?"
 
       - name: Verify JMeter output
