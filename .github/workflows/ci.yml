@@ -546,14 +546,6 @@ jobs:
           allure generate _results/robot -o docs/robot --clean
           sed -i "s|<head>|<head><base href=\"/qa-automation-showcase/robot/\">|" docs/robot/index.html
 
-      # ── Debug: show downloaded artifact structures ──────────────
-      - name: Debug artifact structure
-        run: |
-          echo "=== Allure results ==="
-          find _results/api _results/playwright _results/selenium _results/robot -type f 2>/dev/null | head -20 || true
-          echo "=== Perf results ==="
-          find _results/perf-* -type f 2>/dev/null | head -30 || true
-
       # ── Locust report ──────────────────────────────────────────
       - name: Download Locust HTML report
         uses: actions/download-artifact@v4
@@ -614,6 +606,17 @@ jobs:
           else
             echo "::warning::K6 report.html not found — skipping"
           fi
+
+      # ── Debug: verify what was downloaded & copied ──────────────
+      - name: Debug artifact structure
+        if: always()
+        run: |
+          echo "=== Downloaded _results ==="
+          find _results -type f 2>/dev/null | sort | head -50 || echo "(empty)"
+          echo "=== docs/ tree ==="
+          find docs -type f -name 'index.html' 2>/dev/null | sort || echo "(empty)"
+          echo "=== docs/perf/** file sizes ==="
+          find docs/perf -type f -exec ls -lh {} \; 2>/dev/null || echo "(empty)"
 
       # ── Commit & push → triggers GitHub Pages rebuild ───────
       - name: Deploy to GitHub Pages
