@@ -20,6 +20,7 @@ test-results/
 !web-ui-tests/templates/*.html
 !docs/*.html
 !docs/*/index.html
+!docs/*/*/index.html
 !docs/*/assets/
 !docs/*/assets/**
 report/
